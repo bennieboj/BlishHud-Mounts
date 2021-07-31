@@ -13,7 +13,7 @@ using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 
 
-namespace Mounts
+namespace Manlaan.Mounts
 {
     [Export(typeof(Blish_HUD.Modules.Module))]
     public class Module : Blish_HUD.Modules.Module
@@ -29,8 +29,8 @@ namespace Mounts
 
 
         public enum MountOrder { Disabled, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10 }
-        public enum MountDisplay { TransparentMenuIcons, OpaqueMenuIcons, TransparentManual, OpaqueManual, OpaqueManualText }
-        public enum MountOrientation { Horizontal, Vertical }
+        public enum MountDisplay { TransparentCorner, OpaqueCorner, TransparentManual, OpaqueManual, OpaqueManualText }
+        public enum Orientation { Horizontal, Vertical }
         private SettingEntry<MountOrder> _settingGriffonOrder;
         private SettingEntry<MountOrder> _settingJackelOrder;
         private SettingEntry<MountOrder> _settingRaptorOrder;
@@ -48,29 +48,29 @@ namespace Mounts
         private SettingEntry<KeyBinding> _settingSpringerBinding;
         private SettingEntry<KeyBinding> _settingWarclawBinding;
         private SettingEntry<MountDisplay> _settingDisplay;
-        private SettingEntry<MountOrientation> _settingOrientation;
+        private SettingEntry<Orientation> _settingOrientation;
         private SettingEntry<string> _settingLocX;
         private SettingEntry<string> _settingLocY;
         private SettingEntry<int> _settingImgWidth;
         private SettingEntry<float> _settingOpacity;
 
-        private CornerIcon _menuiconGriffon;
-        private CornerIcon _menuiconJackel;
-        private CornerIcon _menuiconRaptor;
-        private CornerIcon _menuiconRoller;
-        private CornerIcon _menuiconSkimmer;
-        private CornerIcon _menuiconSkyscale;
-        private CornerIcon _menuiconSpringer;
-        private CornerIcon _menuiconWarclaw;
+        private CornerIcon _cornerGriffon;
+        private CornerIcon _cornerJackel;
+        private CornerIcon _cornerRaptor;
+        private CornerIcon _cornerRoller;
+        private CornerIcon _cornerSkimmer;
+        private CornerIcon _cornerSkyscale;
+        private CornerIcon _cornerSpringer;
+        private CornerIcon _cornerWarclaw;
 
-        private Image _imgGriffon;
-        private Image _imgJackel;
-        private Image _imgRaptor;
-        private Image _imgRoller;
-        private Image _imgSkimmer;
-        private Image _imgSkyscale;
-        private Image _imgSpringer;
-        private Image _imgWarclaw;
+        private Image _btnGriffon;
+        private Image _btnJackel;
+        private Image _btnRaptor;
+        private Image _btnRoller;
+        private Image _btnSkimmer;
+        private Image _btnSkyscale;
+        private Image _btnSpringer;
+        private Image _btnWarclaw;
 
         [ImportingConstructor]
         public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) : base(moduleParameters) { }
@@ -99,8 +99,8 @@ namespace Mounts
             _settingWarclawBinding = settings.DefineSetting("MountWarclawBinding", new KeyBinding(Keys.None), "Warclaw Binding", "");
             _settingSkyscaleBinding = settings.DefineSetting("MountSkyscaleBinding", new KeyBinding(Keys.None), "Skyscale Binding", "");
 
-            _settingDisplay = settings.DefineSetting("MountDisplay", MountDisplay.TransparentMenuIcons, "Display Type", "");
-            _settingOrientation = settings.DefineSetting("MountOrientation", MountOrientation.Horizontal, "Manual Orientation", "");
+            _settingDisplay = settings.DefineSetting("MountDisplay", MountDisplay.TransparentCorner, "Display Type", "");
+            _settingOrientation = settings.DefineSetting("Orientation", Orientation.Horizontal, "Manual Orientation", "");
             _settingLocX = settings.DefineSetting("MountLocX", "60", "Manual X", "");
             _settingLocY = settings.DefineSetting("MountLocY", "40", "Manual Y", "");
             _settingImgWidth = settings.DefineSetting("MountImgWidth", 30, "Manual Icon Width", "");
@@ -109,30 +109,30 @@ namespace Mounts
             _settingImgWidth.SetRange(0, 200);
             _settingOpacity.SetRange(0f, 1f);
 
-            _settingGriffonOrder.SettingChanged += UpdateMountSettings;
-            _settingJackelOrder.SettingChanged += UpdateMountSettings;
-            _settingRaptorOrder.SettingChanged += UpdateMountSettings;
-            _settingRollerOrder.SettingChanged += UpdateMountSettings;
-            _settingSkimmerOrder.SettingChanged += UpdateMountSettings;
-            _settingSkyscaleOrder.SettingChanged += UpdateMountSettings;
-            _settingSpringerOrder.SettingChanged += UpdateMountSettings;
-            _settingWarclawOrder.SettingChanged += UpdateMountSettings;
+            _settingGriffonOrder.SettingChanged += UpdateSettings;
+            _settingJackelOrder.SettingChanged += UpdateSettings;
+            _settingRaptorOrder.SettingChanged += UpdateSettings;
+            _settingRollerOrder.SettingChanged += UpdateSettings;
+            _settingSkimmerOrder.SettingChanged += UpdateSettings;
+            _settingSkyscaleOrder.SettingChanged += UpdateSettings;
+            _settingSpringerOrder.SettingChanged += UpdateSettings;
+            _settingWarclawOrder.SettingChanged += UpdateSettings;
 
-            _settingGriffonBinding.SettingChanged += UpdateMountSettings;
-            _settingJackelBinding.SettingChanged += UpdateMountSettings;
-            _settingRaptorBinding.SettingChanged += UpdateMountSettings;
-            _settingRollerBinding.SettingChanged += UpdateMountSettings;
-            _settingSkimmerBinding.SettingChanged += UpdateMountSettings;
-            _settingSkyscaleBinding.SettingChanged += UpdateMountSettings;
-            _settingSpringerBinding.SettingChanged += UpdateMountSettings;
-            _settingWarclawBinding.SettingChanged += UpdateMountSettings;
+            _settingGriffonBinding.SettingChanged += UpdateSettings;
+            _settingJackelBinding.SettingChanged += UpdateSettings;
+            _settingRaptorBinding.SettingChanged += UpdateSettings;
+            _settingRollerBinding.SettingChanged += UpdateSettings;
+            _settingSkimmerBinding.SettingChanged += UpdateSettings;
+            _settingSkyscaleBinding.SettingChanged += UpdateSettings;
+            _settingSpringerBinding.SettingChanged += UpdateSettings;
+            _settingWarclawBinding.SettingChanged += UpdateSettings;
 
-            _settingDisplay.SettingChanged += UpdateMountSettings;
-            _settingOrientation.SettingChanged += UpdateMountSettings;
-            _settingLocX.SettingChanged += UpdateMountSettings;
-            _settingLocY.SettingChanged += UpdateMountSettings;
-            _settingImgWidth.SettingChanged += UpdateMountSettings;
-            _settingOpacity.SettingChanged += UpdateMountSettings;
+            _settingDisplay.SettingChanged += UpdateSettings;
+            _settingOrientation.SettingChanged += UpdateSettings;
+            _settingLocX.SettingChanged += UpdateSettings;
+            _settingLocY.SettingChanged += UpdateSettings;
+            _settingImgWidth.SettingChanged += UpdateSettings;
+            _settingOpacity.SettingChanged += UpdateSettings;
 
         }
 
@@ -149,59 +149,110 @@ namespace Mounts
             base.OnModuleLoaded(e);
         }
 
-        private void UpdateMountSettings(object sender = null, ValueChangedEventArgs<KeyBinding> e = null)
+        protected override void Update(GameTime gameTime)
+        {
+        }
+
+        /// <inheritdoc />
+        protected override void Unload()
+        {
+            _cornerGriffon?.Dispose();
+            _cornerJackel?.Dispose();
+            _cornerRaptor?.Dispose();
+            _cornerRoller?.Dispose();
+            _cornerSkimmer?.Dispose();
+            _cornerSkyscale?.Dispose();
+            _cornerSpringer?.Dispose();
+            _cornerWarclaw?.Dispose();
+
+            _btnGriffon?.Dispose();
+            _btnJackel?.Dispose();
+            _btnRaptor?.Dispose();
+            _btnRoller?.Dispose();
+            _btnSkimmer?.Dispose();
+            _btnSkyscale?.Dispose();
+            _btnSpringer?.Dispose();
+            _btnWarclaw?.Dispose();
+
+            _settingGriffonOrder.SettingChanged -= UpdateSettings;
+            _settingJackelOrder.SettingChanged -= UpdateSettings;
+            _settingRaptorOrder.SettingChanged -= UpdateSettings;
+            _settingRollerOrder.SettingChanged -= UpdateSettings;
+            _settingSkimmerOrder.SettingChanged -= UpdateSettings;
+            _settingSkyscaleOrder.SettingChanged -= UpdateSettings;
+            _settingSpringerOrder.SettingChanged -= UpdateSettings;
+            _settingWarclawOrder.SettingChanged -= UpdateSettings;
+
+            _settingGriffonBinding.SettingChanged -= UpdateSettings;
+            _settingJackelBinding.SettingChanged -= UpdateSettings;
+            _settingRaptorBinding.SettingChanged -= UpdateSettings;
+            _settingRollerBinding.SettingChanged -= UpdateSettings;
+            _settingSkimmerBinding.SettingChanged -= UpdateSettings;
+            _settingSkyscaleBinding.SettingChanged -= UpdateSettings;
+            _settingSpringerBinding.SettingChanged -= UpdateSettings;
+            _settingWarclawBinding.SettingChanged -= UpdateSettings;
+
+            _settingDisplay.SettingChanged -= UpdateSettings;
+            _settingOrientation.SettingChanged -= UpdateSettings;
+            _settingLocX.SettingChanged -= UpdateSettings;
+            _settingLocY.SettingChanged -= UpdateSettings;
+            _settingImgWidth.SettingChanged -= UpdateSettings;
+            _settingOpacity.SettingChanged -= UpdateSettings;
+        }
+
+        private void UpdateSettings(object sender = null, ValueChangedEventArgs<KeyBinding> e = null)
         {
             DrawIcons();
         }
-        private void UpdateMountSettings(object sender = null, ValueChangedEventArgs<MountDisplay> e = null)
+        private void UpdateSettings(object sender = null, ValueChangedEventArgs<MountDisplay> e = null)
         {
             DrawIcons();
         }
-        private void UpdateMountSettings(object sender = null, ValueChangedEventArgs<MountOrder> e = null)
+        private void UpdateSettings(object sender = null, ValueChangedEventArgs<MountOrder> e = null)
         {
             DrawIcons();
         }
-        private void UpdateMountSettings(object sender = null, ValueChangedEventArgs<MountOrientation> e = null)
+        private void UpdateSettings(object sender = null, ValueChangedEventArgs<Orientation> e = null)
         {
             DrawIcons();
         }
-        private void UpdateMountSettings(object sender = null, ValueChangedEventArgs<float> e = null)
+        private void UpdateSettings(object sender = null, ValueChangedEventArgs<float> e = null)
         {
             DrawIcons();
         }
-        private void UpdateMountSettings(object sender = null, ValueChangedEventArgs<string> e = null)
+        private void UpdateSettings(object sender = null, ValueChangedEventArgs<string> e = null)
         {
             if (int.Parse(_settingLocX.Value) < 0)
                 _settingLocX.Value = "0";
             if (int.Parse(_settingLocY.Value) < 0)
                 _settingLocY.Value = "0";
-            
+
             DrawIcons();
         }
-        private void UpdateMountSettings(object sender = null, ValueChangedEventArgs<int> e = null)
+        private void UpdateSettings(object sender = null, ValueChangedEventArgs<int> e = null)
         {
             DrawIcons();
         }
 
         protected void DrawIcons()
         {
-            _menuiconGriffon?.Dispose();
-            _menuiconJackel?.Dispose();
-            _menuiconRaptor?.Dispose();
-            _menuiconRoller?.Dispose();
-            _menuiconSkimmer?.Dispose();
-            _menuiconSkyscale?.Dispose();
-            _menuiconSpringer?.Dispose();
-            _menuiconWarclaw?.Dispose();
+            _cornerGriffon?.Dispose();
+            _cornerJackel?.Dispose();
+            _cornerRaptor?.Dispose();
+            _cornerRoller?.Dispose();
+            _cornerSkimmer?.Dispose();
+            _cornerSkyscale?.Dispose();
+            _cornerSpringer?.Dispose();
+            _cornerWarclaw?.Dispose();
 
-            _imgGriffon?.Dispose();
-            _imgJackel?.Dispose();
-            _imgRaptor?.Dispose();
-            _imgRoller?.Dispose();
-            _imgSkimmer?.Dispose();
-            _imgSkyscale?.Dispose();
-            _imgSpringer?.Dispose();
-            _imgWarclaw?.Dispose();
+            _btnGriffon?.Dispose();
+            _btnJackel?.Dispose();
+            _btnRaptor?.Dispose();
+            _btnRoller?.Dispose();
+            _btnSkimmer?.Dispose();
+            _btnSkyscale?.Dispose();
+            _btnSpringer?.Dispose();
+            _btnWarclaw?.Dispose();
 
             int curX = int.Parse(_settingLocX.Value);
             int curY = int.Parse(_settingLocY.Value);
@@ -211,32 +262,32 @@ namespace Mounts
                 if (name.Equals(MountOrder.Disabled.ToString())) continue;
                 if (_settingGriffonOrder.Value.ToString() == name)
                 {
-                    Texture2D icon = GetIconFile("griffon");
-                    if (_settingDisplay.Value == MountDisplay.OpaqueMenuIcons || _settingDisplay.Value == MountDisplay.TransparentMenuIcons)
+                    Texture2D img = GetImgFile("griffon");
+                    if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
                     {
-                        _menuiconGriffon = new CornerIcon()
+                        _cornerGriffon = new CornerIcon()
                         {
                             IconName = "Griffon",
-                            Icon = icon,
-                            HoverIcon = icon,
+                            Icon = img,
+                            HoverIcon = img,
                             Priority = 10
                         };
-                        _menuiconGriffon.Click += delegate { DoHotKey(_settingGriffonBinding); };
+                        _cornerGriffon.Click += delegate { DoHotKey(_settingGriffonBinding); };
                     }
                     else
                     {
-                        _imgGriffon = new Image
+                        _btnGriffon = new Image
                         {
                             Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
-                            Texture = icon,
+                            Texture = img,
                             Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                             Location = new Point(curX, curY),
                             Opacity = _settingOpacity.Value,
                             BasicTooltipText = "Griffon"
                         };
-                        _imgGriffon.LeftMouseButtonPressed += delegate { DoHotKey(_settingGriffonBinding); };
+                        _btnGriffon.LeftMouseButtonPressed += delegate { DoHotKey(_settingGriffonBinding); };
 
-                        if (_settingOrientation.Value == MountOrientation.Horizontal)
+                        if (_settingOrientation.Value == Orientation.Horizontal)
                             curX += _settingImgWidth.Value;
                         else
                             curY += _settingImgWidth.Value;
@@ -244,32 +295,32 @@ namespace Mounts
                 }
                 if (_settingJackelOrder.Value.ToString() == name)
                 {
-                    Texture2D icon = GetIconFile("jackel");
-                    if (_settingDisplay.Value == MountDisplay.OpaqueMenuIcons || _settingDisplay.Value == MountDisplay.TransparentMenuIcons)
+                    Texture2D img = GetImgFile("jackel");
+                    if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
                     {
-                        _menuiconJackel = new CornerIcon()
+                        _cornerJackel = new CornerIcon()
                         {
                             IconName = "Jackel",
-                            Icon = icon,
-                            HoverIcon = icon,
+                            Icon = img,
+                            HoverIcon = img,
                             Priority = 10
                         };
-                        _menuiconJackel.Click += delegate { DoHotKey(_settingJackelBinding); };
+                        _cornerJackel.Click += delegate { DoHotKey(_settingJackelBinding); };
                     }
                     else
                     {
-                        _imgJackel = new Image
+                        _btnJackel = new Image
                         {
                             Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
-                            Texture = icon,
+                            Texture = img,
                             Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                             Location = new Point(curX, curY),
                             Opacity = _settingOpacity.Value,
                             BasicTooltipText = "Jackel"
                         };
-                        _imgJackel.LeftMouseButtonPressed += delegate { DoHotKey(_settingJackelBinding); };
+                        _btnJackel.LeftMouseButtonPressed += delegate { DoHotKey(_settingJackelBinding); };
 
-                        if (_settingOrientation.Value == MountOrientation.Horizontal)
+                        if (_settingOrientation.Value == Orientation.Horizontal)
                             curX += _settingImgWidth.Value;
                         else
                             curY += _settingImgWidth.Value;
@@ -277,32 +328,32 @@ namespace Mounts
                 }
                 if (_settingRaptorOrder.Value.ToString() == name)
                 {
-                    Texture2D icon = GetIconFile("raptor");
-                    if (_settingDisplay.Value == MountDisplay.OpaqueMenuIcons || _settingDisplay.Value == MountDisplay.TransparentMenuIcons)
+                    Texture2D img = GetImgFile("raptor");
+                    if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
                     {
-                        _menuiconRaptor = new CornerIcon()
+                        _cornerRaptor = new CornerIcon()
                         {
                             IconName = "Raptor",
-                            Icon = icon,
-                            HoverIcon = icon,
+                            Icon = img,
+                            HoverIcon = img,
                             Priority = 10
                         };
-                        _menuiconRaptor.Click += delegate { DoHotKey(_settingRaptorBinding); };
+                        _cornerRaptor.Click += delegate { DoHotKey(_settingRaptorBinding); };
                     }
                     else
                     {
-                        _imgRaptor = new Image
+                        _btnRaptor = new Image
                         {
                             Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
-                            Texture = icon,
+                            Texture = img,
                             Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                             Location = new Point(curX, curY),
                             Opacity = _settingOpacity.Value,
                             BasicTooltipText = "Raptor"
                         };
-                        _imgRaptor.LeftMouseButtonPressed += delegate { DoHotKey(_settingRaptorBinding); };
+                        _btnRaptor.LeftMouseButtonPressed += delegate { DoHotKey(_settingRaptorBinding); };
 
-                        if (_settingOrientation.Value == MountOrientation.Horizontal)
+                        if (_settingOrientation.Value == Orientation.Horizontal)
                             curX += _settingImgWidth.Value;
                         else
                             curY += _settingImgWidth.Value;
@@ -310,32 +361,32 @@ namespace Mounts
                 }
                 if (_settingRollerOrder.Value.ToString() == name)
                 {
-                    Texture2D icon = GetIconFile("roller");
-                    if (_settingDisplay.Value == MountDisplay.OpaqueMenuIcons || _settingDisplay.Value == MountDisplay.TransparentMenuIcons)
+                    Texture2D img = GetImgFile("roller");
+                    if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
                     {
-                        _menuiconRoller = new CornerIcon()
+                        _cornerRoller = new CornerIcon()
                         {
                             IconName = "Roller",
-                            Icon = icon,
-                            HoverIcon = icon,
+                            Icon = img,
+                            HoverIcon = img,
                             Priority = 10
                         };
-                        _menuiconRoller.Click += delegate { DoHotKey(_settingRollerBinding); };
+                        _cornerRoller.Click += delegate { DoHotKey(_settingRollerBinding); };
                     }
                     else
                     {
-                        _imgRoller = new Image
+                        _btnRoller = new Image
                         {
                             Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
-                            Texture = icon,
+                            Texture = img,
                             Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                             Location = new Point(curX, curY),
                             Opacity = _settingOpacity.Value,
                             BasicTooltipText = "Roller"
                         };
-                        _imgRoller.LeftMouseButtonPressed += delegate { DoHotKey(_settingRollerBinding); };
+                        _btnRoller.LeftMouseButtonPressed += delegate { DoHotKey(_settingRollerBinding); };
 
-                        if (_settingOrientation.Value == MountOrientation.Horizontal)
+                        if (_settingOrientation.Value == Orientation.Horizontal)
                             curX += _settingImgWidth.Value;
                         else
                             curY += _settingImgWidth.Value;
@@ -343,32 +394,32 @@ namespace Mounts
                 }
                 if (_settingSkimmerOrder.Value.ToString() == name)
                 {
-                    Texture2D icon = GetIconFile("skimmer");
-                    if (_settingDisplay.Value == MountDisplay.OpaqueMenuIcons || _settingDisplay.Value == MountDisplay.TransparentMenuIcons)
+                    Texture2D img = GetImgFile("skimmer");
+                    if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
                     {
-                        _menuiconSkimmer = new CornerIcon()
+                        _cornerSkimmer = new CornerIcon()
                         {
                             IconName = "Skimmer",
-                            Icon = icon,
-                            HoverIcon = icon,
+                            Icon = img,
+                            HoverIcon = img,
                             Priority = 10
                         };
-                        _menuiconSkimmer.Click += delegate { DoHotKey(_settingSkimmerBinding); };
+                        _cornerSkimmer.Click += delegate { DoHotKey(_settingSkimmerBinding); };
                     }
                     else
                     {
-                        _imgSkimmer = new Image
+                        _btnSkimmer = new Image
                         {
                             Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
-                            Texture = icon,
+                            Texture = img,
                             Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                             Location = new Point(curX, curY),
                             Opacity = _settingOpacity.Value,
                             BasicTooltipText = "Skimmer"
                         };
-                        _imgSkimmer.LeftMouseButtonPressed += delegate { DoHotKey(_settingSkimmerBinding); };
+                        _btnSkimmer.LeftMouseButtonPressed += delegate { DoHotKey(_settingSkimmerBinding); };
 
-                        if (_settingOrientation.Value == MountOrientation.Horizontal)
+                        if (_settingOrientation.Value == Orientation.Horizontal)
                             curX += _settingImgWidth.Value;
                         else
                             curY += _settingImgWidth.Value;
@@ -376,32 +427,32 @@ namespace Mounts
                 }
                 if (_settingSkyscaleOrder.Value.ToString() == name)
                 {
-                    Texture2D icon = GetIconFile("skyscale");
-                    if (_settingDisplay.Value == MountDisplay.OpaqueMenuIcons || _settingDisplay.Value == MountDisplay.TransparentMenuIcons)
+                    Texture2D img = GetImgFile("skyscale");
+                    if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
                     {
-                        _menuiconSkyscale = new CornerIcon()
+                        _cornerSkyscale = new CornerIcon()
                         {
                             IconName = "Skyscale",
-                            Icon = icon,
-                            HoverIcon = icon,
+                            Icon = img,
+                            HoverIcon = img,
                             Priority = 10
                         };
-                        _menuiconSkyscale.Click += delegate { DoHotKey(_settingSkyscaleBinding); };
+                        _cornerSkyscale.Click += delegate { DoHotKey(_settingSkyscaleBinding); };
                     }
                     else
                     {
-                        _imgSkyscale = new Image
+                        _btnSkyscale = new Image
                         {
                             Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
-                            Texture = icon,
+                            Texture = img,
                             Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                             Location = new Point(curX, curY),
                             Opacity = _settingOpacity.Value,
                             BasicTooltipText = "Skyscale"
                         };
-                        _imgSkyscale.LeftMouseButtonPressed += delegate { DoHotKey(_settingSkyscaleBinding); };
+                        _btnSkyscale.LeftMouseButtonPressed += delegate { DoHotKey(_settingSkyscaleBinding); };
 
-                        if (_settingOrientation.Value == MountOrientation.Horizontal)
+                        if (_settingOrientation.Value == Orientation.Horizontal)
                             curX += _settingImgWidth.Value;
                         else
                             curY += _settingImgWidth.Value;
@@ -409,32 +460,32 @@ namespace Mounts
                 }
                 if (_settingSpringerOrder.Value.ToString() == name)
                 {
-                    Texture2D icon = GetIconFile("springer");
-                    if (_settingDisplay.Value == MountDisplay.OpaqueMenuIcons || _settingDisplay.Value == MountDisplay.TransparentMenuIcons)
+                    Texture2D img = GetImgFile("springer");
+                    if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
                     {
-                        _menuiconSpringer = new CornerIcon()
+                        _cornerSpringer = new CornerIcon()
                         {
                             IconName = "Springer",
-                            Icon = icon,
-                            HoverIcon = icon,
+                            Icon = img,
+                            HoverIcon = img,
                             Priority = 10
                         };
-                        _menuiconSpringer.Click += delegate { DoHotKey(_settingSpringerBinding); };
+                        _cornerSpringer.Click += delegate { DoHotKey(_settingSpringerBinding); };
                     }
                     else
                     {
-                        _imgSpringer = new Image
+                        _btnSpringer = new Image
                         {
                             Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
-                            Texture = icon,
+                            Texture = img,
                             Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                             Location = new Point(curX, curY),
                             Opacity = _settingOpacity.Value,
                             BasicTooltipText = "Springer"
                         };
-                        _imgSpringer.LeftMouseButtonPressed += delegate { DoHotKey(_settingSpringerBinding); };
+                        _btnSpringer.LeftMouseButtonPressed += delegate { DoHotKey(_settingSpringerBinding); };
 
-                        if (_settingOrientation.Value == MountOrientation.Horizontal)
+                        if (_settingOrientation.Value == Orientation.Horizontal)
                             curX += _settingImgWidth.Value;
                         else
                             curY += _settingImgWidth.Value;
@@ -442,32 +493,32 @@ namespace Mounts
                 }
                 if (_settingWarclawOrder.Value.ToString() == name)
                 {
-                    Texture2D icon = GetIconFile("warclaw");
-                    if (_settingDisplay.Value == MountDisplay.OpaqueMenuIcons || _settingDisplay.Value == MountDisplay.TransparentMenuIcons)
+                    Texture2D img = GetImgFile("warclaw");
+                    if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
                     {
-                        _menuiconWarclaw = new CornerIcon()
+                        _cornerWarclaw = new CornerIcon()
                         {
                             IconName = "Warclaw",
-                            Icon = icon,
-                            HoverIcon = icon,
+                            Icon = img,
+                            HoverIcon = img,
                             Priority = 10
                         };
-                        _menuiconWarclaw.Click += delegate { DoHotKey(_settingWarclawBinding); };
+                        _cornerWarclaw.Click += delegate { DoHotKey(_settingWarclawBinding); };
                     }
                     else
                     {
-                        _imgWarclaw = new Image
+                        _btnWarclaw = new Image
                         {
                             Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
-                            Texture = icon,
+                            Texture = img,
                             Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                             Location = new Point(curX, curY),
                             Opacity = _settingOpacity.Value,
                             BasicTooltipText = "Warclaw"
                         };
-                        _imgWarclaw.LeftMouseButtonPressed += delegate { DoHotKey(_settingWarclawBinding); };
+                        _btnWarclaw.LeftMouseButtonPressed += delegate { DoHotKey(_settingWarclawBinding); };
 
-                        if (_settingOrientation.Value == MountOrientation.Horizontal)
+                        if (_settingOrientation.Value == Orientation.Horizontal)
                             curX += _settingImgWidth.Value;
                         else
                             curY += _settingImgWidth.Value;
@@ -476,80 +527,18 @@ namespace Mounts
             }
         }
 
-        protected void DoHotKey(SettingEntry<KeyBinding> setting)
-        {
-            if (setting.Value.ModifierKeys != ModifierKeys.None) 
-                Blish_HUD.Controls.Intern.Keyboard.Press(ConvertBindingToVirtualKey(setting.Value.ModifierKeys), true);
-            Blish_HUD.Controls.Intern.Keyboard.Press(ConvertBindingToVirtualKey(setting.Value.PrimaryKey), true);
-            System.Threading.Thread.Sleep(50);
-            Blish_HUD.Controls.Intern.Keyboard.Release(ConvertBindingToVirtualKey(setting.Value.PrimaryKey), true);
-            if (setting.Value.ModifierKeys != ModifierKeys.None)
-                Blish_HUD.Controls.Intern.Keyboard.Release(ConvertBindingToVirtualKey(setting.Value.ModifierKeys), true);
-        }
-
-        protected override void Update(GameTime gameTime)
-        {
-        }
-
-        /// <inheritdoc />
-        protected override void Unload()
-        {
-            _menuiconGriffon?.Dispose();
-            _menuiconJackel?.Dispose();
-            _menuiconRaptor?.Dispose();
-            _menuiconRoller?.Dispose();
-            _menuiconSkimmer?.Dispose();
-            _menuiconSkyscale?.Dispose();
-            _menuiconSpringer?.Dispose();
-            _menuiconWarclaw?.Dispose();
-
-            _imgGriffon?.Dispose();
-            _imgJackel?.Dispose();
-            _imgRaptor?.Dispose();
-            _imgRoller?.Dispose();
-            _imgSkimmer?.Dispose();
-            _imgSkyscale?.Dispose();
-            _imgSpringer?.Dispose();
-            _imgWarclaw?.Dispose();
-
-            _settingGriffonOrder.SettingChanged -= UpdateMountSettings;
-            _settingJackelOrder.SettingChanged -= UpdateMountSettings;
-            _settingRaptorOrder.SettingChanged -= UpdateMountSettings;
-            _settingRollerOrder.SettingChanged -= UpdateMountSettings;
-            _settingSkimmerOrder.SettingChanged -= UpdateMountSettings;
-            _settingSkyscaleOrder.SettingChanged -= UpdateMountSettings;
-            _settingSpringerOrder.SettingChanged -= UpdateMountSettings;
-            _settingWarclawOrder.SettingChanged -= UpdateMountSettings;
-
-            _settingGriffonBinding.SettingChanged -= UpdateMountSettings;
-            _settingJackelBinding.SettingChanged -= UpdateMountSettings;
-            _settingRaptorBinding.SettingChanged -= UpdateMountSettings;
-            _settingRollerBinding.SettingChanged -= UpdateMountSettings;
-            _settingSkimmerBinding.SettingChanged -= UpdateMountSettings;
-            _settingSkyscaleBinding.SettingChanged -= UpdateMountSettings;
-            _settingSpringerBinding.SettingChanged -= UpdateMountSettings;
-            _settingWarclawBinding.SettingChanged -= UpdateMountSettings;
-
-            _settingDisplay.SettingChanged -= UpdateMountSettings;
-            _settingOrientation.SettingChanged -= UpdateMountSettings;
-            _settingLocX.SettingChanged -= UpdateMountSettings;
-            _settingLocY.SettingChanged -= UpdateMountSettings;
-            _settingImgWidth.SettingChanged -= UpdateMountSettings;
-            _settingOpacity.SettingChanged -= UpdateMountSettings;
-        }
-
-        private Texture2D GetIconFile(string filename)
+        private Texture2D GetImgFile(string filename)
         {
             switch (_settingDisplay.Value)
             {
                 case MountDisplay.OpaqueManual:
                     return ContentsManager.GetTexture(filename + ".png");
-                case MountDisplay.OpaqueMenuIcons:
+                case MountDisplay.OpaqueCorner:
                     return ContentsManager.GetTexture(filename + ".png");
 
                 case MountDisplay.TransparentManual:
                     return ContentsManager.GetTexture(filename + "-trans.png");
-                case MountDisplay.TransparentMenuIcons:
+                case MountDisplay.TransparentCorner:
                     return ContentsManager.GetTexture(filename + "-trans.png");
 
                 case MountDisplay.OpaqueManualText:
@@ -559,8 +548,39 @@ namespace Mounts
                     return ContentsManager.GetTexture(filename + ".png");
             }
         }
-        private VirtualKeyShort ConvertBindingToVirtualKey(Keys key)
+        protected void DoHotKey(SettingEntry<KeyBinding> setting)
         {
+            if (setting.Value.ModifierKeys != ModifierKeys.None)
+            {
+                if (setting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
+                    Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.MENU, true);
+                if (setting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
+                    Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.CONTROL, true);
+                if (setting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
+                    Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.SHIFT, true);
+            }
+            Blish_HUD.Controls.Intern.Keyboard.Press(ToVirtualKey(setting.Value.PrimaryKey), true);
+            System.Threading.Thread.Sleep(50);
+            Blish_HUD.Controls.Intern.Keyboard.Release(ToVirtualKey(setting.Value.PrimaryKey), true);
+            if (setting.Value.ModifierKeys != ModifierKeys.None)
+            {
+                if (setting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
+                    Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.SHIFT, true);
+                if (setting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
+                    Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.CONTROL, true);
+                if (setting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
+                    Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.MENU, true);
+            }
+        }
+        private VirtualKeyShort ToVirtualKey(Keys key)
+        {
+            foreach (VirtualKeyShort vkey in Enum.GetValues(typeof(VirtualKeyShort)))
+            {
+                if ((int)vkey == (int)key)
+                    return vkey;
+            }
+            return new VirtualKeyShort();
+            /*
             switch (key)
             {
                 case Keys.A:
@@ -763,20 +783,8 @@ namespace Mounts
                 case Keys.OemOpenBrackets:
                     return VirtualKeyShort.OEM_4;
             }
-            return VirtualKeyShort.NONAME;
-        }
-        private VirtualKeyShort ConvertBindingToVirtualKey(ModifierKeys key)
-        {
-            switch (key)
-            {
-                case ModifierKeys.Alt:
-                    return VirtualKeyShort.MENU;
-                case ModifierKeys.Ctrl:
-                    return VirtualKeyShort.CONTROL;
-                case ModifierKeys.Shift:
-                    return VirtualKeyShort.SHIFT;
-            }
-            return VirtualKeyShort.NONAME;
+            return new VirtualKeyShort();
+            */
         }
 
     }

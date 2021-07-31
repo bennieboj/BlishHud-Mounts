@@ -1,19 +1,19 @@
 {
-  "name": "Mounts",
-  "version": "1.0.0",
-  "namespace": "Mounts",
-  "package": "Mounts.dll",
-  "manifest_version": 1,
+    "name": "Mounts",
+    "version": "1.0.0",
+    "namespace": "Manlaan.Mounts",
+    "package": "Mounts.dll",
+    "manifest_version": 1,
 
-  "description": "Mount icons",
-  "dependencies": {
-    "bh.blishhud": ">=0.7.0"
-  },
-  "url": "https://github.com/manlaan/BlishHud-Mounts",
-  "contributors": [
-    {
-        "name": "Manlaan",
-        "username": "manlaan.8921"
-    }
-  ]
+    "description": "Mount icons",
+    "dependencies": {
+        "bh.blishhud": ">=0.7.0"
+    },
+    "url": "https://github.com/manlaan/BlishHud-Mounts",
+    "contributors": [
+        {
+            "name": "Manlaan",
+            "username": "manlaan.8921"
+        }
+    ]
 }

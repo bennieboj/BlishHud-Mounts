@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2BDEA41C-2BF5-48CD-A25A-91FF8CE95EC4}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Mounts</RootNamespace>
+    <RootNamespace>Manlaan.Mounts</RootNamespace>
     <AssemblyName>Mounts</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
