@@ -84,7 +84,7 @@ namespace Manlaan.Mounts
             _settingRaptorOrder = settings.DefineSetting("MountRaptorOrder", MountOrder._1, "Raptor Order", "");
             _settingSpringerOrder = settings.DefineSetting("MountSpringerOrder", MountOrder._2, "Springer Order", "");
             _settingSkimmerOrder = settings.DefineSetting("MountSkimmerOrder", MountOrder._3, "Skimmer Order", "");
-            _settingJackelOrder = settings.DefineSetting("MountJackelOrder", MountOrder._4, "Jackel Order", "");
+            _settingJackelOrder = settings.DefineSetting("MountJackelOrder", MountOrder._4, "Jackal Order", "");
             _settingGriffonOrder = settings.DefineSetting("MountGriffonOrder", MountOrder._5, "Griffon Order", "");
             _settingRollerOrder = settings.DefineSetting("MountRollerOrder", MountOrder._6, "Roller Order", "");
             _settingWarclawOrder = settings.DefineSetting("MountWarclawOrder", MountOrder._7, "Warclaw Order", "");
@@ -93,7 +93,7 @@ namespace Manlaan.Mounts
             _settingRaptorBinding = settings.DefineSetting("MountRaptorBinding", new KeyBinding(Keys.None), "Raptor Binding", "");
             _settingSpringerBinding = settings.DefineSetting("MountSpringerBinding", new KeyBinding(Keys.None), "Springer Binding", "");
             _settingSkimmerBinding = settings.DefineSetting("MountSkimmerBinding", new KeyBinding(Keys.None), "Skimmer Binding", "");
-            _settingJackelBinding = settings.DefineSetting("MountJackelBinding", new KeyBinding(Keys.None), "Jackel Binding", "");
+            _settingJackelBinding = settings.DefineSetting("MountJackelBinding", new KeyBinding(Keys.None), "Jackal Binding", "");
             _settingGriffonBinding = settings.DefineSetting("MountGriffonBinding", new KeyBinding(Keys.None), "Griffon Binding", "");
             _settingRollerBinding = settings.DefineSetting("MountRollerBinding", new KeyBinding(Keys.None), "Roller Binding", "");
             _settingWarclawBinding = settings.DefineSetting("MountWarclawBinding", new KeyBinding(Keys.None), "Warclaw Binding", "");
@@ -295,12 +295,12 @@ namespace Manlaan.Mounts
                 }
                 if (_settingJackelOrder.Value.ToString() == name)
                 {
-                    Texture2D img = GetImgFile("jackel");
+                    Texture2D img = GetImgFile("jackal");
                     if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
                     {
                         _cornerJackel = new CornerIcon()
                         {
-                            IconName = "Jackel",
+                            IconName = "Jackal",
                             Icon = img,
                             HoverIcon = img,
                             Priority = 10
@@ -316,7 +316,7 @@ namespace Manlaan.Mounts
                             Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                             Location = new Point(curX, curY),
                             Opacity = _settingOpacity.Value,
-                            BasicTooltipText = "Jackel"
+                            BasicTooltipText = "Jackal"
                         };
                         _btnJackel.LeftMouseButtonPressed += delegate { DoHotKey(_settingJackelBinding); };
 
