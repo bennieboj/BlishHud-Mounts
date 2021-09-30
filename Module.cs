@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
-
+using Blish_HUD.Graphics.UI;
 
 namespace Manlaan.Mounts
 {
@@ -28,34 +28,36 @@ namespace Manlaan.Mounts
         #endregion
 
 
-        public enum MountOrder { Disabled, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10 }
-        public enum MountDisplay { TransparentCorner, OpaqueCorner, TransparentManual, OpaqueManual, OpaqueManualText }
-        public enum Orientation { Horizontal, Vertical }
-        private SettingEntry<MountOrder> _settingGriffonOrder;
-        private SettingEntry<MountOrder> _settingJackelOrder;
-        private SettingEntry<MountOrder> _settingRaptorOrder;
-        private SettingEntry<MountOrder> _settingRollerOrder;
-        private SettingEntry<MountOrder> _settingSkimmerOrder;
-        private SettingEntry<MountOrder> _settingSkyscaleOrder;
-        private SettingEntry<MountOrder> _settingSpringerOrder;
-        private SettingEntry<MountOrder> _settingWarclawOrder;
-        private SettingEntry<KeyBinding> _settingGriffonBinding;
-        private SettingEntry<KeyBinding> _settingJackelBinding;
-        private SettingEntry<KeyBinding> _settingRaptorBinding;
-        private SettingEntry<KeyBinding> _settingRollerBinding;
-        private SettingEntry<KeyBinding> _settingSkimmerBinding;
-        private SettingEntry<KeyBinding> _settingSkyscaleBinding;
-        private SettingEntry<KeyBinding> _settingSpringerBinding;
-        private SettingEntry<KeyBinding> _settingWarclawBinding;
-        private SettingEntry<MountDisplay> _settingDisplay;
-        private SettingEntry<Orientation> _settingOrientation;
-        private SettingEntry<string> _settingLocX;
-        private SettingEntry<string> _settingLocY;
-        private SettingEntry<int> _settingImgWidth;
-        private SettingEntry<float> _settingOpacity;
+        public static int[] _mountOrder = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        public static string[] _mountDisplay = new string[] { "Transparent Corner", "Solid Corner", "Transparent Manual", "Solid Manual", "Solid Manual Text" };
+        public static string[] _mountOrientation = new string[] { "Horizontal", "Vertical" };
 
+        public static SettingEntry<int> _settingGriffonOrder;
+        public static SettingEntry<int> _settingJackalOrder;
+        public static SettingEntry<int> _settingRaptorOrder;
+        public static SettingEntry<int> _settingRollerOrder;
+        public static SettingEntry<int> _settingSkimmerOrder;
+        public static SettingEntry<int> _settingSkyscaleOrder;
+        public static SettingEntry<int> _settingSpringerOrder;
+        public static SettingEntry<int> _settingWarclawOrder;
+        public static SettingEntry<KeyBinding> _settingGriffonBinding;
+        public static SettingEntry<KeyBinding> _settingJackalBinding;
+        public static SettingEntry<KeyBinding> _settingRaptorBinding;
+        public static SettingEntry<KeyBinding> _settingRollerBinding;
+        public static SettingEntry<KeyBinding> _settingSkimmerBinding;
+        public static SettingEntry<KeyBinding> _settingSkyscaleBinding;
+        public static SettingEntry<KeyBinding> _settingSpringerBinding;
+        public static SettingEntry<KeyBinding> _settingWarclawBinding;
+        public static SettingEntry<string> _settingDisplay;
+        public static SettingEntry<string> _settingOrientation;
+        private SettingEntry<Point> _settingLoc;
+        public static SettingEntry<bool> _settingDrag;
+        public static SettingEntry<int> _settingImgWidth;
+        public static SettingEntry<float> _settingOpacity;
+
+        private Panel _mountPanel;
         private CornerIcon _cornerGriffon;
-        private CornerIcon _cornerJackel;
+        private CornerIcon _cornerJackal;
         private CornerIcon _cornerRaptor;
         private CornerIcon _cornerRoller;
         private CornerIcon _cornerSkimmer;
@@ -63,14 +65,8 @@ namespace Manlaan.Mounts
         private CornerIcon _cornerSpringer;
         private CornerIcon _cornerWarclaw;
 
-        private Image _btnGriffon;
-        private Image _btnJackel;
-        private Image _btnRaptor;
-        private Image _btnRoller;
-        private Image _btnSkimmer;
-        private Image _btnSkyscale;
-        private Image _btnSpringer;
-        private Image _btnWarclaw;
+        private bool _dragging;
+        private Point _dragStart = Point.Zero;
 
         [ImportingConstructor]
         public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) : base(moduleParameters) { }
@@ -81,36 +77,36 @@ namespace Manlaan.Mounts
 
         protected override void DefineSettings(SettingCollection settings)
         {
-            _settingRaptorOrder = settings.DefineSetting("MountRaptorOrder", MountOrder._1, "Raptor Order", "");
-            _settingSpringerOrder = settings.DefineSetting("MountSpringerOrder", MountOrder._2, "Springer Order", "");
-            _settingSkimmerOrder = settings.DefineSetting("MountSkimmerOrder", MountOrder._3, "Skimmer Order", "");
-            _settingJackelOrder = settings.DefineSetting("MountJackelOrder", MountOrder._4, "Jackal Order", "");
-            _settingGriffonOrder = settings.DefineSetting("MountGriffonOrder", MountOrder._5, "Griffon Order", "");
-            _settingRollerOrder = settings.DefineSetting("MountRollerOrder", MountOrder._6, "Roller Order", "");
-            _settingWarclawOrder = settings.DefineSetting("MountWarclawOrder", MountOrder._7, "Warclaw Order", "");
-            _settingSkyscaleOrder = settings.DefineSetting("MountSkyscaleOrder", MountOrder._8, "Skyscale Order", "");
+            _settingRaptorOrder = settings.DefineSetting("MountRaptorOrder2", 1, "Raptor Order", "");
+            _settingSpringerOrder = settings.DefineSetting("MountSpringerOrder2", 2, "Springer Order", "");
+            _settingSkimmerOrder = settings.DefineSetting("MountSkimmerOrder2", 3, "Skimmer Order", "");
+            _settingJackalOrder = settings.DefineSetting("MountJackalOrder2", 4, "Jackal Order", "");
+            _settingGriffonOrder = settings.DefineSetting("MountGriffonOrder2", 5, "Griffon Order", "");
+            _settingRollerOrder = settings.DefineSetting("MountRollerOrder2", 6, "Roller Order", "");
+            _settingWarclawOrder = settings.DefineSetting("MountWarclawOrder2", 7, "Warclaw Order", "");
+            _settingSkyscaleOrder = settings.DefineSetting("MountSkyscaleOrder2", 8, "Skyscale Order", "");
 
             _settingRaptorBinding = settings.DefineSetting("MountRaptorBinding", new KeyBinding(Keys.None), "Raptor Binding", "");
             _settingSpringerBinding = settings.DefineSetting("MountSpringerBinding", new KeyBinding(Keys.None), "Springer Binding", "");
             _settingSkimmerBinding = settings.DefineSetting("MountSkimmerBinding", new KeyBinding(Keys.None), "Skimmer Binding", "");
-            _settingJackelBinding = settings.DefineSetting("MountJackelBinding", new KeyBinding(Keys.None), "Jackal Binding", "");
+            _settingJackalBinding = settings.DefineSetting("MountJackalBinding", new KeyBinding(Keys.None), "Jackal Binding", "");
             _settingGriffonBinding = settings.DefineSetting("MountGriffonBinding", new KeyBinding(Keys.None), "Griffon Binding", "");
             _settingRollerBinding = settings.DefineSetting("MountRollerBinding", new KeyBinding(Keys.None), "Roller Binding", "");
             _settingWarclawBinding = settings.DefineSetting("MountWarclawBinding", new KeyBinding(Keys.None), "Warclaw Binding", "");
             _settingSkyscaleBinding = settings.DefineSetting("MountSkyscaleBinding", new KeyBinding(Keys.None), "Skyscale Binding", "");
 
-            _settingDisplay = settings.DefineSetting("MountDisplay", MountDisplay.TransparentCorner, "Display Type", "");
-            _settingOrientation = settings.DefineSetting("Orientation", Orientation.Horizontal, "Manual Orientation", "");
-            _settingLocX = settings.DefineSetting("MountLocX", "60", "Manual X", "");
-            _settingLocY = settings.DefineSetting("MountLocY", "40", "Manual Y", "");
-            _settingImgWidth = settings.DefineSetting("MountImgWidth", 30, "Manual Icon Width", "");
+            _settingDisplay = settings.DefineSetting("MountDisplay", "Transparent Corner", "Display Type", "");
+            _settingOrientation = settings.DefineSetting("Orientation", "Horizontal", "Manual Orientation", "");
+            _settingLoc = settings.DefineSetting("MountLoc", new Point(100,100), "Window Location", "");
+            _settingDrag = settings.DefineSetting("MountDrag", false, "Enable Dragging (White Box)", "");
+            _settingImgWidth = settings.DefineSetting("MountImgWidth", 50, "Manual Icon Width", "");
             _settingOpacity = settings.DefineSetting("MountOpacity", 1.0f, "Manual Opacity", "");
 
             _settingImgWidth.SetRange(0, 200);
             _settingOpacity.SetRange(0f, 1f);
 
             _settingGriffonOrder.SettingChanged += UpdateSettings;
-            _settingJackelOrder.SettingChanged += UpdateSettings;
+            _settingJackalOrder.SettingChanged += UpdateSettings;
             _settingRaptorOrder.SettingChanged += UpdateSettings;
             _settingRollerOrder.SettingChanged += UpdateSettings;
             _settingSkimmerOrder.SettingChanged += UpdateSettings;
@@ -119,7 +115,7 @@ namespace Manlaan.Mounts
             _settingWarclawOrder.SettingChanged += UpdateSettings;
 
             _settingGriffonBinding.SettingChanged += UpdateSettings;
-            _settingJackelBinding.SettingChanged += UpdateSettings;
+            _settingJackalBinding.SettingChanged += UpdateSettings;
             _settingRaptorBinding.SettingChanged += UpdateSettings;
             _settingRollerBinding.SettingChanged += UpdateSettings;
             _settingSkimmerBinding.SettingChanged += UpdateSettings;
@@ -129,11 +125,15 @@ namespace Manlaan.Mounts
 
             _settingDisplay.SettingChanged += UpdateSettings;
             _settingOrientation.SettingChanged += UpdateSettings;
-            _settingLocX.SettingChanged += UpdateSettings;
-            _settingLocY.SettingChanged += UpdateSettings;
+            _settingLoc.SettingChanged += UpdateSettings;
+            _settingDrag.SettingChanged += UpdateSettings;
             _settingImgWidth.SettingChanged += UpdateSettings;
             _settingOpacity.SettingChanged += UpdateSettings;
 
+        }
+        public override IView GetSettingsView() {
+            return new Mounts.Views.SettingsView();
+            //return new SettingsView( (this.ModuleParameters.SettingsManager.ModuleSettings);
         }
 
         protected override async Task LoadAsync()
@@ -151,13 +151,19 @@ namespace Manlaan.Mounts
 
         protected override void Update(GameTime gameTime)
         {
+            if (_dragging) {
+                var nOffset = InputService.Input.Mouse.Position - _dragStart;
+                _mountPanel.Location += nOffset;
+
+                _dragStart = InputService.Input.Mouse.Position;
+            }
         }
 
         /// <inheritdoc />
         protected override void Unload()
         {
             _cornerGriffon?.Dispose();
-            _cornerJackel?.Dispose();
+            _cornerJackal?.Dispose();
             _cornerRaptor?.Dispose();
             _cornerRoller?.Dispose();
             _cornerSkimmer?.Dispose();
@@ -165,17 +171,10 @@ namespace Manlaan.Mounts
             _cornerSpringer?.Dispose();
             _cornerWarclaw?.Dispose();
 
-            _btnGriffon?.Dispose();
-            _btnJackel?.Dispose();
-            _btnRaptor?.Dispose();
-            _btnRoller?.Dispose();
-            _btnSkimmer?.Dispose();
-            _btnSkyscale?.Dispose();
-            _btnSpringer?.Dispose();
-            _btnWarclaw?.Dispose();
+            _mountPanel?.Dispose();
 
             _settingGriffonOrder.SettingChanged -= UpdateSettings;
-            _settingJackelOrder.SettingChanged -= UpdateSettings;
+            _settingJackalOrder.SettingChanged -= UpdateSettings;
             _settingRaptorOrder.SettingChanged -= UpdateSettings;
             _settingRollerOrder.SettingChanged -= UpdateSettings;
             _settingSkimmerOrder.SettingChanged -= UpdateSettings;
@@ -184,7 +183,7 @@ namespace Manlaan.Mounts
             _settingWarclawOrder.SettingChanged -= UpdateSettings;
 
             _settingGriffonBinding.SettingChanged -= UpdateSettings;
-            _settingJackelBinding.SettingChanged -= UpdateSettings;
+            _settingJackalBinding.SettingChanged -= UpdateSettings;
             _settingRaptorBinding.SettingChanged -= UpdateSettings;
             _settingRollerBinding.SettingChanged -= UpdateSettings;
             _settingSkimmerBinding.SettingChanged -= UpdateSettings;
@@ -194,39 +193,26 @@ namespace Manlaan.Mounts
 
             _settingDisplay.SettingChanged -= UpdateSettings;
             _settingOrientation.SettingChanged -= UpdateSettings;
-            _settingLocX.SettingChanged -= UpdateSettings;
-            _settingLocY.SettingChanged -= UpdateSettings;
+            _settingLoc.SettingChanged -= UpdateSettings;
+            _settingDrag.SettingChanged -= UpdateSettings;
             _settingImgWidth.SettingChanged -= UpdateSettings;
             _settingOpacity.SettingChanged -= UpdateSettings;
         }
 
-        private void UpdateSettings(object sender = null, ValueChangedEventArgs<KeyBinding> e = null)
-        {
+        private void UpdateSettings(object sender = null, ValueChangedEventArgs<string> e = null) {
             DrawIcons();
         }
-        private void UpdateSettings(object sender = null, ValueChangedEventArgs<MountDisplay> e = null)
-        {
+        private void UpdateSettings(object sender = null, ValueChangedEventArgs<KeyBinding> e = null) {
             DrawIcons();
         }
-        private void UpdateSettings(object sender = null, ValueChangedEventArgs<MountOrder> e = null)
-        {
+        private void UpdateSettings(object sender = null, ValueChangedEventArgs<Point> e = null) {
             DrawIcons();
         }
-        private void UpdateSettings(object sender = null, ValueChangedEventArgs<Orientation> e = null)
-        {
+        private void UpdateSettings(object sender = null, ValueChangedEventArgs<bool> e = null) {
             DrawIcons();
         }
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<float> e = null)
         {
-            DrawIcons();
-        }
-        private void UpdateSettings(object sender = null, ValueChangedEventArgs<string> e = null)
-        {
-            if (int.Parse(_settingLocX.Value) < 0)
-                _settingLocX.Value = "0";
-            if (int.Parse(_settingLocY.Value) < 0)
-                _settingLocY.Value = "0";
-
             DrawIcons();
         }
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<int> e = null)
@@ -234,10 +220,292 @@ namespace Manlaan.Mounts
             DrawIcons();
         }
 
-        protected void DrawIcons()
+        public void DrawManualIcons() {
+            int curX = 0;
+            int curY = 0;
+            int totalMounts = 0;
+
+            _mountPanel = new Panel() {
+                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Location = _settingLoc.Value,
+                Size = new Point(_settingImgWidth.Value * 8, _settingImgWidth.Value * 8),
+            };
+
+            foreach (int i in _mountOrder) {
+                if (i == 0) continue;
+                if (_settingGriffonOrder.Value == i) {
+                    Texture2D img = GetImgFile("griffon");
+                    Image _btnGriffon = new Image {
+                        Parent = _mountPanel,
+                        Texture = img,
+                        Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
+                        Location = new Point(curX, curY),
+                        Opacity = _settingOpacity.Value,
+                        BasicTooltipText = "Griffon"
+                    };
+                    _btnGriffon.LeftMouseButtonPressed += delegate { DoHotKey(_settingGriffonBinding); };
+
+                    if (_settingOrientation.Value.Equals("Horizontal"))
+                        curX += _settingImgWidth.Value;
+                    else
+                        curY += _settingImgWidth.Value;
+
+                    totalMounts++;
+                }
+                if (_settingJackalOrder.Value == i) {
+                    Texture2D img = GetImgFile("jackal");
+                    Image _btnJackal = new Image {
+                        Parent = _mountPanel,
+                        Texture = img,
+                        Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
+                        Location = new Point(curX, curY),
+                        Opacity = _settingOpacity.Value,
+                        BasicTooltipText = "Jackal"
+                    };
+                    _btnJackal.LeftMouseButtonPressed += delegate { DoHotKey(_settingJackalBinding); };
+
+                    if (_settingOrientation.Value.Equals("Horizontal"))
+                        curX += _settingImgWidth.Value;
+                    else
+                        curY += _settingImgWidth.Value;
+
+                    totalMounts++;
+                }
+                if (_settingRaptorOrder.Value == i) {
+                    Texture2D img = GetImgFile("raptor");
+                    Image _btnRaptor = new Image {
+                        Parent = _mountPanel,
+                        Texture = img,
+                        Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
+                        Location = new Point(curX, curY),
+                        Opacity = _settingOpacity.Value,
+                        BasicTooltipText = "Raptor"
+                    };
+                    _btnRaptor.LeftMouseButtonPressed += delegate { DoHotKey(_settingRaptorBinding); };
+
+                    if (_settingOrientation.Value.Equals("Horizontal"))
+                        curX += _settingImgWidth.Value;
+                    else
+                        curY += _settingImgWidth.Value;
+
+                    totalMounts++;
+                }
+                if (_settingRollerOrder.Value == i) {
+                    Texture2D img = GetImgFile("roller");
+                    Image _btnRoller = new Image {
+                        Parent = _mountPanel,
+                        Texture = img,
+                        Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
+                        Location = new Point(curX, curY),
+                        Opacity = _settingOpacity.Value,
+                        BasicTooltipText = "Roller"
+                    };
+                    _btnRoller.LeftMouseButtonPressed += delegate { DoHotKey(_settingRollerBinding); };
+
+                    if (_settingOrientation.Value.Equals("Horizontal"))
+                        curX += _settingImgWidth.Value;
+                    else
+                        curY += _settingImgWidth.Value;
+
+                    totalMounts++;
+                }
+                if (_settingSkimmerOrder.Value == i) {
+                    Texture2D img = GetImgFile("skimmer");
+                    Image _btnSkimmer = new Image {
+                        Parent = _mountPanel,
+                        Texture = img,
+                        Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
+                        Location = new Point(curX, curY),
+                        Opacity = _settingOpacity.Value,
+                        BasicTooltipText = "Skimmer"
+                    };
+                    _btnSkimmer.LeftMouseButtonPressed += delegate { DoHotKey(_settingSkimmerBinding); };
+
+                    if (_settingOrientation.Value.Equals("Horizontal"))
+                        curX += _settingImgWidth.Value;
+                    else
+                        curY += _settingImgWidth.Value;
+
+                    totalMounts++;
+                }
+                if (_settingSkyscaleOrder.Value == i) {
+                    Texture2D img = GetImgFile("skyscale");
+                    Image _btnSkyscale = new Image {
+                        Parent = _mountPanel,
+                        Texture = img,
+                        Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
+                        Location = new Point(curX, curY),
+                        Opacity = _settingOpacity.Value,
+                        BasicTooltipText = "Skyscale"
+                    };
+                    _btnSkyscale.LeftMouseButtonPressed += delegate { DoHotKey(_settingSkyscaleBinding); };
+
+                    if (_settingOrientation.Value.Equals("Horizontal"))
+                        curX += _settingImgWidth.Value;
+                    else
+                        curY += _settingImgWidth.Value;
+
+                    totalMounts++;
+                }
+                if (_settingSpringerOrder.Value == i) {
+                    Texture2D img = GetImgFile("springer");
+                    Image _btnSpringer = new Image {
+                        Parent = _mountPanel,
+                        Texture = img,
+                        Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
+                        Location = new Point(curX, curY),
+                        Opacity = _settingOpacity.Value,
+                        BasicTooltipText = "Springer"
+                    };
+                    _btnSpringer.LeftMouseButtonPressed += delegate { DoHotKey(_settingSpringerBinding); };
+
+                    if (_settingOrientation.Value.Equals("Horizontal"))
+                        curX += _settingImgWidth.Value;
+                    else
+                        curY += _settingImgWidth.Value;
+
+                    totalMounts++;
+                }
+                if (_settingWarclawOrder.Value == i) {
+                    Texture2D img = GetImgFile("warclaw");
+                    Image _btnWarclaw = new Image {
+                        Parent = _mountPanel,
+                        Texture = img,
+                        Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
+                        Location = new Point(curX, curY),
+                        Opacity = _settingOpacity.Value,
+                        BasicTooltipText = "Warclaw"
+                    };
+                    _btnWarclaw.LeftMouseButtonPressed += delegate { DoHotKey(_settingWarclawBinding); };
+
+                    if (_settingOrientation.Value.Equals("Horizontal"))
+                        curX += _settingImgWidth.Value;
+                    else
+                        curY += _settingImgWidth.Value;
+
+                    totalMounts++;
+                }
+            }
+
+            if (_settingDrag.Value) {
+                Panel dragBox = new Panel() {
+                    Parent = _mountPanel,
+                    Location = new Point(0, 0),
+                    Size = new Point(_settingImgWidth.Value / 2, _settingImgWidth.Value / 2),
+                    BackgroundColor = Color.White,
+                    ZIndex = 10,
+                };
+                dragBox.LeftMouseButtonPressed += delegate {
+                    _dragging = true;
+                    _dragStart = InputService.Input.Mouse.Position;
+                };
+                dragBox.LeftMouseButtonReleased += delegate {
+                    _dragging = false;
+                   _settingLoc.Value = _mountPanel.Location;
+                };
+            }
+
+            if (_settingOrientation.Value.Equals("Horizontal")) {
+                _mountPanel.Size = new Point(_settingImgWidth.Value * totalMounts, _settingImgWidth.Value);
+            }
+            else {
+                _mountPanel.Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value * totalMounts);
+            }
+
+        }
+        private void DrawCornerIcons() {
+            foreach (int i in _mountOrder) {
+                if (i == 0) continue;
+                if (_settingGriffonOrder.Value == i) {
+                    Texture2D img = GetImgFile("griffon");
+                    _cornerGriffon = new CornerIcon() {
+                        IconName = "Griffon",
+                        Icon = img,
+                        HoverIcon = img,
+                        Priority = 10
+                    };
+                    _cornerGriffon.Click += delegate { DoHotKey(_settingGriffonBinding); };
+                }
+                if (_settingJackalOrder.Value == i) {
+                    Texture2D img = GetImgFile("jackal");
+                    _cornerJackal = new CornerIcon() {
+                        IconName = "Jackal",
+                        Icon = img,
+                        HoverIcon = img,
+                        Priority = 10
+                    };
+                    _cornerJackal.Click += delegate { DoHotKey(_settingJackalBinding); };
+                }
+                if (_settingRaptorOrder.Value == i) {
+                    Texture2D img = GetImgFile("raptor");
+                    _cornerRaptor = new CornerIcon() {
+                        IconName = "Raptor",
+                        Icon = img,
+                        HoverIcon = img,
+                        Priority = 10
+                    };
+                    _cornerRaptor.Click += delegate { DoHotKey(_settingRaptorBinding); };
+                }
+                if (_settingRollerOrder.Value == i) {
+                    Texture2D img = GetImgFile("roller");
+                    _cornerRoller = new CornerIcon() {
+                        IconName = "Roller",
+                        Icon = img,
+                        HoverIcon = img,
+                        Priority = 10
+                    };
+                    _cornerRoller.Click += delegate { DoHotKey(_settingRollerBinding); };
+                }
+                if (_settingSkimmerOrder.Value == i) {
+                    Texture2D img = GetImgFile("skimmer");
+                    _cornerSkimmer = new CornerIcon() {
+                        IconName = "Skimmer",
+                        Icon = img,
+                        HoverIcon = img,
+                        Priority = 10
+                    };
+                    _cornerSkimmer.Click += delegate { DoHotKey(_settingSkimmerBinding); };
+                }
+                if (_settingSkyscaleOrder.Value == i) {
+                    Texture2D img = GetImgFile("skyscale");
+                    _cornerSkyscale = new CornerIcon() {
+                        IconName = "Skyscale",
+                        Icon = img,
+                        HoverIcon = img,
+                        Priority = 10
+                    };
+                    _cornerSkyscale.Click += delegate { DoHotKey(_settingSkyscaleBinding); };
+                }
+                if (_settingSpringerOrder.Value == i) {
+                    Texture2D img = GetImgFile("springer");
+                    _cornerSpringer = new CornerIcon() {
+                        IconName = "Springer",
+                        Icon = img,
+                        HoverIcon = img,
+                        Priority = 10
+                    };
+                    _cornerSpringer.Click += delegate { DoHotKey(_settingSpringerBinding); };
+                }
+                if (_settingWarclawOrder.Value == i) {
+                    Texture2D img = GetImgFile("warclaw");
+                    _cornerWarclaw = new CornerIcon() {
+                        IconName = "Warclaw",
+                        Icon = img,
+                        HoverIcon = img,
+                        Priority = 10
+                    };
+                    _cornerWarclaw.Click += delegate { DoHotKey(_settingWarclawBinding); };
+                }
+            }
+
+        }
+
+        private void DrawIcons()
         {
+            _mountPanel?.Dispose();
+
             _cornerGriffon?.Dispose();
-            _cornerJackel?.Dispose();
+            _cornerJackal?.Dispose();
             _cornerRaptor?.Dispose();
             _cornerRoller?.Dispose();
             _cornerSkimmer?.Dispose();
@@ -245,307 +513,27 @@ namespace Manlaan.Mounts
             _cornerSpringer?.Dispose();
             _cornerWarclaw?.Dispose();
 
-            _btnGriffon?.Dispose();
-            _btnJackel?.Dispose();
-            _btnRaptor?.Dispose();
-            _btnRoller?.Dispose();
-            _btnSkimmer?.Dispose();
-            _btnSkyscale?.Dispose();
-            _btnSpringer?.Dispose();
-            _btnWarclaw?.Dispose();
-
-            int curX = int.Parse(_settingLocX.Value);
-            int curY = int.Parse(_settingLocY.Value);
-
-            foreach (string name in Enum.GetNames(typeof(MountOrder)))
-            {
-                if (name.Equals(MountOrder.Disabled.ToString())) continue;
-                if (_settingGriffonOrder.Value.ToString() == name)
-                {
-                    Texture2D img = GetImgFile("griffon");
-                    if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
-                    {
-                        _cornerGriffon = new CornerIcon()
-                        {
-                            IconName = "Griffon",
-                            Icon = img,
-                            HoverIcon = img,
-                            Priority = 10
-                        };
-                        _cornerGriffon.Click += delegate { DoHotKey(_settingGriffonBinding); };
-                    }
-                    else
-                    {
-                        _btnGriffon = new Image
-                        {
-                            Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
-                            Texture = img,
-                            Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
-                            Location = new Point(curX, curY),
-                            Opacity = _settingOpacity.Value,
-                            BasicTooltipText = "Griffon"
-                        };
-                        _btnGriffon.LeftMouseButtonPressed += delegate { DoHotKey(_settingGriffonBinding); };
-
-                        if (_settingOrientation.Value == Orientation.Horizontal)
-                            curX += _settingImgWidth.Value;
-                        else
-                            curY += _settingImgWidth.Value;
-                    }
-                }
-                if (_settingJackelOrder.Value.ToString() == name)
-                {
-                    Texture2D img = GetImgFile("jackal");
-                    if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
-                    {
-                        _cornerJackel = new CornerIcon()
-                        {
-                            IconName = "Jackal",
-                            Icon = img,
-                            HoverIcon = img,
-                            Priority = 10
-                        };
-                        _cornerJackel.Click += delegate { DoHotKey(_settingJackelBinding); };
-                    }
-                    else
-                    {
-                        _btnJackel = new Image
-                        {
-                            Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
-                            Texture = img,
-                            Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
-                            Location = new Point(curX, curY),
-                            Opacity = _settingOpacity.Value,
-                            BasicTooltipText = "Jackal"
-                        };
-                        _btnJackel.LeftMouseButtonPressed += delegate { DoHotKey(_settingJackelBinding); };
-
-                        if (_settingOrientation.Value == Orientation.Horizontal)
-                            curX += _settingImgWidth.Value;
-                        else
-                            curY += _settingImgWidth.Value;
-                    }
-                }
-                if (_settingRaptorOrder.Value.ToString() == name)
-                {
-                    Texture2D img = GetImgFile("raptor");
-                    if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
-                    {
-                        _cornerRaptor = new CornerIcon()
-                        {
-                            IconName = "Raptor",
-                            Icon = img,
-                            HoverIcon = img,
-                            Priority = 10
-                        };
-                        _cornerRaptor.Click += delegate { DoHotKey(_settingRaptorBinding); };
-                    }
-                    else
-                    {
-                        _btnRaptor = new Image
-                        {
-                            Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
-                            Texture = img,
-                            Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
-                            Location = new Point(curX, curY),
-                            Opacity = _settingOpacity.Value,
-                            BasicTooltipText = "Raptor"
-                        };
-                        _btnRaptor.LeftMouseButtonPressed += delegate { DoHotKey(_settingRaptorBinding); };
-
-                        if (_settingOrientation.Value == Orientation.Horizontal)
-                            curX += _settingImgWidth.Value;
-                        else
-                            curY += _settingImgWidth.Value;
-                    }
-                }
-                if (_settingRollerOrder.Value.ToString() == name)
-                {
-                    Texture2D img = GetImgFile("roller");
-                    if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
-                    {
-                        _cornerRoller = new CornerIcon()
-                        {
-                            IconName = "Roller",
-                            Icon = img,
-                            HoverIcon = img,
-                            Priority = 10
-                        };
-                        _cornerRoller.Click += delegate { DoHotKey(_settingRollerBinding); };
-                    }
-                    else
-                    {
-                        _btnRoller = new Image
-                        {
-                            Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
-                            Texture = img,
-                            Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
-                            Location = new Point(curX, curY),
-                            Opacity = _settingOpacity.Value,
-                            BasicTooltipText = "Roller"
-                        };
-                        _btnRoller.LeftMouseButtonPressed += delegate { DoHotKey(_settingRollerBinding); };
-
-                        if (_settingOrientation.Value == Orientation.Horizontal)
-                            curX += _settingImgWidth.Value;
-                        else
-                            curY += _settingImgWidth.Value;
-                    }
-                }
-                if (_settingSkimmerOrder.Value.ToString() == name)
-                {
-                    Texture2D img = GetImgFile("skimmer");
-                    if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
-                    {
-                        _cornerSkimmer = new CornerIcon()
-                        {
-                            IconName = "Skimmer",
-                            Icon = img,
-                            HoverIcon = img,
-                            Priority = 10
-                        };
-                        _cornerSkimmer.Click += delegate { DoHotKey(_settingSkimmerBinding); };
-                    }
-                    else
-                    {
-                        _btnSkimmer = new Image
-                        {
-                            Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
-                            Texture = img,
-                            Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
-                            Location = new Point(curX, curY),
-                            Opacity = _settingOpacity.Value,
-                            BasicTooltipText = "Skimmer"
-                        };
-                        _btnSkimmer.LeftMouseButtonPressed += delegate { DoHotKey(_settingSkimmerBinding); };
-
-                        if (_settingOrientation.Value == Orientation.Horizontal)
-                            curX += _settingImgWidth.Value;
-                        else
-                            curY += _settingImgWidth.Value;
-                    }
-                }
-                if (_settingSkyscaleOrder.Value.ToString() == name)
-                {
-                    Texture2D img = GetImgFile("skyscale");
-                    if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
-                    {
-                        _cornerSkyscale = new CornerIcon()
-                        {
-                            IconName = "Skyscale",
-                            Icon = img,
-                            HoverIcon = img,
-                            Priority = 10
-                        };
-                        _cornerSkyscale.Click += delegate { DoHotKey(_settingSkyscaleBinding); };
-                    }
-                    else
-                    {
-                        _btnSkyscale = new Image
-                        {
-                            Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
-                            Texture = img,
-                            Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
-                            Location = new Point(curX, curY),
-                            Opacity = _settingOpacity.Value,
-                            BasicTooltipText = "Skyscale"
-                        };
-                        _btnSkyscale.LeftMouseButtonPressed += delegate { DoHotKey(_settingSkyscaleBinding); };
-
-                        if (_settingOrientation.Value == Orientation.Horizontal)
-                            curX += _settingImgWidth.Value;
-                        else
-                            curY += _settingImgWidth.Value;
-                    }
-                }
-                if (_settingSpringerOrder.Value.ToString() == name)
-                {
-                    Texture2D img = GetImgFile("springer");
-                    if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
-                    {
-                        _cornerSpringer = new CornerIcon()
-                        {
-                            IconName = "Springer",
-                            Icon = img,
-                            HoverIcon = img,
-                            Priority = 10
-                        };
-                        _cornerSpringer.Click += delegate { DoHotKey(_settingSpringerBinding); };
-                    }
-                    else
-                    {
-                        _btnSpringer = new Image
-                        {
-                            Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
-                            Texture = img,
-                            Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
-                            Location = new Point(curX, curY),
-                            Opacity = _settingOpacity.Value,
-                            BasicTooltipText = "Springer"
-                        };
-                        _btnSpringer.LeftMouseButtonPressed += delegate { DoHotKey(_settingSpringerBinding); };
-
-                        if (_settingOrientation.Value == Orientation.Horizontal)
-                            curX += _settingImgWidth.Value;
-                        else
-                            curY += _settingImgWidth.Value;
-                    }
-                }
-                if (_settingWarclawOrder.Value.ToString() == name)
-                {
-                    Texture2D img = GetImgFile("warclaw");
-                    if (_settingDisplay.Value == MountDisplay.OpaqueCorner || _settingDisplay.Value == MountDisplay.TransparentCorner)
-                    {
-                        _cornerWarclaw = new CornerIcon()
-                        {
-                            IconName = "Warclaw",
-                            Icon = img,
-                            HoverIcon = img,
-                            Priority = 10
-                        };
-                        _cornerWarclaw.Click += delegate { DoHotKey(_settingWarclawBinding); };
-                    }
-                    else
-                    {
-                        _btnWarclaw = new Image
-                        {
-                            Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
-                            Texture = img,
-                            Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
-                            Location = new Point(curX, curY),
-                            Opacity = _settingOpacity.Value,
-                            BasicTooltipText = "Warclaw"
-                        };
-                        _btnWarclaw.LeftMouseButtonPressed += delegate { DoHotKey(_settingWarclawBinding); };
-
-                        if (_settingOrientation.Value == Orientation.Horizontal)
-                            curX += _settingImgWidth.Value;
-                        else
-                            curY += _settingImgWidth.Value;
-                    }
-                }
-            }
+            if (_settingDisplay.Value.Equals("Solid Corner") || _settingDisplay.Value.Equals("Transparent Corner"))
+                DrawCornerIcons();
+            else
+                DrawManualIcons();
         }
 
         private Texture2D GetImgFile(string filename)
         {
             switch (_settingDisplay.Value)
             {
-                case MountDisplay.OpaqueManual:
-                    return ContentsManager.GetTexture(filename + ".png");
-                case MountDisplay.OpaqueCorner:
-                    return ContentsManager.GetTexture(filename + ".png");
-
-                case MountDisplay.TransparentManual:
-                    return ContentsManager.GetTexture(filename + "-trans.png");
-                case MountDisplay.TransparentCorner:
-                    return ContentsManager.GetTexture(filename + "-trans.png");
-
-                case MountDisplay.OpaqueManualText:
-                    return ContentsManager.GetTexture(filename + "-text.png");
-
                 default:
+                case "Solid Manual":
+                case "Solid Corner":
                     return ContentsManager.GetTexture(filename + ".png");
+
+                case "Transparent Manual":
+                case "Transparent Corner":
+                    return ContentsManager.GetTexture(filename + "-trans.png");
+
+                case "Solid Manual Text":
+                    return ContentsManager.GetTexture(filename + "-text.png");
             }
         }
         protected void DoHotKey(SettingEntry<KeyBinding> setting)
