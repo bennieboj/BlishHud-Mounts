@@ -32,7 +32,7 @@ namespace Manlaan.Mounts
         public static int[] _mountOrder = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         public static string[] _mountDisplay = new string[] { "Transparent Corner", "Solid Corner", "Transparent Manual", "Solid Manual", "Solid Manual Text" };
         public static string[] _mountOrientation = new string[] { "Horizontal", "Vertical" };
-
+        private SettingEntry<KeyBinding> InputQueuingKeybindSetting = null;
         public static string[] _defaultMountChoices = new string[] { "Disabled", "Raptor", "Springer", "Skimmer", "Jackal", "Griffon", "Roller Beetle", "Skyscale", "Warclaw" };
         Dictionary<string, Action> defaultMountChoicesToActions;
         Gw2Sharp.Models.MapType[] warclawOnlyMaps = {
@@ -90,6 +90,7 @@ namespace Manlaan.Mounts
         protected override void Initialize()
         {
             InitializeDefaultMountActions();
+            GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += (sender, e) => HandleCombatChange(sender, e);
         }
 
         private void InitializeDefaultMountActions()
@@ -611,8 +612,23 @@ namespace Manlaan.Mounts
             defaultMountChoicesToActions[_settingDefaultMountChoice.Value]();
         }
 
+        private void HandleCombatChange(object sender, ValueEventArgs<bool> e)
+        {
+            if(!e.Value)
+            {
+                DoHotKey(InputQueuingKeybindSetting);
+                InputQueuingKeybindSetting = null;
+            }
+        }
+
         protected void DoHotKey(SettingEntry<KeyBinding> setting)
         {
+            if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat)
+            {
+                InputQueuingKeybindSetting = setting;
+                return;
+            }
+
             if (setting.Value.ModifierKeys != ModifierKeys.None)
             {
                 if (setting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
