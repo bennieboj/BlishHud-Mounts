@@ -2,13 +2,14 @@
 using Microsoft.Xna.Framework;
 using Blish_HUD.Settings.UI.Views;
 using Blish_HUD.Graphics.UI;
+using System;
 
 namespace Manlaan.Mounts.Views
 {
     class SettingsView : View
     {
         protected override void Build(Container buildPanel) {
-            int labelWidth = 65;
+            int labelWidth = 100;
             int orderWidth = 80;
             int bindingWidth = 150;
 
@@ -91,9 +92,6 @@ namespace Manlaan.Mounts.Views
                 KeyBinding = Module._settingRaptorBinding.Value,
                 Location = new Point(settingRaptor_Select.Right + 5, settingRaptor_Label.Top - 1),
             };
-            settingRaptor_Keybind.BindingChanged += delegate {
-                Module._settingRaptorBinding.Value = settingRaptor_Keybind.KeyBinding;
-            };
 
             Label settingSpringer_Label = new Label() {
                 Location = new Point(0, settingRaptor_Label.Bottom + 6),
@@ -127,9 +125,6 @@ namespace Manlaan.Mounts.Views
                 Parent = mountsLeftPanel,
                 KeyBinding = Module._settingSpringerBinding.Value,
                 Location = new Point(settingSpringer_Select.Right + 5, settingSpringer_Label.Top - 1),
-            };
-            settingSpringer_Keybind.BindingChanged += delegate {
-                Module._settingSpringerBinding.Value = settingSpringer_Keybind.KeyBinding;
             };
 
             Label settingSkimmer_Label = new Label() {
@@ -165,9 +160,6 @@ namespace Manlaan.Mounts.Views
                 KeyBinding = Module._settingSkimmerBinding.Value,
                 Location = new Point(settingSkimmer_Select.Right + 5, settingSkimmer_Label.Top - 1),
             };
-            settingSkimmer_Keybind.BindingChanged += delegate {
-                Module._settingSkimmerBinding.Value = settingSkimmer_Keybind.KeyBinding;
-            };
 
             Label settingJackal_Label = new Label() {
                 Location = new Point(0, settingSkimmer_Label.Bottom + 6),
@@ -201,9 +193,6 @@ namespace Manlaan.Mounts.Views
                 Parent = mountsLeftPanel,
                 KeyBinding = Module._settingJackalBinding.Value,
                 Location = new Point(settingJackal_Select.Right + 5, settingJackal_Label.Top - 1),
-            };
-            settingJackal_Keybind.BindingChanged += delegate {
-                Module._settingJackalBinding.Value = settingJackal_Keybind.KeyBinding;
             };
 
             Label settingGriffon_Label = new Label() {
@@ -239,9 +228,6 @@ namespace Manlaan.Mounts.Views
                 KeyBinding = Module._settingGriffonBinding.Value,
                 Location = new Point(settingGriffon_Select.Right + 5, settingGriffon_Label.Top - 1),
             };
-            settingGriffon_Keybind.BindingChanged += delegate {
-                Module._settingGriffonBinding.Value = settingGriffon_Keybind.KeyBinding;
-            };
 
             Label settingRoller_Label = new Label() {
                 Location = new Point(0, settingGriffon_Label.Bottom + 6),
@@ -275,9 +261,6 @@ namespace Manlaan.Mounts.Views
                 Parent = mountsLeftPanel,
                 KeyBinding = Module._settingRollerBinding.Value,
                 Location = new Point(settingRoller_Select.Right + 5, settingRoller_Label.Top - 1),
-            };
-            settingRoller_Keybind.BindingChanged += delegate {
-                Module._settingRollerBinding.Value = settingRoller_Keybind.KeyBinding;
             };
 
             Label settingWarclaw_Label = new Label() {
@@ -313,11 +296,9 @@ namespace Manlaan.Mounts.Views
                 KeyBinding = Module._settingWarclawBinding.Value,
                 Location = new Point(settingWarclaw_Select.Right + 5, settingWarclaw_Label.Top - 1),
             };
-            settingWarclaw_Keybind.BindingChanged += delegate {
-                Module._settingWarclawBinding.Value = settingWarclaw_Keybind.KeyBinding;
-            };
 
-            Label settingSkyscale_Label = new Label() {
+            Label settingSkyscale_Label = new Label()
+            {
                 Location = new Point(0, settingWarclaw_Label.Bottom + 6),
                 Width = labelWidth,
                 AutoSizeHeight = false,
@@ -325,12 +306,14 @@ namespace Manlaan.Mounts.Views
                 Parent = mountsLeftPanel,
                 Text = "Skyscale: ",
             };
-            Dropdown settingSkyscale_Select = new Dropdown() {
+            Dropdown settingSkyscale_Select = new Dropdown()
+            {
                 Location = new Point(settingSkyscale_Label.Right + 5, settingSkyscale_Label.Top - 4),
                 Width = orderWidth,
                 Parent = mountsLeftPanel,
             };
-            foreach (int i in Module._mountOrder) {
+            foreach (int i in Module._mountOrder)
+            {
                 if (i == 0)
                     settingSkyscale_Select.Items.Add("Disabled");
                 else
@@ -343,16 +326,49 @@ namespace Manlaan.Mounts.Views
                 else
                     Module._settingSkyscaleOrder.Value = int.Parse(settingSkyscale_Select.SelectedItem);
             };
-            KeybindingAssigner settingSkyscale_Keybind = new KeybindingAssigner() {
+            KeybindingAssigner settingSkyscale_Keybind = new KeybindingAssigner()
+            {
                 NameWidth = 0,
                 Size = new Point(bindingWidth, 20),
                 Parent = mountsLeftPanel,
                 KeyBinding = Module._settingSkyscaleBinding.Value,
                 Location = new Point(settingSkyscale_Select.Right + 5, settingSkyscale_Label.Top - 1),
             };
-            settingSkyscale_Keybind.BindingChanged += delegate {
-                Module._settingSkyscaleBinding.Value = settingSkyscale_Keybind.KeyBinding;
+
+            Label settingDefaultMount_Label = new Label()
+            {
+                Location = new Point(0, settingSkyscale_Label.Bottom + 6),
+                Width = labelWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsLeftPanel,
+                Text = "Default mount: ",
             };
+            Dropdown settingDefaultMount_Select = new Dropdown()
+            {
+                Location = new Point(settingDefaultMount_Label.Right + 5, settingDefaultMount_Label.Top - 4),
+                Width = orderWidth,
+                Parent = mountsLeftPanel,
+            };
+            foreach (string i in Module._defaultMountChoices)
+            {
+                settingDefaultMount_Select.Items.Add(i.ToString());
+            }
+            settingDefaultMount_Select.SelectedItem = Array.Exists(Module._defaultMountChoices, e => e == Module._settingDefaultMountChoice.Value) ? Module._settingDefaultMountChoice.Value : "Disabled";
+            settingDefaultMount_Select.ValueChanged += delegate {
+                Module._settingDefaultMountChoice.Value = settingDefaultMount_Select.SelectedItem;
+            };
+            KeybindingAssigner settingDefaultMount_Keybind = new KeybindingAssigner()
+            {
+                NameWidth = 0,
+                Size = new Point(bindingWidth, 20),
+                Parent = mountsLeftPanel,
+                KeyBinding = Module._settingDefaultMountBinding.Value,
+                Location = new Point(settingDefaultMount_Select.Right + 5, settingDefaultMount_Label.Top - 1),
+            };
+
+
+
 
             #endregion
 

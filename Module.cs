@@ -12,6 +12,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using Blish_HUD.Graphics.UI;
+using System.Collections.Generic;
 
 namespace Manlaan.Mounts
 {
@@ -32,6 +33,19 @@ namespace Manlaan.Mounts
         public static string[] _mountDisplay = new string[] { "Transparent Corner", "Solid Corner", "Transparent Manual", "Solid Manual", "Solid Manual Text" };
         public static string[] _mountOrientation = new string[] { "Horizontal", "Vertical" };
 
+        public static string[] _defaultMountChoices = new string[] { "Disabled", "Raptor", "Springer", "Skimmer", "Jackal", "Griffon", "Roller Beetle", "Skyscale", "Warclaw" };
+        Dictionary<string, Action> defaultMountChoicesToActions;
+        Gw2Sharp.Models.MapType[] warclawOnlyMaps = {
+                Gw2Sharp.Models.MapType.RedBorderlands,
+                Gw2Sharp.Models.MapType.RedHome,
+                Gw2Sharp.Models.MapType.BlueBorderlands,
+                Gw2Sharp.Models.MapType.BlueHome,
+                Gw2Sharp.Models.MapType.GreenBorderlands,
+                Gw2Sharp.Models.MapType.GreenHome,
+                Gw2Sharp.Models.MapType.EternalBattlegrounds,
+                Gw2Sharp.Models.MapType.Center,
+            };
+
         public static SettingEntry<int> _settingGriffonOrder;
         public static SettingEntry<int> _settingJackalOrder;
         public static SettingEntry<int> _settingRaptorOrder;
@@ -40,6 +54,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<int> _settingSkyscaleOrder;
         public static SettingEntry<int> _settingSpringerOrder;
         public static SettingEntry<int> _settingWarclawOrder;
+        public static SettingEntry<string> _settingDefaultMountChoice;
         public static SettingEntry<KeyBinding> _settingGriffonBinding;
         public static SettingEntry<KeyBinding> _settingJackalBinding;
         public static SettingEntry<KeyBinding> _settingRaptorBinding;
@@ -48,6 +63,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<KeyBinding> _settingSkyscaleBinding;
         public static SettingEntry<KeyBinding> _settingSpringerBinding;
         public static SettingEntry<KeyBinding> _settingWarclawBinding;
+        public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
         public static SettingEntry<string> _settingDisplay;
         public static SettingEntry<string> _settingOrientation;
         private SettingEntry<Point> _settingLoc;
@@ -73,6 +89,28 @@ namespace Manlaan.Mounts
 
         protected override void Initialize()
         {
+            InitializeDefaultMountActions();
+        }
+
+        private void InitializeDefaultMountActions()
+        {
+            defaultMountChoicesToActions = new Dictionary<string, Action>();
+            var defaultMountActions = new Action[]
+            {
+                () =>{ },
+                () =>{ DoHotKey(_settingRaptorBinding); },
+                () =>{ DoHotKey(_settingSpringerBinding); },
+                () =>{ DoHotKey(_settingSkimmerBinding); },
+                () =>{ DoHotKey(_settingJackalBinding); },
+                () =>{ DoHotKey(_settingGriffonBinding); },
+                () =>{ DoHotKey(_settingRollerBinding); },
+                () =>{ DoHotKey(_settingSkyscaleBinding); },
+                () =>{ DoHotKey(_settingWarclawBinding); }
+            };
+            for (int index = 0; index < defaultMountActions.Length; index++)
+            {
+                defaultMountChoicesToActions.Add(_defaultMountChoices[index], defaultMountActions[index]);
+            }
         }
 
         protected override void DefineSettings(SettingCollection settings)
@@ -85,6 +123,7 @@ namespace Manlaan.Mounts
             _settingRollerOrder = settings.DefineSetting("MountRollerOrder2", 6, "Roller Order", "");
             _settingWarclawOrder = settings.DefineSetting("MountWarclawOrder2", 7, "Warclaw Order", "");
             _settingSkyscaleOrder = settings.DefineSetting("MountSkyscaleOrder2", 8, "Skyscale Order", "");
+            _settingDefaultMountChoice = settings.DefineSetting("DefaultMountChoice", "Disabled", "Default Mount Choice", "");
 
             _settingRaptorBinding = settings.DefineSetting("MountRaptorBinding", new KeyBinding(Keys.None), "Raptor Binding", "");
             _settingSpringerBinding = settings.DefineSetting("MountSpringerBinding", new KeyBinding(Keys.None), "Springer Binding", "");
@@ -94,6 +133,7 @@ namespace Manlaan.Mounts
             _settingRollerBinding = settings.DefineSetting("MountRollerBinding", new KeyBinding(Keys.None), "Roller Binding", "");
             _settingWarclawBinding = settings.DefineSetting("MountWarclawBinding", new KeyBinding(Keys.None), "Warclaw Binding", "");
             _settingSkyscaleBinding = settings.DefineSetting("MountSkyscaleBinding", new KeyBinding(Keys.None), "Skyscale Binding", "");
+            _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), "Default Mount Binding", "");
 
             _settingDisplay = settings.DefineSetting("MountDisplay", "Transparent Corner", "Display Type", "");
             _settingOrientation = settings.DefineSetting("Orientation", "Horizontal", "Manual Orientation", "");
@@ -122,6 +162,9 @@ namespace Manlaan.Mounts
             _settingSkyscaleBinding.SettingChanged += UpdateSettings;
             _settingSpringerBinding.SettingChanged += UpdateSettings;
             _settingWarclawBinding.SettingChanged += UpdateSettings;
+            _settingDefaultMountBinding.SettingChanged += UpdateSettings;
+            _settingDefaultMountBinding.Value.Enabled = true;
+            _settingDefaultMountBinding.Value.Activated += delegate { DoDefaultMountAction(); };
 
             _settingDisplay.SettingChanged += UpdateSettings;
             _settingOrientation.SettingChanged += UpdateSettings;
@@ -151,16 +194,23 @@ namespace Manlaan.Mounts
 
         protected override void Update(GameTime gameTime)
         {
-            if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen) {
-                _mountPanel.Show();
-            } else {
-                _mountPanel.Hide(); 
-            }
-            if (_dragging) {
-                var nOffset = InputService.Input.Mouse.Position - _dragStart;
-                _mountPanel.Location += nOffset;
+            if(_mountPanel != null)
+            {
+                if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen)
+                {
+                    _mountPanel.Show();
+                }
+                else
+                {
+                    _mountPanel.Hide();
+                }
+                if (_dragging)
+                {
+                    var nOffset = InputService.Input.Mouse.Position - _dragStart;
+                    _mountPanel.Location += nOffset;
 
-                _dragStart = InputService.Input.Mouse.Position;
+                    _dragStart = InputService.Input.Mouse.Position;
+                }
             }
         }
 
@@ -195,6 +245,7 @@ namespace Manlaan.Mounts
             _settingSkyscaleBinding.SettingChanged -= UpdateSettings;
             _settingSpringerBinding.SettingChanged -= UpdateSettings;
             _settingWarclawBinding.SettingChanged -= UpdateSettings;
+            _settingDefaultMountBinding.SettingChanged -= UpdateSettings;
 
             _settingDisplay.SettingChanged -= UpdateSettings;
             _settingOrientation.SettingChanged -= UpdateSettings;
@@ -541,6 +592,25 @@ namespace Manlaan.Mounts
                     return ContentsManager.GetTexture(filename + "-text.png");
             }
         }
+
+
+        private void DoDefaultMountAction()
+        {
+            if (Array.Exists(warclawOnlyMaps, mapType => mapType == GameService.Gw2Mumble.CurrentMap.Type))
+            {
+                DoHotKey(_settingWarclawBinding);
+                return;
+            }
+
+            if (GameService.Gw2Mumble.PlayerCharacter.Position.Z <= 0)
+            {
+                DoHotKey(_settingSkimmerBinding);
+                return;
+            }
+
+            defaultMountChoicesToActions[_settingDefaultMountChoice.Value]();
+        }
+
         protected void DoHotKey(SettingEntry<KeyBinding> setting)
         {
             if (setting.Value.ModifierKeys != ModifierKeys.None)
