@@ -623,6 +623,11 @@ namespace Manlaan.Mounts
 
         protected void DoHotKey(SettingEntry<KeyBinding> setting)
         {
+            if(setting == null)
+            {
+                return;
+            }
+
             if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat)
             {
                 InputQueuingKeybindSetting = setting;
