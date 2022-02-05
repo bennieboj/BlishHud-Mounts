@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Blish_HUD.Settings.UI.Views;
 using Blish_HUD.Graphics.UI;
 using System;
+using System.Linq;
 
 namespace Manlaan.Mounts.Views
 {
@@ -59,286 +60,64 @@ namespace Manlaan.Mounts.Views
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
 
-            Label settingRaptor_Label = new Label() {
-                Location = new Point(0, settingOrderLeft_Label.Bottom + 6),
-                Width = labelWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = mountsLeftPanel,
-                Text = "Raptor: ",
-            };
-            Dropdown settingRaptor_Select = new Dropdown() {
-                Location = new Point(settingRaptor_Label.Right + 5, settingRaptor_Label.Top - 4),
-                Width = orderWidth,
-                Parent = mountsLeftPanel,
-            };
-            foreach (int i in Module._mountOrder) {
-                if (i == 0)
-                    settingRaptor_Select.Items.Add("Disabled");
-                else
-                    settingRaptor_Select.Items.Add(i.ToString());
-            }
-            settingRaptor_Select.SelectedItem = Module._settingRaptorOrder.Value == 0 ? "Disabled" : Module._settingRaptorOrder.Value.ToString();
-            settingRaptor_Select.ValueChanged += delegate {
-                if (settingRaptor_Select.SelectedItem.Equals("Disabled"))
-                    Module._settingRaptorOrder.Value = 0;
-                else
-                    Module._settingRaptorOrder.Value = int.Parse(settingRaptor_Select.SelectedItem);
-            };
-            KeybindingAssigner settingRaptor_Keybind = new KeybindingAssigner() {
-                NameWidth = 0,
-                Size = new Point(bindingWidth, 20),
-                Parent = mountsLeftPanel,
-                KeyBinding = Module._settingRaptorBinding.Value,
-                Location = new Point(settingRaptor_Select.Right + 5, settingRaptor_Label.Top - 1),
-            };
+            int curY = settingOrderLeft_Label.Bottom;
 
-            Label settingSpringer_Label = new Label() {
-                Location = new Point(0, settingRaptor_Label.Bottom + 6),
-                Width = labelWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = mountsLeftPanel,
-                Text = "Springer: ",
-            };
-            Dropdown settingSpringer_Select = new Dropdown() {
-                Location = new Point(settingSpringer_Label.Right + 5, settingSpringer_Label.Top - 4),
-                Width = orderWidth,
-                Parent = mountsLeftPanel,
-            };
-            foreach (int i in Module._mountOrder) {
-                if (i == 0)
-                    settingSpringer_Select.Items.Add("Disabled");
-                else
-                    settingSpringer_Select.Items.Add(i.ToString());
-            }
-            settingSpringer_Select.SelectedItem = Module._settingSpringerOrder.Value == 0 ? "Disabled" : Module._settingSpringerOrder.Value.ToString();
-            settingSpringer_Select.ValueChanged += delegate {
-                if (settingSpringer_Select.SelectedItem.Equals("Disabled"))
-                    Module._settingSpringerOrder.Value = 0;
-                else
-                    Module._settingSpringerOrder.Value = int.Parse(settingSpringer_Select.SelectedItem);
-            };
-            KeybindingAssigner settingSpringer_Keybind = new KeybindingAssigner() {
-                NameWidth = 0,
-                Size = new Point(bindingWidth, 20),
-                Parent = mountsLeftPanel,
-                KeyBinding = Module._settingSpringerBinding.Value,
-                Location = new Point(settingSpringer_Select.Right + 5, settingSpringer_Label.Top - 1),
-            };
-
-            Label settingSkimmer_Label = new Label() {
-                Location = new Point(0, settingSpringer_Label.Bottom + 6),
-                Width = labelWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = mountsLeftPanel,
-                Text = "Skimmer: ",
-            };
-            Dropdown settingSkimmer_Select = new Dropdown() {
-                Location = new Point(settingSkimmer_Label.Right + 5, settingSkimmer_Label.Top - 4),
-                Width = orderWidth,
-                Parent = mountsLeftPanel,
-            };
-            foreach (int i in Module._mountOrder) {
-                if (i == 0)
-                    settingSkimmer_Select.Items.Add("Disabled");
-                else
-                    settingSkimmer_Select.Items.Add(i.ToString());
-            }
-            settingSkimmer_Select.SelectedItem = Module._settingSkimmerOrder.Value == 0 ? "Disabled" : Module._settingSkimmerOrder.Value.ToString();
-            settingSkimmer_Select.ValueChanged += delegate {
-                if (settingSkimmer_Select.SelectedItem.Equals("Disabled"))
-                    Module._settingSkimmerOrder.Value = 0;
-                else
-                    Module._settingSkimmerOrder.Value = int.Parse(settingSkimmer_Select.SelectedItem);
-            };
-            KeybindingAssigner settingSkimmer_Keybind = new KeybindingAssigner() {
-                NameWidth = 0,
-                Size = new Point(bindingWidth, 20),
-                Parent = mountsLeftPanel,
-                KeyBinding = Module._settingSkimmerBinding.Value,
-                Location = new Point(settingSkimmer_Select.Right + 5, settingSkimmer_Label.Top - 1),
-            };
-
-            Label settingJackal_Label = new Label() {
-                Location = new Point(0, settingSkimmer_Label.Bottom + 6),
-                Width = labelWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = mountsLeftPanel,
-                Text = "Jackal: ",
-            };
-            Dropdown settingJackal_Select = new Dropdown() {
-                Location = new Point(settingJackal_Label.Right + 5, settingJackal_Label.Top - 4),
-                Width = orderWidth,
-                Parent = mountsLeftPanel,
-            };
-            foreach (int i in Module._mountOrder) {
-                if (i == 0)
-                    settingJackal_Select.Items.Add("Disabled");
-                else
-                    settingJackal_Select.Items.Add(i.ToString());
-            }
-            settingJackal_Select.SelectedItem = Module._settingJackalOrder.Value == 0 ? "Disabled" : Module._settingJackalOrder.Value.ToString();
-            settingJackal_Select.ValueChanged += delegate {
-                if (settingJackal_Select.SelectedItem.Equals("Disabled"))
-                    Module._settingJackalOrder.Value = 0;
-                else
-                    Module._settingJackalOrder.Value = int.Parse(settingJackal_Select.SelectedItem);
-            };
-            KeybindingAssigner settingJackal_Keybind = new KeybindingAssigner() {
-                NameWidth = 0,
-                Size = new Point(bindingWidth, 20),
-                Parent = mountsLeftPanel,
-                KeyBinding = Module._settingJackalBinding.Value,
-                Location = new Point(settingJackal_Select.Right + 5, settingJackal_Label.Top - 1),
-            };
-
-            Label settingGriffon_Label = new Label() {
-                Location = new Point(0, settingJackal_Label.Bottom + 6),
-                Width = labelWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = mountsLeftPanel,
-                Text = "Griffon: ",
-            };
-            Dropdown settingGriffon_Select = new Dropdown() {
-                Location = new Point(settingGriffon_Label.Right + 5, settingGriffon_Label.Top - 4),
-                Width = orderWidth,
-                Parent = mountsLeftPanel,
-            };
-            foreach (int i in Module._mountOrder) {
-                if (i == 0)
-                    settingGriffon_Select.Items.Add("Disabled");
-                else
-                    settingGriffon_Select.Items.Add(i.ToString());
-            }
-            settingGriffon_Select.SelectedItem = Module._settingGriffonOrder.Value == 0 ? "Disabled" : Module._settingGriffonOrder.Value.ToString();
-            settingGriffon_Select.ValueChanged += delegate {
-                if (settingGriffon_Select.SelectedItem.Equals("Disabled"))
-                    Module._settingGriffonOrder.Value = 0;
-                else
-                    Module._settingGriffonOrder.Value = int.Parse(settingGriffon_Select.SelectedItem);
-            };
-            KeybindingAssigner settingGriffon_Keybind = new KeybindingAssigner() {
-                NameWidth = 0,
-                Size = new Point(bindingWidth, 20),
-                Parent = mountsLeftPanel,
-                KeyBinding = Module._settingGriffonBinding.Value,
-                Location = new Point(settingGriffon_Select.Right + 5, settingGriffon_Label.Top - 1),
-            };
-
-            Label settingRoller_Label = new Label() {
-                Location = new Point(0, settingGriffon_Label.Bottom + 6),
-                Width = labelWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = mountsLeftPanel,
-                Text = "Roller: ",
-            };
-            Dropdown settingRoller_Select = new Dropdown() {
-                Location = new Point(settingRoller_Label.Right + 5, settingRoller_Label.Top - 4),
-                Width = orderWidth,
-                Parent = mountsLeftPanel,
-            };
-            foreach (int i in Module._mountOrder) {
-                if (i == 0)
-                    settingRoller_Select.Items.Add("Disabled");
-                else
-                    settingRoller_Select.Items.Add(i.ToString());
-            }
-            settingRoller_Select.SelectedItem = Module._settingRollerOrder.Value == 0 ? "Disabled" : Module._settingRollerOrder.Value.ToString();
-            settingRoller_Select.ValueChanged += delegate {
-                if (settingRoller_Select.SelectedItem.Equals("Disabled"))
-                    Module._settingRollerOrder.Value = 0;
-                else
-                    Module._settingRollerOrder.Value = int.Parse(settingRoller_Select.SelectedItem);
-            };
-            KeybindingAssigner settingRoller_Keybind = new KeybindingAssigner() {
-                NameWidth = 0,
-                Size = new Point(bindingWidth, 20),
-                Parent = mountsLeftPanel,
-                KeyBinding = Module._settingRollerBinding.Value,
-                Location = new Point(settingRoller_Select.Right + 5, settingRoller_Label.Top - 1),
-            };
-
-            Label settingWarclaw_Label = new Label() {
-                Location = new Point(0, settingRoller_Label.Bottom + 6),
-                Width = labelWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = mountsLeftPanel,
-                Text = "Warclaw: ",
-            };
-            Dropdown settingWarclaw_Select = new Dropdown() {
-                Location = new Point(settingWarclaw_Label.Right + 5, settingWarclaw_Label.Top - 4),
-                Width = orderWidth,
-                Parent = mountsLeftPanel,
-            };
-            foreach (int i in Module._mountOrder) {
-                if (i == 0)
-                    settingWarclaw_Select.Items.Add("Disabled");
-                else
-                    settingWarclaw_Select.Items.Add(i.ToString());
-            }
-            settingWarclaw_Select.SelectedItem = Module._settingWarclawOrder.Value == 0 ? "Disabled" : Module._settingWarclawOrder.Value.ToString();
-            settingWarclaw_Select.ValueChanged += delegate {
-                if (settingWarclaw_Select.SelectedItem.Equals("Disabled"))
-                    Module._settingWarclawOrder.Value = 0;
-                else
-                    Module._settingWarclawOrder.Value = int.Parse(settingWarclaw_Select.SelectedItem);
-            };
-            KeybindingAssigner settingWarclaw_Keybind = new KeybindingAssigner() {
-                NameWidth = 0,
-                Size = new Point(bindingWidth, 20),
-                Parent = mountsLeftPanel,
-                KeyBinding = Module._settingWarclawBinding.Value,
-                Location = new Point(settingWarclaw_Select.Right + 5, settingWarclaw_Label.Top - 1),
-            };
-
-            Label settingSkyscale_Label = new Label()
+            foreach (var mount in Module._mounts)
             {
-                Location = new Point(0, settingWarclaw_Label.Bottom + 6),
-                Width = labelWidth,
+                Label settingMount_Label = new Label()
+                {
+                    Location = new Point(0, curY + 6),
+                    Width = labelWidth,
+                    AutoSizeHeight = false,
+                    WrapText = false,
+                    Parent = mountsLeftPanel,
+                    Text = $"{mount.DisplayName}: ",
+                };
+                Dropdown settingRaptor_Select = new Dropdown()
+                {
+                    Location = new Point(settingMount_Label.Right + 5, settingMount_Label.Top - 4),
+                    Width = orderWidth,
+                    Parent = mountsLeftPanel,
+                };
+                foreach (int i in Module._mountOrder)
+                {
+                    if (i == 0)
+                        settingRaptor_Select.Items.Add("Disabled");
+                    else
+                        settingRaptor_Select.Items.Add(i.ToString());
+                }
+                settingRaptor_Select.SelectedItem = mount.OrderSetting.Value == 0 ? "Disabled" : mount.OrderSetting.Value.ToString();
+                settingRaptor_Select.ValueChanged += delegate {
+                    if (settingRaptor_Select.SelectedItem.Equals("Disabled"))
+                        mount.OrderSetting.Value = 0;
+                    else
+                        mount.OrderSetting.Value = int.Parse(settingRaptor_Select.SelectedItem);
+                };
+                KeybindingAssigner settingRaptor_Keybind = new KeybindingAssigner()
+                {
+                    NameWidth = 0,
+                    Size = new Point(bindingWidth, 20),
+                    Parent = mountsLeftPanel,
+                    KeyBinding = mount.KeybindingSetting.Value,
+                    Location = new Point(settingRaptor_Select.Right + 5, settingMount_Label.Top - 1),
+                };
+
+                curY = settingMount_Label.Bottom;
+            }
+
+            Label settingDefaultSettingsMount_Label = new Label()
+            {
+                Location = new Point(0, curY + 12),
+                Width = bindingWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
-                Text = "Skyscale: ",
+                Text = "Default mount settings: ",
             };
-            Dropdown settingSkyscale_Select = new Dropdown()
-            {
-                Location = new Point(settingSkyscale_Label.Right + 5, settingSkyscale_Label.Top - 4),
-                Width = orderWidth,
-                Parent = mountsLeftPanel,
-            };
-            foreach (int i in Module._mountOrder)
-            {
-                if (i == 0)
-                    settingSkyscale_Select.Items.Add("Disabled");
-                else
-                    settingSkyscale_Select.Items.Add(i.ToString());
-            }
-            settingSkyscale_Select.SelectedItem = Module._settingSkyscaleOrder.Value == 0 ? "Disabled" : Module._settingSkyscaleOrder.Value.ToString();
-            settingSkyscale_Select.ValueChanged += delegate {
-                if (settingSkyscale_Select.SelectedItem.Equals("Disabled"))
-                    Module._settingSkyscaleOrder.Value = 0;
-                else
-                    Module._settingSkyscaleOrder.Value = int.Parse(settingSkyscale_Select.SelectedItem);
-            };
-            KeybindingAssigner settingSkyscale_Keybind = new KeybindingAssigner()
-            {
-                NameWidth = 0,
-                Size = new Point(bindingWidth, 20),
-                Parent = mountsLeftPanel,
-                KeyBinding = Module._settingSkyscaleBinding.Value,
-                Location = new Point(settingSkyscale_Select.Right + 5, settingSkyscale_Label.Top - 1),
-            };
-
             Label settingDefaultMount_Label = new Label()
             {
-                Location = new Point(0, settingSkyscale_Label.Bottom + 6),
-                Width = labelWidth,
+                Location = new Point(0, settingDefaultSettingsMount_Label.Bottom + 6),
+                Width = bindingWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
@@ -350,13 +129,49 @@ namespace Manlaan.Mounts.Views
                 Width = orderWidth,
                 Parent = mountsLeftPanel,
             };
-            foreach (string i in Module._defaultMountChoices)
+            settingDefaultMount_Select.Items.Add("Disabled");
+            var mountNames = Module._mounts.Select(m => m.Name);
+            foreach (string i in mountNames)
             {
                 settingDefaultMount_Select.Items.Add(i.ToString());
             }
-            settingDefaultMount_Select.SelectedItem = Array.Exists(Module._defaultMountChoices, e => e == Module._settingDefaultMountChoice.Value) ? Module._settingDefaultMountChoice.Value : "Disabled";
+            settingDefaultMount_Select.SelectedItem = mountNames.Any(m => m == Module._settingDefaultMountChoice.Value) ? Module._settingDefaultMountChoice.Value : "Disabled";
             settingDefaultMount_Select.ValueChanged += delegate {
                 Module._settingDefaultMountChoice.Value = settingDefaultMount_Select.SelectedItem;
+            };
+            Label settingDefaultWaterMount_Label = new Label()
+            {
+                Location = new Point(0, settingDefaultMount_Select.Bottom + 6),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsLeftPanel,
+                Text = "Default water mount: ",
+            };
+            Dropdown settingDefaultWaterMount_Select = new Dropdown()
+            {
+                Location = new Point(settingDefaultWaterMount_Label.Right + 5, settingDefaultWaterMount_Label.Top - 4),
+                Width = orderWidth,
+                Parent = mountsLeftPanel,
+            };
+            settingDefaultWaterMount_Select.Items.Add("Disabled");
+            var mountNamesWater = Module._mounts.Where(m => m.IsWaterMount).Select(m => m.Name);
+            foreach (string i in mountNamesWater)
+            {
+                settingDefaultWaterMount_Select.Items.Add(i.ToString());
+            }
+            settingDefaultWaterMount_Select.SelectedItem = mountNamesWater.Any(m => m == Module._settingDefaultWaterMountChoice.Value) ? Module._settingDefaultWaterMountChoice.Value : "Disabled";
+            settingDefaultWaterMount_Select.ValueChanged += delegate {
+                Module._settingDefaultWaterMountChoice.Value = settingDefaultWaterMount_Select.SelectedItem;
+            };
+            Label settingDefaultMountKeybind_Label = new Label()
+            {
+                Location = new Point(0, settingDefaultWaterMount_Select.Bottom + 6),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsLeftPanel,
+                Text = "Keybind: ",
             };
             KeybindingAssigner settingDefaultMount_Keybind = new KeybindingAssigner()
             {
@@ -364,10 +179,8 @@ namespace Manlaan.Mounts.Views
                 Size = new Point(bindingWidth, 20),
                 Parent = mountsLeftPanel,
                 KeyBinding = Module._settingDefaultMountBinding.Value,
-                Location = new Point(settingDefaultMount_Select.Right + 5, settingDefaultMount_Label.Top - 1),
+                Location = new Point(settingDefaultMountKeybind_Label.Right + 5, settingDefaultMountKeybind_Label.Top - 1),
             };
-
-
 
 
             #endregion
