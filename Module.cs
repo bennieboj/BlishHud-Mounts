@@ -14,6 +14,8 @@ using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.ObjectModel;
+using Manlaan.Mounts.Controls;
+using System.Collections.Generic;
 
 namespace Manlaan.Mounts
 {
@@ -29,26 +31,18 @@ namespace Manlaan.Mounts
         internal Gw2ApiManager Gw2ApiManager => this.ModuleParameters.Gw2ApiManager;
         #endregion
 
-        public static Collection<Mount> _mounts;
+        internal static Collection<Mount> _mounts;
+        internal static List<Mount> _availableOrderedMounts => _mounts.Where(m => m.OrderSetting.Value != 0).OrderBy(m => m.OrderSetting.Value).ToList();
 
         public static int[] _mountOrder = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         public static string[] _mountDisplay = new string[] { "Transparent Corner", "Solid Corner", "Transparent Manual", "Solid Manual", "Solid Manual Text" };
         public static string[] _mountOrientation = new string[] { "Horizontal", "Vertical" };
         public static SettingEntry<KeyBinding> InputQueuingKeybindSetting = null;
-        Gw2Sharp.Models.MapType[] warclawOnlyMaps = {
-                Gw2Sharp.Models.MapType.RedBorderlands,
-                Gw2Sharp.Models.MapType.RedHome,
-                Gw2Sharp.Models.MapType.BlueBorderlands,
-                Gw2Sharp.Models.MapType.BlueHome,
-                Gw2Sharp.Models.MapType.GreenBorderlands,
-                Gw2Sharp.Models.MapType.GreenHome,
-                Gw2Sharp.Models.MapType.EternalBattlegrounds,
-                Gw2Sharp.Models.MapType.Center,
-            };
 
         public static SettingEntry<string> _settingDefaultMountChoice;
         public static SettingEntry<string> _settingDefaultWaterMountChoice;
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
+        public static SettingEntry<bool> _settingDefaultMountUseRadial;
         public static SettingEntry<string> _settingDisplay;
         public static SettingEntry<string> _settingOrientation;
         private SettingEntry<Point> _settingLoc;
@@ -57,6 +51,8 @@ namespace Manlaan.Mounts
         public static SettingEntry<float> _settingOpacity;
 
         private Panel _mountPanel;
+        private DrawRadial _radial;
+        private Helper _helper;
 
         private bool _dragging;
         private Point _dragStart = Point.Zero;
@@ -67,6 +63,9 @@ namespace Manlaan.Mounts
         protected override void Initialize()
         {
             GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += (sender, e) => HandleCombatChange(sender, e);
+            GameService.Input.Keyboard.KeyStateChanged += (sender, e) => HandleKeyBoardKeyChange(sender, e);
+
+            _helper = new Helper(ContentsManager);
         }
 
         protected override void DefineSettings(SettingCollection settings)
@@ -87,6 +86,7 @@ namespace Manlaan.Mounts
             _settingDefaultMountChoice = settings.DefineSetting("DefaultMountChoice", "Disabled", "Default Mount Choice", "");
             _settingDefaultWaterMountChoice = settings.DefineSetting("DefaultWaterMountChoice", "Disabled", "Default Water Mount Choice", "");
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), "Default Mount Binding", "");
+            _settingDefaultMountUseRadial = settings.DefineSetting("DefaultMountUseRadial", false, "Default Mount uses radial", "");
 
             _settingDisplay = settings.DefineSetting("MountDisplay", "Transparent Corner", "Display Type", "");
             _settingOrientation = settings.DefineSetting("Orientation", "Horizontal", "Manual Orientation", "");
@@ -106,6 +106,8 @@ namespace Manlaan.Mounts
             _settingDefaultMountBinding.SettingChanged += UpdateSettings;
             _settingDefaultMountBinding.Value.Enabled = true;
             _settingDefaultMountBinding.Value.Activated += delegate { DoDefaultMountAction(); };
+            _settingDefaultWaterMountChoice.SettingChanged += UpdateSettings;
+            _settingDefaultMountUseRadial.SettingChanged += UpdateSettings;
 
             _settingDisplay.SettingChanged += UpdateSettings;
             _settingOrientation.SettingChanged += UpdateSettings;
@@ -158,8 +160,9 @@ namespace Manlaan.Mounts
         protected override void Unload()
         {
             _mountPanel?.Dispose();
+            _radial?.Dispose();
 
-            foreach(Mount m in _mounts)
+            foreach (Mount m in _mounts)
             {
                 m.OrderSetting.SettingChanged -= UpdateSettings;
                 m.KeybindingSetting.SettingChanged -= UpdateSettings;
@@ -167,6 +170,7 @@ namespace Manlaan.Mounts
             }
 
             _settingDefaultMountBinding.SettingChanged -= UpdateSettings;
+            _settingDefaultMountUseRadial.SettingChanged -= UpdateSettings;
 
             _settingDisplay.SettingChanged -= UpdateSettings;
             _settingOrientation.SettingChanged -= UpdateSettings;
@@ -198,7 +202,7 @@ namespace Manlaan.Mounts
             DrawIcons();
         }
 
-        public void DrawManualIcons() {
+        internal void DrawManualIcons() {
             int curX = 0;
             int curY = 0;
             int totalMounts = 0;
@@ -209,29 +213,25 @@ namespace Manlaan.Mounts
                 Size = new Point(_settingImgWidth.Value * 8, _settingImgWidth.Value * 8),
             };
 
-            var mountsOrdered = _mounts.OrderBy(m => m.OrderSetting.Value);
-            foreach (Mount mount in mountsOrdered) {
-                if (mount.OrderSetting.Value != 0)
+            foreach (Mount mount in _availableOrderedMounts) {
+                Texture2D img = _helper.GetImgFile(mount.ImageFileName);
+                Image _btnMount = new Image
                 {
-                    Texture2D img = GetImgFile(mount.ImageFileName);
-                    Image _btnMount = new Image
-                    {
-                        Parent = _mountPanel,
-                        Texture = img,
-                        Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
-                        Location = new Point(curX, curY),
-                        Opacity = _settingOpacity.Value,
-                        BasicTooltipText = mount.DisplayName
-                    };
-                    _btnMount.LeftMouseButtonPressed += delegate { mount.DoHotKey(); };
+                    Parent = _mountPanel,
+                    Texture = img,
+                    Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
+                    Location = new Point(curX, curY),
+                    Opacity = _settingOpacity.Value,
+                    BasicTooltipText = mount.DisplayName
+                };
+                _btnMount.LeftMouseButtonPressed += delegate { mount.DoHotKey(); };
 
-                    if (_settingOrientation.Value.Equals("Horizontal"))
-                        curX += _settingImgWidth.Value;
-                    else
-                        curY += _settingImgWidth.Value;
+                if (_settingOrientation.Value.Equals("Horizontal"))
+                    curX += _settingImgWidth.Value;
+                else
+                    curY += _settingImgWidth.Value;
 
-                    totalMounts++;
-                }              
+                totalMounts++;
             }
 
             if (_settingDrag.Value) {
@@ -261,12 +261,11 @@ namespace Manlaan.Mounts
 
         }
         private void DrawCornerIcons() {
-            var mountsOrdered = _mounts.OrderBy(m => m.OrderSetting.Value);
-            foreach (Mount mount in mountsOrdered)
+            foreach (Mount mount in _availableOrderedMounts)
             {
                 if (mount.OrderSetting.Value != 0)
                 {
-                    mount.CreateCornerIcon(GetImgFile(mount.ImageFileName));
+                    mount.CreateCornerIcon(_helper.GetImgFile(mount.ImageFileName));
                 }
             }
 
@@ -284,42 +283,41 @@ namespace Manlaan.Mounts
                 DrawCornerIcons();
             else
                 DrawManualIcons();
+
+            _radial?.Dispose();
+            _radial = new DrawRadial(_helper);
+            _radial.Parent = GameService.Graphics.SpriteScreen;
+            _radial?.Update();
         }
 
-        private Texture2D GetImgFile(string filename)
+        private void HandleKeyBoardKeyChange(object sender, KeyboardEventArgs e)
         {
-            switch (_settingDisplay.Value)
+            var key = _settingDefaultMountBinding.Value.PrimaryKey;
+            if (_settingDefaultMountUseRadial.Value)
             {
-                default:
-                case "Solid Manual":
-                case "Solid Corner":
-                    return ContentsManager.GetTexture(filename + ".png");
-
-                case "Transparent Manual":
-                case "Transparent Corner":
-                    return ContentsManager.GetTexture(filename + "-trans.png");
-
-                case "Solid Manual Text":
-                    return ContentsManager.GetTexture(filename + "-text.png");
+                if (e.Key == key)
+                {
+                    if(!_radial.Visible && e.EventType == KeyboardEventType.KeyDown)
+                    {
+                        Mouse.SetPosition(_radial.MiddleOfScreen.X, _radial.MiddleOfScreen.Y);
+                    }
+                    _radial.Visible = e.EventType == KeyboardEventType.KeyDown;
+                    if (!_radial.Visible)
+                    {
+                        _radial.TriggerSelectedMount();
+                    }
+                }
             }
         }
-
 
         private void DoDefaultMountAction()
         {
-            if (Array.Exists(warclawOnlyMaps, mapType => mapType == GameService.Gw2Mumble.CurrentMap.Type))
+            if (_settingDefaultMountUseRadial.Value)
             {
-                _mounts.Single(m => m.IsWvWMount).DoHotKey();
                 return;
             }
 
-            if (GameService.Gw2Mumble.PlayerCharacter.Position.Z <= 0)
-            {
-                _mounts.SingleOrDefault(m => m.IsWaterMount && m.Name == _settingDefaultWaterMountChoice.Value)?.DoHotKey();
-                return;
-            }
-
-            _mounts.SingleOrDefault(m => m.Name == _settingDefaultMountChoice.Value)?.DoHotKey();
+            _helper.GetDefaultMount()?.DoHotKey();
         }
 
 

@@ -181,6 +181,25 @@ namespace Manlaan.Mounts.Views
                 KeyBinding = Module._settingDefaultMountBinding.Value,
                 Location = new Point(settingDefaultMountKeybind_Label.Right + 5, settingDefaultMountKeybind_Label.Top - 1),
             };
+            Label settingDefaultMountUsesRadial_Label = new Label()
+            {
+                Location = new Point(0, settingDefaultMountKeybind_Label.Bottom + 6),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsLeftPanel,
+                Text = "Use Radial: ",
+            };
+            Checkbox settingDefaultMountUsesRadial_Checkbox = new Checkbox()
+            {
+                Size = new Point(bindingWidth, 20),
+                Parent = mountsLeftPanel,
+                Checked = Module._settingDefaultMountUseRadial.Value,
+                Location = new Point(settingDefaultMountUsesRadial_Label.Right + 5, settingDefaultMountUsesRadial_Label.Top - 1),
+            };
+            settingDefaultMountUsesRadial_Checkbox.CheckedChanged += delegate {
+                Module._settingDefaultMountUseRadial.Value = settingDefaultMountUsesRadial_Checkbox.Checked;
+            };
 
 
             #endregion
