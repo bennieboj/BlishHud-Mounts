@@ -287,7 +287,6 @@ namespace Manlaan.Mounts
             _radial?.Dispose();
             _radial = new DrawRadial(_helper);
             _radial.Parent = GameService.Graphics.SpriteScreen;
-            _radial?.Update();
         }
 
         private void HandleKeyBoardKeyChange(object sender, KeyboardEventArgs e)
@@ -297,15 +296,8 @@ namespace Manlaan.Mounts
             {
                 if (e.Key == key)
                 {
-                    if(!_radial.Visible && e.EventType == KeyboardEventType.KeyDown)
-                    {
-                        Mouse.SetPosition(_radial.MiddleOfScreen.X, _radial.MiddleOfScreen.Y);
-                    }
-                    _radial.Visible = e.EventType == KeyboardEventType.KeyDown;
-                    if (!_radial.Visible)
-                    {
-                        _radial.TriggerSelectedMount();
-                    }
+                    if (e.EventType == KeyboardEventType.KeyDown) _radial.Start();
+                    else if (e.EventType == KeyboardEventType.KeyUp) _radial.Stop();
                 }
             }
         }

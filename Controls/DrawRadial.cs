@@ -2,6 +2,7 @@
 using Blish_HUD.Controls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,31 +11,33 @@ namespace Manlaan.Mounts.Controls
 {
     internal class RadialMount
     {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public Texture Texture { get; set; }
+        public double AngleBegin { get; set; }
+        public double AngleEnd { get; set; }
         public Mount Mount { get; set; }
+        public Texture Texture { get; set; }
+        public int ImageX { get; set; }
+        public int ImageY { get; set; }
+        public bool Selected { get; set; }
+        public bool Default { get; internal set; }
     }
 
     internal class DrawRadial : Container
     {
-        List<RadialMount> RadialMounts;
         private readonly Helper _helper;
+        private List<RadialMount> RadialMounts = new List<RadialMount>();
+        private RadialMount SelectedMount => RadialMounts.SingleOrDefault(m => m.Selected);
 
         int radius = 0;
         int mountIconSize = 0;
         int _maxRadialSize = 0;
-        internal RadialMount SelectedMount;
 
-        public Point MiddleOfScreen { get; private set; }
+        private Point SpawnPoint = default;
 
         public DrawRadial(Helper helper)
         {
             Visible = false;
             Padding = Thickness.Zero;
             _helper = helper;
-            RadialMounts = new List<RadialMount>();
-            MiddleOfScreen = new Point(GameService.Graphics.WindowWidth / 2, GameService.Graphics.WindowHeight / 2);
         }
 
         protected override CaptureType CapturesInput()
@@ -42,45 +45,66 @@ namespace Manlaan.Mounts.Controls
             return CaptureType.Mouse;
         }
 
-        internal void Update()
+        public override void UpdateContainer(GameTime gameTime)
         {
-            RadialMounts.Clear();
-
-            var mounts = Module._availableOrderedMounts;
-            var defaultMount = _helper.GetDefaultMount();
-            if(defaultMount != null)
-            {
-                mounts.Remove(defaultMount);
-                var texture = _helper.GetImgFile(defaultMount.ImageFileName);
-                int loc = _maxRadialSize / 2 - radius;
-                RadialMounts.Add(new RadialMount { Texture = texture, Mount = defaultMount, X = loc, Y = loc });
-            }
-            double currentAngle = 0;
-            var partAngleStep = Math.PI * 2 / mounts.Count();
-            foreach (var mount in mounts)
-            {
-                var midAngle = currentAngle + partAngleStep / 2;
-                var texture = _helper.GetImgFile(mount.ImageFileName);
-
-                int x = (int)Math.Round(radius + radius * Math.Cos(midAngle));
-                int y = (int)Math.Round(radius + radius * Math.Sin(midAngle));
-                RadialMounts.Add(new RadialMount { Texture = texture, Mount = mount, X = x, Y = y });
-                currentAngle += partAngleStep;
-            }
         }
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds)
         {
             if(_maxRadialSize == 0)
             {
+                SpawnPoint = new Point(GameService.Graphics.SpriteScreen.Width / 2, GameService.Graphics.SpriteScreen.Height / 2);
                 _maxRadialSize = Math.Min(GameService.Graphics.SpriteScreen.Width, GameService.Graphics.SpriteScreen.Height);
                 radius = _maxRadialSize / 4;
                 mountIconSize = _maxRadialSize / 6;
-                Update();
                 Location = new Point(GameService.Graphics.SpriteScreen.Width / 2 - radius - mountIconSize / 2, GameService.Graphics.SpriteScreen.Height / 2 - radius - mountIconSize / 2);
                 Size = new Point(_maxRadialSize, _maxRadialSize);
             }
 
+            RadialMounts.Clear();
+            var mounts = Module._availableOrderedMounts;
+            var defaultMount = _helper.GetDefaultMount();
+            if (defaultMount != null)
+            {
+                mounts.Remove(defaultMount);
+                var texture = _helper.GetImgFile(defaultMount.ImageFileName);
+                int loc = _maxRadialSize / 2 - radius;
+                RadialMounts.Add(new RadialMount { Texture = texture, Mount = defaultMount, ImageX = loc, ImageY = loc, Default = true });
+            }
+            double currentAngle = 0;
+            var partAngleStep = Math.PI * 2 / mounts.Count();
+            foreach (var mount in mounts)
+            {
+                var angleMid = currentAngle + partAngleStep / 2;
+                var angleEnd = currentAngle + partAngleStep;
+                var texture = _helper.GetImgFile(mount.ImageFileName);
+
+                int x = (int)Math.Round(radius + radius * Math.Cos(angleMid));
+                int y = (int)Math.Round(radius + radius * Math.Sin(angleMid));
+                RadialMounts.Add(new RadialMount
+                {
+                    Texture = texture,
+                    Mount = mount,
+                    ImageX = x,
+                    ImageY = y,
+                    AngleBegin = currentAngle,
+                    AngleEnd = angleEnd
+                });
+                currentAngle = angleEnd;
+            }
+
+
+            var mousePos = Input.Mouse.Position;
+            var diff = mousePos - SpawnPoint;
+            var angle = Math.Atan2(diff.Y, diff.X);
+            if (angle < 0)
+            {
+                angle += Math.PI * 2;
+            }
+
+            var length = new Vector2(diff.Y, diff.X).Length();
+            
+            Children.Clear();
             foreach (var radialMount in RadialMounts)
             {
                 Image _btnMount = new Image
@@ -88,27 +112,42 @@ namespace Manlaan.Mounts.Controls
                     Parent = this,
                     Texture = (Blish_HUD.Content.AsyncTexture2D)radialMount.Texture,
                     Size = new Point(mountIconSize, mountIconSize),
-                    Location = new Point(radialMount.X, radialMount.Y),
+                    Location = new Point(radialMount.ImageX, radialMount.ImageY),
                     BasicTooltipText = radialMount.Mount.DisplayName
                 };
-                _btnMount.MouseEntered += delegate { _btnMount.BackgroundColor = Color.Red; SelectedMount = radialMount; SelectedMount = radialMount; };
-                _btnMount.MouseLeft += delegate { _btnMount.BackgroundColor = Color.Transparent; };
+
+                if(length < radius / 2)
+                {
+                    radialMount.Selected = radialMount.Default;
+                }
+                else
+                {
+                    radialMount.Selected = radialMount.AngleBegin <= angle && radialMount.AngleEnd > angle;
+                }
+
+                _btnMount.Opacity = radialMount.Selected ? 1f : 0.5f;
                 AddChild(_btnMount);
-
-                //spriteBatch.DrawOnCtrl(this,
-                //(Texture2D) radialMount.Texture,
-                //new Rectangle(radialMount.X, radialMount.Y, mountIconSize, mountIconSize),
-                //null,
-                //Color.White
-                //);
             }
-
         }
 
         public void TriggerSelectedMount()
         {
             SelectedMount?.Mount.DoHotKey();
-            SelectedMount = null;
+        }
+
+        internal void Start()
+        {
+            if (!Visible)
+            {
+                Mouse.SetPosition(GameService.Graphics.WindowWidth/2, GameService.Graphics.WindowHeight/2);
+            }
+            Visible = true;
+        }
+
+        internal void Stop()
+        {
+            TriggerSelectedMount();
+            Visible = false;
         }
     }
 }

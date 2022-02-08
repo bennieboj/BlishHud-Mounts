@@ -1,11 +1,11 @@
 {
   "name": "Mounts",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
 
-  "description": "Mount icons",
+  "description": "Mount icons + radial",
   "dependencies": {
     "bh.blishhud": ">=0.11.4"
   },
