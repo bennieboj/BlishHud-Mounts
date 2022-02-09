@@ -317,7 +317,7 @@ namespace Manlaan.Mounts
         {
             if (!e.Value)
             {
-                _mounts.Single(m => m.IsQueuing).DoHotKey();
+                _mounts.SingleOrDefault(m => m.IsQueuing)?.DoHotKey();
             }
         }
     }
