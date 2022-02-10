@@ -51,16 +51,6 @@ namespace Manlaan.Mounts.Controls
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds)
         {
-            if(_maxRadialSize == 0)
-            {
-                SpawnPoint = new Point(GameService.Graphics.SpriteScreen.Width / 2, GameService.Graphics.SpriteScreen.Height / 2);
-                _maxRadialSize = Math.Min(GameService.Graphics.SpriteScreen.Width, GameService.Graphics.SpriteScreen.Height);
-                radius = _maxRadialSize / 4;
-                mountIconSize = _maxRadialSize / 6;
-                Location = new Point(GameService.Graphics.SpriteScreen.Width / 2 - radius - mountIconSize / 2, GameService.Graphics.SpriteScreen.Height / 2 - radius - mountIconSize / 2);
-                Size = new Point(_maxRadialSize, _maxRadialSize);
-            }
-
             RadialMounts.Clear();
             var mounts = Module._availableOrderedMounts;
             var defaultMount = _helper.GetDefaultMount();
@@ -139,7 +129,22 @@ namespace Manlaan.Mounts.Controls
         {
             if (!Visible)
             {
-                Mouse.SetPosition(GameService.Graphics.WindowWidth/2, GameService.Graphics.WindowHeight/2);
+                _maxRadialSize = Math.Min(GameService.Graphics.SpriteScreen.Width, GameService.Graphics.SpriteScreen.Height);
+                radius = _maxRadialSize / 4;
+                mountIconSize = _maxRadialSize / 6;
+                Size = new Point(_maxRadialSize, _maxRadialSize);
+
+                if (Module._settingMountRadialSpawnAtMouse.Value)
+                {
+                    SpawnPoint = Input.Mouse.Position;
+                }
+                else
+                {
+                    Mouse.SetPosition(GameService.Graphics.WindowWidth / 2, GameService.Graphics.WindowHeight / 2);
+                    SpawnPoint = new Point(GameService.Graphics.SpriteScreen.Width / 2, GameService.Graphics.SpriteScreen.Height / 2);
+                }
+
+                Location = new Point(SpawnPoint.X - radius - mountIconSize / 2, SpawnPoint.Y - radius - mountIconSize / 2);
             }
             Visible = true;
         }

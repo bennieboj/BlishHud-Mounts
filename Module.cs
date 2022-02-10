@@ -43,6 +43,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<string> _settingDefaultWaterMountChoice;
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
         public static SettingEntry<bool> _settingDefaultMountUseRadial;
+        public static SettingEntry<bool> _settingMountRadialSpawnAtMouse;
         public static SettingEntry<string> _settingDisplay;
         public static SettingEntry<string> _settingOrientation;
         private SettingEntry<Point> _settingLoc;
@@ -87,6 +88,7 @@ namespace Manlaan.Mounts
             _settingDefaultWaterMountChoice = settings.DefineSetting("DefaultWaterMountChoice", "Disabled", "Default Water Mount Choice", "");
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), "Default Mount Binding", "");
             _settingDefaultMountUseRadial = settings.DefineSetting("DefaultMountUseRadial", false, "Default Mount uses radial", "");
+            _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, "Radial spawn at mouse", "");
 
             _settingDisplay = settings.DefineSetting("MountDisplay", "Transparent Corner", "Display Type", "");
             _settingOrientation = settings.DefineSetting("Orientation", "Horizontal", "Manual Orientation", "");

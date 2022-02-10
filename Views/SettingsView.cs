@@ -200,6 +200,25 @@ namespace Manlaan.Mounts.Views
             settingDefaultMountUsesRadial_Checkbox.CheckedChanged += delegate {
                 Module._settingDefaultMountUseRadial.Value = settingDefaultMountUsesRadial_Checkbox.Checked;
             };
+            Label settingMountRadialSpawnAtMouse_Label = new Label()
+            {
+                Location = new Point(0, settingDefaultMountUsesRadial_Label.Bottom + 6),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsLeftPanel,
+                Text = "Spawn Radial at mouse: ",
+            };
+            Checkbox settingMountRadialSpawnAtMouse_Checkbox = new Checkbox()
+            {
+                Size = new Point(bindingWidth, 20),
+                Parent = mountsLeftPanel,
+                Checked = Module._settingMountRadialSpawnAtMouse.Value,
+                Location = new Point(settingMountRadialSpawnAtMouse_Label.Right + 5, settingMountRadialSpawnAtMouse_Label.Top - 1),
+            };
+            settingMountRadialSpawnAtMouse_Checkbox.CheckedChanged += delegate {
+                Module._settingMountRadialSpawnAtMouse.Value = settingMountRadialSpawnAtMouse_Checkbox.Checked;
+            };
 
 
             #endregion
