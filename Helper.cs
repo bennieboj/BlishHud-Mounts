@@ -31,15 +31,13 @@ namespace Manlaan.Mounts
             switch (Module._settingDisplay.Value)
             {
                 default:
-                case "Solid Manual":
-                case "Solid Corner":
+                case "Solid":
                     return contentsManager.GetTexture(filename + ".png");
 
-                case "Transparent Manual":
-                case "Transparent Corner":
+                case "Transparent":
                     return contentsManager.GetTexture(filename + "-trans.png");
 
-                case "Solid Manual Text":
+                case "SolidText":
                     return contentsManager.GetTexture(filename + "-text.png");
             }
         }

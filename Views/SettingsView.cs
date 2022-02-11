@@ -33,12 +33,9 @@ namespace Manlaan.Mounts.Views
                 Parent = buildPanel,
                 HeightSizingMode = SizingMode.AutoSize,
                 Width = 330,
-                Location = new Point(mountsLeftPanel.Right + 20, 63),
+                Location = new Point(mountsLeftPanel.Right + 20, 93),
             };
-            if (Module._settingDisplay.Value.Equals("Transparent Manual") || Module._settingDisplay.Value.Equals("Solid Manual") || Module._settingDisplay.Value.Equals("Solid Manual Text")) 
-                manualPanel.Show();
-            else 
-                manualPanel.Hide();
+            DisplayManualPanelIfNeeded(manualPanel);
 
             #region Mounts Panel
             Label settingOrderLeft_Label = new Label() {
@@ -243,10 +240,46 @@ namespace Manlaan.Mounts.Views
             settingDisplay_Select.SelectedItem = Module._settingDisplay.Value;
             settingDisplay_Select.ValueChanged += delegate {
                 Module._settingDisplay.Value = settingDisplay_Select.SelectedItem;
-                if (settingDisplay_Select.SelectedItem.Equals("Transparent Manual") || settingDisplay_Select.SelectedItem.Equals("Solid Manual") || settingDisplay_Select.SelectedItem.Equals("Solid Manual Text"))
-                    manualPanel.Show();
-                else
-                    manualPanel.Hide();
+            };
+            Label settingDisplayCornerIcons_Label = new Label()
+            {
+                Location = new Point(0, settingDisplay_Label.Bottom + 6),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = otherPanel,
+                Text = "Display Corner Icons: ",
+            };
+            Checkbox settingDisplayCornerIcons_Checkbox = new Checkbox()
+            {
+                Size = new Point(bindingWidth, 20),
+                Parent = otherPanel,
+                Checked = Module._settingDisplayCornerIcons.Value,
+                Location = new Point(settingDisplayCornerIcons_Label.Right + 5, settingDisplayCornerIcons_Label.Top - 1),
+            };
+            settingDisplayCornerIcons_Checkbox.CheckedChanged += delegate {
+                Module._settingDisplayCornerIcons.Value = settingDisplayCornerIcons_Checkbox.Checked;
+            };
+            Label settingDisplayManualIcons_Label = new Label()
+            {
+                Location = new Point(0, settingDisplayCornerIcons_Label.Bottom + 6),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = otherPanel,
+                Text = "Display Manual Icons: ",
+            };
+            Checkbox settingDisplayManualIcons_Checkbox = new Checkbox()
+            {
+                Size = new Point(bindingWidth, 20),
+                Parent = otherPanel,
+                Checked = Module._settingDisplayManualIcons.Value,
+                Location = new Point(settingDisplayManualIcons_Label.Right + 5, settingDisplayManualIcons_Label.Top - 1),
+            };
+            settingDisplayManualIcons_Checkbox.CheckedChanged += delegate
+            {
+                Module._settingDisplayManualIcons.Value = settingDisplayManualIcons_Checkbox.Checked;
+                DisplayManualPanelIfNeeded(manualPanel);
             };
             #endregion
 
@@ -326,6 +359,14 @@ namespace Manlaan.Mounts.Views
             };
             settingClockDrag_Container.Show(settingClockDrag_View);
             #endregion
+        }
+
+        private static void DisplayManualPanelIfNeeded(Panel manualPanel)
+        {
+            if (Module._settingDisplayManualIcons.Value)
+                manualPanel.Show();
+            else
+                manualPanel.Hide();
         }
     }
 }

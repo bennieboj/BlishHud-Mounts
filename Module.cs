@@ -35,7 +35,7 @@ namespace Manlaan.Mounts
         internal static List<Mount> _availableOrderedMounts => _mounts.Where(m => m.OrderSetting.Value != 0).OrderBy(m => m.OrderSetting.Value).ToList();
 
         public static int[] _mountOrder = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        public static string[] _mountDisplay = new string[] { "Transparent Corner", "Solid Corner", "Transparent Manual", "Solid Manual", "Solid Manual Text" };
+        public static string[] _mountDisplay = new string[] { "Transparent", "Solid", "SolidText" };
         public static string[] _mountOrientation = new string[] { "Horizontal", "Vertical" };
         public static SettingEntry<KeyBinding> InputQueuingKeybindSetting = null;
 
@@ -45,6 +45,8 @@ namespace Manlaan.Mounts
         public static SettingEntry<bool> _settingDefaultMountUseRadial;
         public static SettingEntry<bool> _settingMountRadialSpawnAtMouse;
         public static SettingEntry<string> _settingDisplay;
+        public static SettingEntry<bool> _settingDisplayCornerIcons;
+        public static SettingEntry<bool> _settingDisplayManualIcons;
         public static SettingEntry<string> _settingOrientation;
         private SettingEntry<Point> _settingLoc;
         public static SettingEntry<bool> _settingDrag;
@@ -69,6 +71,34 @@ namespace Manlaan.Mounts
             _helper = new Helper(ContentsManager);
         }
 
+
+        /*
+         * Migrate from seperate settings from MountDisplay
+         * MountDisplay => "Transparent", "Solid", "SolidText"
+         *
+         */
+        private void MigrateDisplaySettings()
+        {
+            if (_settingDisplay.Value.Contains("Corner") || _settingDisplay.Value.Contains("Manual"))
+            {
+                _settingDisplayCornerIcons.Value = _settingDisplay.Value.Contains("Corner");
+                _settingDisplayManualIcons.Value = _settingDisplay.Value.Contains("Solid");
+
+                if (_settingDisplay.Value.Contains("Text"))
+                {
+                    _settingDisplay.Value = "SolidText";
+                }
+                else if (_settingDisplay.Value.Contains("Solid"))
+                {
+                    _settingDisplay.Value = "Solid";
+                }
+                else if (_settingDisplay.Value.Contains("Transparent"))
+                {
+                    _settingDisplay.Value = "Transparent";
+                }
+            }
+        }
+
         protected override void DefineSettings(SettingCollection settings)
         {
             _mounts = new Collection<Mount>
@@ -90,12 +120,16 @@ namespace Manlaan.Mounts
             _settingDefaultMountUseRadial = settings.DefineSetting("DefaultMountUseRadial", false, "Default Mount uses radial", "");
             _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, "Radial spawn at mouse", "");
 
-            _settingDisplay = settings.DefineSetting("MountDisplay", "Transparent Corner", "Display Type", "");
+            _settingDisplay = settings.DefineSetting("MountDisplay", "Transparent", "Display Type", "");
+            _settingDisplayCornerIcons = settings.DefineSetting("MountDisplayCornerIcons", false, "Display corner icons", "");
+            _settingDisplayManualIcons = settings.DefineSetting("MountDisplayManualIcons", false, "Display manual icons", "");
             _settingOrientation = settings.DefineSetting("Orientation", "Horizontal", "Manual Orientation", "");
             _settingLoc = settings.DefineSetting("MountLoc", new Point(100, 100), "Window Location", "");
             _settingDrag = settings.DefineSetting("MountDrag", false, "Enable Dragging (White Box)", "");
             _settingImgWidth = settings.DefineSetting("MountImgWidth", 50, "Manual Icon Width", "");
             _settingOpacity = settings.DefineSetting("MountOpacity", 1.0f, "Manual Opacity", "");
+
+            MigrateDisplaySettings();
 
             _settingImgWidth.SetRange(0, 200);
             _settingOpacity.SetRange(0f, 1f);
@@ -112,6 +146,8 @@ namespace Manlaan.Mounts
             _settingDefaultMountUseRadial.SettingChanged += UpdateSettings;
 
             _settingDisplay.SettingChanged += UpdateSettings;
+            _settingDisplayCornerIcons.SettingChanged += UpdateSettings;
+            _settingDisplayManualIcons.SettingChanged += UpdateSettings;
             _settingOrientation.SettingChanged += UpdateSettings;
             _settingLoc.SettingChanged += UpdateSettings;
             _settingDrag.SettingChanged += UpdateSettings;
@@ -175,6 +211,8 @@ namespace Manlaan.Mounts
             _settingDefaultMountUseRadial.SettingChanged -= UpdateSettings;
 
             _settingDisplay.SettingChanged -= UpdateSettings;
+            _settingDisplayCornerIcons.SettingChanged -= UpdateSettings;
+            _settingDisplayManualIcons.SettingChanged -= UpdateSettings;
             _settingOrientation.SettingChanged -= UpdateSettings;
             _settingLoc.SettingChanged -= UpdateSettings;
             _settingDrag.SettingChanged -= UpdateSettings;
@@ -281,9 +319,9 @@ namespace Manlaan.Mounts
                 mount.DisposeCornerIcon();
             }
 
-            if (_settingDisplay.Value.Equals("Solid Corner") || _settingDisplay.Value.Equals("Transparent Corner"))
+            if (_settingDisplayCornerIcons.Value)
                 DrawCornerIcons();
-            else
+            if (_settingDisplayManualIcons.Value)
                 DrawManualIcons();
 
             _radial?.Dispose();
