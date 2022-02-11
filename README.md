@@ -2,4 +2,5 @@ Add icons to the screen to mount on the clicked upon mount.  Several options for
 
 
 ## Credits
-- Ghost for the new mount art (taken from https://github.com/Friendly0Fire/GW2Radial/blob/master/readme.md with FriendlyFire's permission.)
+- Ghost for the transparant mount art for Raptor, Springer, Skimmer, Jackal, Griffon, Roller Beetle, Skyscale and Warclaw (taken from https://github.com/Friendly0Fire/GW2Radial/blob/master/readme.md with FriendlyFire's permission.)
+- Vixen for the transparant mount art for Siege Turtle.
