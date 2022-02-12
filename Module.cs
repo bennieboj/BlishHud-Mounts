@@ -155,8 +155,9 @@ namespace Manlaan.Mounts
             _settingOpacity.SettingChanged += UpdateSettings;
 
         }
-        public override IView GetSettingsView() {
-            return new Mounts.Views.SettingsView();
+        public override IView GetSettingsView()
+        {
+            return new Views.DummySettingsView();
         }
 
         protected override async Task LoadAsync()
@@ -167,6 +168,7 @@ namespace Manlaan.Mounts
         protected override void OnModuleLoaded(EventArgs e)
         {
             DrawIcons();
+            GameService.Overlay.BlishHudWindow.AddTab("Mounts", this.ContentsManager.GetTexture("jackal.png"), () => new Views.SettingsView());
 
             // Base handler must be called
             base.OnModuleLoaded(e);

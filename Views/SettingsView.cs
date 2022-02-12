@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Blish_HUD.Settings.UI.Views;
 using Blish_HUD.Graphics.UI;
-using System;
 using System.Linq;
 
 namespace Manlaan.Mounts.Views
@@ -104,7 +103,7 @@ namespace Manlaan.Mounts.Views
 
             Label settingDefaultSettingsMount_Label = new Label()
             {
-                Location = new Point(0, curY + 12),
+                Location = new Point(0, curY + 24),
                 Width = bindingWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -178,9 +177,18 @@ namespace Manlaan.Mounts.Views
                 KeyBinding = Module._settingDefaultMountBinding.Value,
                 Location = new Point(settingDefaultMountKeybind_Label.Right + 5, settingDefaultMountKeybind_Label.Top - 1),
             };
+            Label settingMountRadialSettingsMount_Label = new Label()
+            {
+                Location = new Point(0, settingDefaultMountKeybind_Label.Bottom + 24),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsLeftPanel,
+                Text = "Radial settings: ",
+            };
             Label settingDefaultMountUsesRadial_Label = new Label()
             {
-                Location = new Point(0, settingDefaultMountKeybind_Label.Bottom + 6),
+                Location = new Point(0, settingMountRadialSettingsMount_Label.Bottom + 6),
                 Width = bindingWidth,
                 AutoSizeHeight = false,
                 WrapText = false,

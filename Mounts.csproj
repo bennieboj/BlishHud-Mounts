@@ -132,6 +132,7 @@
     <Compile Include="Helper.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Mounts\Mount.cs" />
+    <Compile Include="Views\DummySettingsView.cs" />
     <Compile Include="Views\SettingsView.cs" />
   </ItemGroup>
   <ItemGroup>
