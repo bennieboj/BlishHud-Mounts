@@ -177,9 +177,28 @@ namespace Manlaan.Mounts.Views
                 KeyBinding = Module._settingDefaultMountBinding.Value,
                 Location = new Point(settingDefaultMountKeybind_Label.Right + 5, settingDefaultMountKeybind_Label.Top - 1),
             };
+            Label settingDisplayMountQueueing_Label = new Label()
+            {
+                Location = new Point(0, settingDefaultMountKeybind_Label.Bottom + 6),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsLeftPanel,
+                Text = "Display Mount Queueing: ",
+            };
+            Checkbox settingDisplayMountQueueing_Checkbox = new Checkbox()
+            {
+                Size = new Point(bindingWidth, 20),
+                Parent = mountsLeftPanel,
+                Checked = Module._settingDisplayMountQueueing.Value,
+                Location = new Point(settingDisplayMountQueueing_Label.Right + 5, settingDisplayMountQueueing_Label.Top - 1),
+            };
+            settingDisplayMountQueueing_Checkbox.CheckedChanged += delegate {
+                Module._settingDisplayMountQueueing.Value = settingDisplayMountQueueing_Checkbox.Checked;
+            };
             Label settingMountRadialSettingsMount_Label = new Label()
             {
-                Location = new Point(0, settingDefaultMountKeybind_Label.Bottom + 24),
+                Location = new Point(0, settingDisplayMountQueueing_Label.Bottom + 24),
                 Width = bindingWidth,
                 AutoSizeHeight = false,
                 WrapText = false,

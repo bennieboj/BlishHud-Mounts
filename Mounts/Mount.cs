@@ -28,7 +28,7 @@ namespace Manlaan.Mounts
         public string DisplayName { get; private set; }
         public string ImageFileName { get; private set; }
         public bool IsDisabled { get; private set; }
-        public bool IsQueuing { get; private set; }
+        public DateTime? QueuedTimestamp { get; internal set; }
         public bool IsWaterMount { get; private set; }
         public bool IsWvWMount { get; private set; }
 
@@ -37,16 +37,13 @@ namespace Manlaan.Mounts
         public SettingEntry<KeyBinding> KeybindingSetting { get; private set; }
         public CornerIcon CornerIcon { get; private set; }
 
-
         public void DoHotKey()
         {
             if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat)
             {
-                IsQueuing = true;
+                QueuedTimestamp = DateTime.UtcNow;
                 return;
             }
-
-            IsQueuing = false;
 
             if (KeybindingSetting.Value.ModifierKeys != ModifierKeys.None)
             {

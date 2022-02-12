@@ -42,6 +42,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<string> _settingDefaultMountChoice;
         public static SettingEntry<string> _settingDefaultWaterMountChoice;
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
+        public static SettingEntry<bool> _settingDisplayMountQueueing;
         public static SettingEntry<bool> _settingDefaultMountUseRadial;
         public static SettingEntry<bool> _settingMountRadialSpawnAtMouse;
         public static SettingEntry<float> _settingMountRadialRadiusModifier;
@@ -57,6 +58,7 @@ namespace Manlaan.Mounts
 
         private Panel _mountPanel;
         private DrawRadial _radial;
+        private LoadingSpinner _queueingSpinner;
         private Helper _helper;
 
         private bool _dragging;
@@ -121,6 +123,7 @@ namespace Manlaan.Mounts
             _settingDefaultMountBinding.Value.Activated += delegate { DoDefaultMountAction(); };
             _settingDefaultMountChoice = settings.DefineSetting("DefaultMountChoice", "Disabled", "Default Mount Choice", "");
             _settingDefaultWaterMountChoice = settings.DefineSetting("DefaultWaterMountChoice", "Disabled", "Default Water Mount Choice", "");
+            _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false, "Display Mount queuing", "");
             _settingDefaultMountUseRadial = settings.DefineSetting("DefaultMountUseRadial", false, "Default Mount uses radial", "");
             _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, "Radial spawn at mouse", "");
             _settingMountRadialIconSizeModifier = settings.DefineSetting("MountRadialIconSizeModifier", 1.0f, "Radial Icon Size", "");
@@ -150,6 +153,7 @@ namespace Manlaan.Mounts
             _settingDefaultMountBinding.SettingChanged += UpdateSettings;
             _settingDefaultMountChoice.SettingChanged += UpdateSettings;
             _settingDefaultWaterMountChoice.SettingChanged += UpdateSettings;
+            _settingDisplayMountQueueing.SettingChanged += UpdateSettings;
             _settingDefaultMountUseRadial.SettingChanged += UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged += UpdateSettings;
@@ -177,7 +181,7 @@ namespace Manlaan.Mounts
 
         protected override void OnModuleLoaded(EventArgs e)
         {
-            DrawIcons();
+            DrawUI();
             GameService.Overlay.BlishHudWindow.AddTab("Mounts", this.ContentsManager.GetTexture("jackal.png"), () => new Views.SettingsView());
 
             // Base handler must be called
@@ -204,6 +208,11 @@ namespace Manlaan.Mounts
                     _dragStart = InputService.Input.Mouse.Position;
                 }
             }
+
+            if(_settingDisplayMountQueueing.Value && _mounts.Any(m => m.QueuedTimestamp != null))
+            {
+                _queueingSpinner?.Show();
+            }
         }
 
         /// <inheritdoc />
@@ -222,6 +231,7 @@ namespace Manlaan.Mounts
             _settingDefaultMountBinding.SettingChanged -= UpdateSettings;
             _settingDefaultMountChoice.SettingChanged -= UpdateSettings;
             _settingDefaultWaterMountChoice.SettingChanged -= UpdateSettings;
+            _settingDisplayMountQueueing.SettingChanged -= UpdateSettings;
             _settingDefaultMountUseRadial.SettingChanged -= UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged += UpdateSettings;
@@ -239,24 +249,24 @@ namespace Manlaan.Mounts
         }
 
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<string> e = null) {
-            DrawIcons();
+            DrawUI();
         }
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<KeyBinding> e = null) {
-            DrawIcons();
+            DrawUI();
         }
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<Point> e = null) {
-            DrawIcons();
+            DrawUI();
         }
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<bool> e = null) {
-            DrawIcons();
+            DrawUI();
         }
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<float> e = null)
         {
-            DrawIcons();
+            DrawUI();
         }
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<int> e = null)
         {
-            DrawIcons();
+            DrawUI();
         }
 
         internal void DrawManualIcons() {
@@ -328,7 +338,7 @@ namespace Manlaan.Mounts
 
         }
 
-        private void DrawIcons()
+        private void DrawUI()
         {
             _mountPanel?.Dispose();
             foreach (Mount mount in _mounts)
@@ -340,6 +350,12 @@ namespace Manlaan.Mounts
                 DrawCornerIcons();
             if (_settingDisplayManualIcons.Value)
                 DrawManualIcons();
+
+            _queueingSpinner?.Dispose();
+            _queueingSpinner = new LoadingSpinner();
+            _queueingSpinner.Location = new Point(GameService.Graphics.SpriteScreen.Width / 2 + 400, GameService.Graphics.SpriteScreen.Height - _queueingSpinner.Height - 25);
+            _queueingSpinner.Parent = GameService.Graphics.SpriteScreen;
+            _queueingSpinner.Hide();
 
             _radial?.Dispose();
             _radial = new DrawRadial(_helper);
@@ -368,13 +384,17 @@ namespace Manlaan.Mounts
 
             _helper.GetDefaultMount()?.DoHotKey();
         }
-
-
+        
         private void HandleCombatChange(object sender, ValueEventArgs<bool> e)
         {
             if (!e.Value)
             {
-                _mounts.SingleOrDefault(m => m.IsQueuing)?.DoHotKey();
+                _mounts.OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault()?.DoHotKey();
+                foreach (var mount in _mounts)
+                {
+                    mount.QueuedTimestamp = null;
+                }
+                _queueingSpinner?.Hide();
             }
         }
     }
