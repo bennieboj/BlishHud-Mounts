@@ -44,6 +44,8 @@ namespace Manlaan.Mounts
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
         public static SettingEntry<bool> _settingDefaultMountUseRadial;
         public static SettingEntry<bool> _settingMountRadialSpawnAtMouse;
+        public static SettingEntry<float> _settingMountRadialRadiusModifier;
+        public static SettingEntry<float> _settingMountRadialIconSizeModifier;
         public static SettingEntry<string> _settingDisplay;
         public static SettingEntry<bool> _settingDisplayCornerIcons;
         public static SettingEntry<bool> _settingDisplayManualIcons;
@@ -114,11 +116,18 @@ namespace Manlaan.Mounts
                 new SiegeTurtle(settings)
             };
 
+            _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), "Default Mount Binding", "");
+            _settingDefaultMountBinding.Value.Enabled = true;
+            _settingDefaultMountBinding.Value.Activated += delegate { DoDefaultMountAction(); };
             _settingDefaultMountChoice = settings.DefineSetting("DefaultMountChoice", "Disabled", "Default Mount Choice", "");
             _settingDefaultWaterMountChoice = settings.DefineSetting("DefaultWaterMountChoice", "Disabled", "Default Water Mount Choice", "");
-            _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), "Default Mount Binding", "");
             _settingDefaultMountUseRadial = settings.DefineSetting("DefaultMountUseRadial", false, "Default Mount uses radial", "");
             _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, "Radial spawn at mouse", "");
+            _settingMountRadialIconSizeModifier = settings.DefineSetting("MountRadialIconSizeModifier", 1.0f, "Radial Icon Size", "");
+            _settingMountRadialIconSizeModifier.SetRange(0.05f, 1f);
+            _settingMountRadialRadiusModifier = settings.DefineSetting("MountRadialRadiusModifier", 1.0f, "Radial radius", "");
+            _settingMountRadialRadiusModifier.SetRange(0.2f, 1f);
+
 
             _settingDisplay = settings.DefineSetting("MountDisplay", "Transparent", "Display Type", "");
             _settingDisplayCornerIcons = settings.DefineSetting("MountDisplayCornerIcons", false, "Display corner icons", "");
@@ -127,12 +136,11 @@ namespace Manlaan.Mounts
             _settingLoc = settings.DefineSetting("MountLoc", new Point(100, 100), "Window Location", "");
             _settingDrag = settings.DefineSetting("MountDrag", false, "Enable Dragging (White Box)", "");
             _settingImgWidth = settings.DefineSetting("MountImgWidth", 50, "Manual Icon Width", "");
+            _settingImgWidth.SetRange(0, 200);
             _settingOpacity = settings.DefineSetting("MountOpacity", 1.0f, "Manual Opacity", "");
+            _settingOpacity.SetRange(0f, 1f);
 
             MigrateDisplaySettings();
-
-            _settingImgWidth.SetRange(0, 200);
-            _settingOpacity.SetRange(0f, 1f);
 
             foreach (Mount m in _mounts)
             {
@@ -140,10 +148,12 @@ namespace Manlaan.Mounts
                 m.KeybindingSetting.SettingChanged += UpdateSettings;
             }
             _settingDefaultMountBinding.SettingChanged += UpdateSettings;
-            _settingDefaultMountBinding.Value.Enabled = true;
-            _settingDefaultMountBinding.Value.Activated += delegate { DoDefaultMountAction(); };
+            _settingDefaultMountChoice.SettingChanged += UpdateSettings;
             _settingDefaultWaterMountChoice.SettingChanged += UpdateSettings;
             _settingDefaultMountUseRadial.SettingChanged += UpdateSettings;
+            _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
+            _settingMountRadialIconSizeModifier.SettingChanged += UpdateSettings;
+            _settingMountRadialRadiusModifier.SettingChanged += UpdateSettings;
 
             _settingDisplay.SettingChanged += UpdateSettings;
             _settingDisplayCornerIcons.SettingChanged += UpdateSettings;
@@ -210,7 +220,12 @@ namespace Manlaan.Mounts
             }
 
             _settingDefaultMountBinding.SettingChanged -= UpdateSettings;
+            _settingDefaultMountChoice.SettingChanged -= UpdateSettings;
+            _settingDefaultWaterMountChoice.SettingChanged -= UpdateSettings;
             _settingDefaultMountUseRadial.SettingChanged -= UpdateSettings;
+            _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
+            _settingMountRadialIconSizeModifier.SettingChanged += UpdateSettings;
+            _settingMountRadialRadiusModifier.SettingChanged += UpdateSettings;
 
             _settingDisplay.SettingChanged -= UpdateSettings;
             _settingDisplayCornerIcons.SettingChanged -= UpdateSettings;

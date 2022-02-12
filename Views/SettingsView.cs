@@ -224,6 +224,44 @@ namespace Manlaan.Mounts.Views
             settingMountRadialSpawnAtMouse_Checkbox.CheckedChanged += delegate {
                 Module._settingMountRadialSpawnAtMouse.Value = settingMountRadialSpawnAtMouse_Checkbox.Checked;
             };
+            Label settingMountRadialRadiusModifier_Label = new Label()
+            {
+                Location = new Point(0, settingMountRadialSpawnAtMouse_Label.Bottom + 6),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsLeftPanel,
+                Text = "Radial radius: ",
+            };
+            TrackBar settingMountRadialRadiusModifier_Slider = new TrackBar()
+            {
+                Location = new Point(settingMountRadialRadiusModifier_Label.Right + 5, settingMountRadialRadiusModifier_Label.Top),
+                Width = 120,
+                MaxValue = 100,
+                MinValue = 20,
+                Value = Module._settingMountRadialRadiusModifier.Value * 100,
+                Parent = mountsLeftPanel,
+            };
+            settingMountRadialRadiusModifier_Slider.ValueChanged += delegate { Module._settingMountRadialRadiusModifier.Value = settingMountRadialRadiusModifier_Slider.Value / 100; };
+            Label settingMountRadialIconSizeModifier_Label = new Label()
+            {
+                Location = new Point(0, settingMountRadialRadiusModifier_Label.Bottom + 6),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsLeftPanel,
+                Text = "Radial icon size: ",
+            };
+            TrackBar settingMountRadialIconSizeModifier_Slider = new TrackBar()
+            {
+                Location = new Point(settingMountRadialIconSizeModifier_Label.Right + 5, settingMountRadialIconSizeModifier_Label.Top),
+                Width = 120,
+                MaxValue = 100,
+                MinValue = 5,
+                Value = Module._settingMountRadialIconSizeModifier.Value * 100,
+                Parent = mountsLeftPanel,
+            };
+            settingMountRadialIconSizeModifier_Slider.ValueChanged += delegate { Module._settingMountRadialIconSizeModifier.Value = settingMountRadialIconSizeModifier_Slider.Value / 100; };
 
 
             #endregion

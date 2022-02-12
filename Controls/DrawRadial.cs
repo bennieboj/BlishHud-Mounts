@@ -29,7 +29,7 @@ namespace Manlaan.Mounts.Controls
 
         int radius = 0;
         int mountIconSize = 0;
-        int _maxRadialSize = 0;
+        int _maxRadialDiameter = 0;
 
         private Point SpawnPoint = default;
 
@@ -58,7 +58,7 @@ namespace Manlaan.Mounts.Controls
             {
                 mounts.Remove(defaultMount);
                 var texture = _helper.GetImgFile(defaultMount.ImageFileName);
-                int loc = _maxRadialSize / 2 - radius;
+                int loc = radius;
                 RadialMounts.Add(new RadialMount { Texture = texture, Mount = defaultMount, ImageX = loc, ImageY = loc, Default = true });
             }
             double currentAngle = 0;
@@ -106,7 +106,7 @@ namespace Manlaan.Mounts.Controls
                     BasicTooltipText = radialMount.Mount.DisplayName
                 };
 
-                if(length < radius / 2)
+                if(length < mountIconSize*Math.Sqrt(2)/2)
                 {
                     radialMount.Selected = radialMount.Default;
                 }
@@ -129,10 +129,10 @@ namespace Manlaan.Mounts.Controls
         {
             if (!Visible)
             {
-                _maxRadialSize = Math.Min(GameService.Graphics.SpriteScreen.Width, GameService.Graphics.SpriteScreen.Height);
-                radius = _maxRadialSize / 4;
-                mountIconSize = _maxRadialSize / 6;
-                Size = new Point(_maxRadialSize, _maxRadialSize);
+                _maxRadialDiameter = Math.Min(GameService.Graphics.SpriteScreen.Width, GameService.Graphics.SpriteScreen.Height);
+                mountIconSize = (int)(_maxRadialDiameter / 4 * Module._settingMountRadialIconSizeModifier.Value);
+                radius = (int)((_maxRadialDiameter / 2 - mountIconSize / 2) * Module._settingMountRadialRadiusModifier.Value);
+                Size = new Point(_maxRadialDiameter, _maxRadialDiameter);
 
                 if (Module._settingMountRadialSpawnAtMouse.Value)
                 {
@@ -144,7 +144,7 @@ namespace Manlaan.Mounts.Controls
                     SpawnPoint = new Point(GameService.Graphics.SpriteScreen.Width / 2, GameService.Graphics.SpriteScreen.Height / 2);
                 }
 
-                Location = new Point(SpawnPoint.X - radius - mountIconSize / 2, SpawnPoint.Y - radius - mountIconSize / 2);
+                Location = new Point(SpawnPoint.X - radius - mountIconSize/2, SpawnPoint.Y - radius - mountIconSize/2);
             }
             Visible = true;
         }
