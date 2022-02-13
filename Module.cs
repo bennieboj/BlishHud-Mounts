@@ -171,7 +171,7 @@ namespace Manlaan.Mounts
         }
         public override IView GetSettingsView()
         {
-            return new Views.DummySettingsView();
+            return new Views.DummySettingsView(ContentsManager);
         }
 
         protected override async Task LoadAsync()
@@ -182,7 +182,7 @@ namespace Manlaan.Mounts
         protected override void OnModuleLoaded(EventArgs e)
         {
             DrawUI();
-            GameService.Overlay.BlishHudWindow.AddTab("Mounts", this.ContentsManager.GetTexture("jackal.png"), () => new Views.SettingsView());
+            GameService.Overlay.BlishHudWindow.AddTab("Mounts", this.ContentsManager.GetTexture("514394.png"), () => new Views.SettingsView());
 
             // Base handler must be called
             base.OnModuleLoaded(e);
