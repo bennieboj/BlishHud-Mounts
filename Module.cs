@@ -389,7 +389,7 @@ namespace Manlaan.Mounts
         {
             if (!e.Value)
             {
-                _mounts.OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault()?.DoHotKey();
+                _mounts.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault()?.DoHotKey();
                 foreach (var mount in _mounts)
                 {
                     mount.QueuedTimestamp = null;
