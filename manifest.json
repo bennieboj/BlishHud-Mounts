@@ -1,6 +1,6 @@
 {
   "name": "Mounts",
-  "version": "1.2.4",
+  "version": "1.2.6",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -23,6 +23,9 @@
 }
 /*
     "changelog": {
+        "1.2.6": "2022-02-14: Made settings icon grey + fix bug with mount queuring",
+        "1.2.5": "2022-02-11: Added customizations, moved settings",
+        "1.2.4": "2022-02-09: Add radial",
         "1.2.3": "2022-02-05: Add turtle mount",
         "1.2.2": "2022-01-30: Fix crash bug",
         "1.2.0": "2022-01-30: Blish 11.4, Mount queuing, autoselect mount",

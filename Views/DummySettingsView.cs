@@ -31,7 +31,7 @@ namespace Manlaan.Mounts.Views
                 Parent = buildPanel,
                 Size = new Point(32, 32),
                 Location = new Point(text1_label.Right + 3, text1_label.Bottom - 32),
-                Texture = contentsManager.GetTexture("514394.png"),
+                Texture = contentsManager.GetTexture("514394-grey.png"),
             };
             Label text2_label = new Label()
             {
