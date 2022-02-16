@@ -36,7 +36,9 @@ namespace Manlaan.Mounts
 
         public static int[] _mountOrder = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         public static string[] _mountDisplay = new string[] { "Transparent", "Solid", "SolidText" };
+        public static string[] _mountBehaviour = new string[] { "DefaultMount", "Radial" };
         public static string[] _mountOrientation = new string[] { "Horizontal", "Vertical" };
+        public static string[] _mountRadialCenterMountBehavior = new string[] { "None", "Default", "LastUsed" };
         public static SettingEntry<KeyBinding> InputQueuingKeybindSetting = null;
 
         public static SettingEntry<string> _settingDefaultMountChoice;
@@ -44,9 +46,11 @@ namespace Manlaan.Mounts
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
         public static SettingEntry<bool> _settingDisplayMountQueueing;
         public static SettingEntry<bool> _settingDefaultMountUseRadial;
+        public static SettingEntry<string> _settingDefaultMountBehaviour;
         public static SettingEntry<bool> _settingMountRadialSpawnAtMouse;
         public static SettingEntry<float> _settingMountRadialRadiusModifier;
         public static SettingEntry<float> _settingMountRadialIconSizeModifier;
+        public static SettingEntry<string> _settingMountRadialCenterMountBehavior;
         public static SettingEntry<string> _settingDisplay;
         public static SettingEntry<bool> _settingDisplayCornerIcons;
         public static SettingEntry<bool> _settingDisplayManualIcons;
@@ -102,6 +106,13 @@ namespace Manlaan.Mounts
                 }
             }
         }
+        private void MigrateDefaultMountBehaviour()
+        {
+            if (_settingDefaultMountBehaviour.Value.Equals(""))
+            {
+                _settingDefaultMountBehaviour.Value = _settingDefaultMountUseRadial.Value ? "Radial" : "DefaultMount";
+            }
+        }
 
         protected override void DefineSettings(SettingCollection settings)
         {
@@ -125,11 +136,13 @@ namespace Manlaan.Mounts
             _settingDefaultWaterMountChoice = settings.DefineSetting("DefaultWaterMountChoice", "Disabled", "Default Water Mount Choice", "");
             _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false, "Display Mount queuing", "");
             _settingDefaultMountUseRadial = settings.DefineSetting("DefaultMountUseRadial", false, "Default Mount uses radial", "");
+            _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "", "Default Mount button behaviour", "");
             _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, "Radial spawn at mouse", "");
             _settingMountRadialIconSizeModifier = settings.DefineSetting("MountRadialIconSizeModifier", 1.0f, "Radial Icon Size", "");
             _settingMountRadialIconSizeModifier.SetRange(0.05f, 1f);
             _settingMountRadialRadiusModifier = settings.DefineSetting("MountRadialRadiusModifier", 1.0f, "Radial radius", "");
             _settingMountRadialRadiusModifier.SetRange(0.2f, 1f);
+            _settingMountRadialCenterMountBehavior = settings.DefineSetting("MountRadialCenterMountBehavior", "Default", "Determines the mount in the center of the radial.", "");
 
 
             _settingDisplay = settings.DefineSetting("MountDisplay", "Transparent", "Display Type", "");
@@ -144,6 +157,7 @@ namespace Manlaan.Mounts
             _settingOpacity.SetRange(0f, 1f);
 
             MigrateDisplaySettings();
+            MigrateDefaultMountBehaviour();
 
             foreach (Mount m in _mounts)
             {
@@ -155,9 +169,11 @@ namespace Manlaan.Mounts
             _settingDefaultWaterMountChoice.SettingChanged += UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged += UpdateSettings;
             _settingDefaultMountUseRadial.SettingChanged += UpdateSettings;
+            _settingDefaultMountBehaviour.SettingChanged += UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged += UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged += UpdateSettings;
+            _settingMountRadialCenterMountBehavior.SettingChanged += UpdateSettings;
 
             _settingDisplay.SettingChanged += UpdateSettings;
             _settingDisplayCornerIcons.SettingChanged += UpdateSettings;
@@ -233,9 +249,11 @@ namespace Manlaan.Mounts
             _settingDefaultWaterMountChoice.SettingChanged -= UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged -= UpdateSettings;
             _settingDefaultMountUseRadial.SettingChanged -= UpdateSettings;
+            _settingDefaultMountBehaviour.SettingChanged -= UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
-            _settingMountRadialIconSizeModifier.SettingChanged += UpdateSettings;
-            _settingMountRadialRadiusModifier.SettingChanged += UpdateSettings;
+            _settingMountRadialIconSizeModifier.SettingChanged -= UpdateSettings;
+            _settingMountRadialRadiusModifier.SettingChanged -= UpdateSettings;
+            _settingMountRadialCenterMountBehavior.SettingChanged -= UpdateSettings;
 
             _settingDisplay.SettingChanged -= UpdateSettings;
             _settingDisplayCornerIcons.SettingChanged -= UpdateSettings;
@@ -365,7 +383,7 @@ namespace Manlaan.Mounts
         private void HandleKeyBoardKeyChange(object sender, KeyboardEventArgs e)
         {
             var key = _settingDefaultMountBinding.Value.PrimaryKey;
-            if (_settingDefaultMountUseRadial.Value)
+            if (_settingDefaultMountBehaviour.Value == "Radial")
             {
                 if (e.Key == key)
                 {
@@ -377,12 +395,11 @@ namespace Manlaan.Mounts
 
         private void DoDefaultMountAction()
         {
-            if (_settingDefaultMountUseRadial.Value)
+            if (_settingDefaultMountBehaviour.Value == "DefaultMount")
             {
-                return;
+                _helper.GetDefaultMount()?.DoHotKey();
             }
 
-            _helper.GetDefaultMount()?.DoHotKey();
         }
         
         private void HandleCombatChange(object sender, ValueEventArgs<bool> e)

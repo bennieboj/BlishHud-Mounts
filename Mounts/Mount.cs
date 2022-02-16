@@ -29,6 +29,7 @@ namespace Manlaan.Mounts
         public string ImageFileName { get; private set; }
         public bool IsDisabled { get; private set; }
         public DateTime? QueuedTimestamp { get; internal set; }
+        public DateTime? LastUsedTimestamp { get; internal set; }
         public bool IsWaterMount { get; private set; }
         public bool IsWvWMount { get; private set; }
 
@@ -44,6 +45,8 @@ namespace Manlaan.Mounts
                 QueuedTimestamp = DateTime.UtcNow;
                 return;
             }
+
+            LastUsedTimestamp = DateTime.UtcNow;
 
             if (KeybindingSetting.Value.ModifierKeys != ModifierKeys.None)
             {

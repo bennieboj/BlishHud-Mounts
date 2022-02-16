@@ -53,14 +53,30 @@ namespace Manlaan.Mounts.Controls
         {
             RadialMounts.Clear();
             var mounts = Module._availableOrderedMounts;
-            var defaultMount = _helper.GetDefaultMount();
-            if (defaultMount != null)
+
+            if(Module._settingMountRadialCenterMountBehavior.Value != "None")
             {
-                mounts.Remove(defaultMount);
-                var texture = _helper.GetImgFile(defaultMount.ImageFileName);
-                int loc = radius;
-                RadialMounts.Add(new RadialMount { Texture = texture, Mount = defaultMount, ImageX = loc, ImageY = loc, Default = true });
+                Mount mountToPutInCenter = null;
+                switch (Module._settingMountRadialCenterMountBehavior.Value)
+                {
+                    case "Default":
+                        mountToPutInCenter = _helper.GetDefaultMount();
+                        break;
+                    case "LastUsed":
+                        mountToPutInCenter = _helper.GetLastUsedMount();
+                        break;
+                }
+
+                if (mountToPutInCenter != null)
+                {
+                    mounts.Remove(mountToPutInCenter);
+                    var texture = _helper.GetImgFile(mountToPutInCenter.ImageFileName);
+                    int loc = radius;
+                    RadialMounts.Add(new RadialMount { Texture = texture, Mount = mountToPutInCenter, ImageX = loc, ImageY = loc, Default = true });
+                }
             }
+
+
             double currentAngle = 0;
             var partAngleStep = Math.PI * 2 / mounts.Count();
             foreach (var mount in mounts)

@@ -66,5 +66,10 @@ namespace Manlaan.Mounts
 
             return Module._mounts.SingleOrDefault(m => m.Name == Module._settingDefaultMountChoice.Value);
         }
+
+        internal Mount GetLastUsedMount()
+        {
+            return Module._mounts.Where(m => m.LastUsedTimestamp != null).OrderByDescending(m => m.LastUsedTimestamp).FirstOrDefault();
+        }
     }
 }

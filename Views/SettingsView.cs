@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Blish_HUD.Settings.UI.Views;
 using Blish_HUD.Graphics.UI;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Manlaan.Mounts.Views
 {
@@ -177,9 +178,34 @@ namespace Manlaan.Mounts.Views
                 KeyBinding = Module._settingDefaultMountBinding.Value,
                 Location = new Point(settingDefaultMountKeybind_Label.Right + 5, settingDefaultMountKeybind_Label.Top - 1),
             };
-            Label settingDisplayMountQueueing_Label = new Label()
+            Label settingDefaultMountBehaviour_Label = new Label()
             {
                 Location = new Point(0, settingDefaultMountKeybind_Label.Bottom + 6),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsLeftPanel,
+                Text = "Keybind behaviour: ",
+            };
+            Dropdown settingDefaultMountBehaviour_Select = new Dropdown()
+            {
+                Location = new Point(settingDefaultMountBehaviour_Label.Right + 5, settingDefaultMountBehaviour_Label.Top - 4),
+                Width = orderWidth,
+                Parent = mountsLeftPanel,
+            };
+            settingDefaultMountBehaviour_Select.Items.Add("Disabled");
+            List<string> mountBehaviours = Module._mountBehaviour.ToList();
+            foreach (string i in mountBehaviours)
+            {
+                settingDefaultMountBehaviour_Select.Items.Add(i.ToString());
+            }
+            settingDefaultMountBehaviour_Select.SelectedItem = mountBehaviours.Any(m => m == Module._settingDefaultMountBehaviour.Value) ? Module._settingDefaultMountBehaviour.Value : "Disabled";
+            settingDefaultMountBehaviour_Select.ValueChanged += delegate {
+                Module._settingDefaultMountBehaviour.Value = settingDefaultMountBehaviour_Select.SelectedItem;
+            };
+            Label settingDisplayMountQueueing_Label = new Label()
+            {
+                Location = new Point(0, settingDefaultMountBehaviour_Label.Bottom + 6),
                 Width = bindingWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -196,6 +222,8 @@ namespace Manlaan.Mounts.Views
             settingDisplayMountQueueing_Checkbox.CheckedChanged += delegate {
                 Module._settingDisplayMountQueueing.Value = settingDisplayMountQueueing_Checkbox.Checked;
             };
+
+
             Label settingMountRadialSettingsMount_Label = new Label()
             {
                 Location = new Point(0, settingDisplayMountQueueing_Label.Bottom + 24),
@@ -205,33 +233,14 @@ namespace Manlaan.Mounts.Views
                 Parent = mountsLeftPanel,
                 Text = "Radial settings: ",
             };
-            Label settingDefaultMountUsesRadial_Label = new Label()
+            Label settingMountRadialSpawnAtMouse_Label = new Label()
             {
                 Location = new Point(0, settingMountRadialSettingsMount_Label.Bottom + 6),
                 Width = bindingWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
-                Text = "Use Radial: ",
-            };
-            Checkbox settingDefaultMountUsesRadial_Checkbox = new Checkbox()
-            {
-                Size = new Point(bindingWidth, 20),
-                Parent = mountsLeftPanel,
-                Checked = Module._settingDefaultMountUseRadial.Value,
-                Location = new Point(settingDefaultMountUsesRadial_Label.Right + 5, settingDefaultMountUsesRadial_Label.Top - 1),
-            };
-            settingDefaultMountUsesRadial_Checkbox.CheckedChanged += delegate {
-                Module._settingDefaultMountUseRadial.Value = settingDefaultMountUsesRadial_Checkbox.Checked;
-            };
-            Label settingMountRadialSpawnAtMouse_Label = new Label()
-            {
-                Location = new Point(0, settingDefaultMountUsesRadial_Label.Bottom + 6),
-                Width = bindingWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = mountsLeftPanel,
-                Text = "Spawn Radial at mouse: ",
+                Text = "Spawn at mouse: ",
             };
             Checkbox settingMountRadialSpawnAtMouse_Checkbox = new Checkbox()
             {
@@ -250,7 +259,7 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
-                Text = "Radial radius: ",
+                Text = "Radius: ",
             };
             TrackBar settingMountRadialRadiusModifier_Slider = new TrackBar()
             {
@@ -269,7 +278,7 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
-                Text = "Radial icon size: ",
+                Text = "Icon size: ",
             };
             TrackBar settingMountRadialIconSizeModifier_Slider = new TrackBar()
             {
@@ -281,7 +290,29 @@ namespace Manlaan.Mounts.Views
                 Parent = mountsLeftPanel,
             };
             settingMountRadialIconSizeModifier_Slider.ValueChanged += delegate { Module._settingMountRadialIconSizeModifier.Value = settingMountRadialIconSizeModifier_Slider.Value / 100; };
-
+            Label settingMountRadialCenterMountBehavior_Label = new Label()
+            {
+                Location = new Point(0, settingMountRadialIconSizeModifier_Label.Bottom + 6),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsLeftPanel,
+                Text = "Center mount: ",
+            };
+            Dropdown settingMountRadialCenterMountBehavior_Select = new Dropdown()
+            {
+                Location = new Point(settingMountRadialCenterMountBehavior_Label.Right + 5, settingMountRadialCenterMountBehavior_Label.Top - 4),
+                Width = orderWidth,
+                Parent = mountsLeftPanel,
+            };
+            foreach (string i in Module._mountRadialCenterMountBehavior)
+            {
+                settingMountRadialCenterMountBehavior_Select.Items.Add(i.ToString());
+            }
+            settingMountRadialCenterMountBehavior_Select.SelectedItem = Module._settingMountRadialCenterMountBehavior.Value;
+            settingMountRadialCenterMountBehavior_Select.ValueChanged += delegate {
+                Module._settingMountRadialCenterMountBehavior.Value = settingMountRadialCenterMountBehavior_Select.SelectedItem;
+            };
 
             #endregion
 
