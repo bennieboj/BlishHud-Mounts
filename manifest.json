@@ -1,6 +1,6 @@
 {
   "name": "Mounts",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -23,6 +23,7 @@
 }
 /*
     "changelog": {
+        "1.2.7": "2022-02-18: Added Behaviors for Radial/Default + Center Radial: None, Default, LastUsed",
         "1.2.6": "2022-02-14: Made settings icon grey + fix bug with mount queuring",
         "1.2.5": "2022-02-11: Added customizations, moved settings",
         "1.2.4": "2022-02-09: Add radial",
