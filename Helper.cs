@@ -52,6 +52,11 @@ namespace Manlaan.Mounts
             return GameService.Gw2Mumble.PlayerCharacter.Position.Z <= 0;
         }
 
+        private static Mount GetWaterMount()
+        {
+            return Module._mounts.SingleOrDefault(m => m.IsWaterMount && m.Name == Module._settingDefaultWaterMountChoice.Value);
+        }
+
         internal Mount GetDefaultMount()
         {
             if (IsPlayerInWvWMap())
@@ -61,7 +66,7 @@ namespace Manlaan.Mounts
 
             if (IsPlayerUnderOrCloseToWater())
             {
-                return Module._mounts.SingleOrDefault(m => m.IsWaterMount && m.Name == Module._settingDefaultWaterMountChoice.Value);
+                return GetWaterMount();
             }
 
             return Module._mounts.SingleOrDefault(m => m.Name == Module._settingDefaultMountChoice.Value);
@@ -69,6 +74,11 @@ namespace Manlaan.Mounts
 
         internal Mount GetLastUsedMount()
         {
+            if (IsPlayerUnderOrCloseToWater())
+            {
+                return GetWaterMount();
+            }
+
             return Module._mounts.Where(m => m.LastUsedTimestamp != null).OrderByDescending(m => m.LastUsedTimestamp).FirstOrDefault();
         }
     }
