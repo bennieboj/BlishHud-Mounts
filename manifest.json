@@ -1,28 +1,33 @@
 {
-    "name": "Mounts",
-    "version": "1.2.2",
-    "namespace": "Manlaan.Mounts",
-    "package": "Mounts.dll",
-    "manifest_version": 1,
+  "name": "Mounts",
+  "version": "1.2.7",
+  "namespace": "Manlaan.Mounts",
+  "package": "Mounts.dll",
+  "manifest_version": 1,
 
-    "description": "Mount icons",
-    "dependencies": {
-        "bh.blishhud": ">=0.11.4"
+  "description": "Mount icons + radial",
+  "dependencies": {
+    "bh.blishhud": ">=0.11.4"
+  },
+  "url": "https://github.com/manlaan/BlishHud-Mounts",
+  "contributors": [
+    {
+      "name": "Manlaan",
+      "username": "manlaan.8921"
     },
-    "url": "https://github.com/manlaan/BlishHud-Mounts",
-    "contributors": [
-        {
-            "name": "Manlaan",
-            "username": "manlaan.8921"
-        },
-        {
-            "name": "bennieboj",
-            "username": "bennieboj"
-        }
-    ]
+    {
+      "name": "Bennieboj",
+      "username": "bennieboj.2607"
+    }
+  ]
 }
 /*
     "changelog": {
+        "1.2.7": "2022-02-18: Added Behaviors for Radial/Default + Center Radial: None, Default, LastUsed",
+        "1.2.6": "2022-02-14: Made settings icon grey + fix bug with mount queuring",
+        "1.2.5": "2022-02-11: Added customizations, moved settings",
+        "1.2.4": "2022-02-09: Add radial",
+        "1.2.3": "2022-02-05: Add turtle mount",
         "1.2.2": "2022-01-30: Fix crash bug",
         "1.2.0": "2022-01-30: Blish 11.4, Mount queuing, autoselect mount",
         "1.1.1": "2021-10-06: Added check for loading screen or map open",

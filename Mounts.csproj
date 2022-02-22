@@ -128,7 +128,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\DrawRadial.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="Module.cs" />
+    <Compile Include="Mounts\Mount.cs" />
+    <Compile Include="Views\DummySettingsView.cs" />
     <Compile Include="Views\SettingsView.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -325,6 +329,7 @@
   <ItemGroup>
     <None Include="ref\_instructions.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
