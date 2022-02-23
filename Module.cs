@@ -400,7 +400,7 @@ namespace Manlaan.Mounts
         {
             if (_settingDefaultMountBehaviour.Value == "DefaultMount")
             {
-                await _helper.GetDefaultMount()?.DoHotKey();
+                await (_helper.GetDefaultMount()?.DoHotKey() ?? Task.CompletedTask);
             }
 
         }
@@ -409,7 +409,7 @@ namespace Manlaan.Mounts
         {
             if (!e.Value)
             {
-                await _mounts.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault()?.DoHotKey();
+                await (_mounts.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault()?.DoHotKey() ?? Task.CompletedTask);
                 foreach (var mount in _mounts)
                 {
                     mount.QueuedTimestamp = null;

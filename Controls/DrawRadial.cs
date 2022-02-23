@@ -1,8 +1,8 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
+using Blish_HUD.Controls.Intern;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -139,7 +139,7 @@ namespace Manlaan.Mounts.Controls
 
         public async Task TriggerSelectedMountAsync()
         {
-            await SelectedMount?.Mount.DoHotKey();
+            await (SelectedMount?.Mount.DoHotKey() ?? Task.CompletedTask);
         }
 
         internal void Start()
@@ -157,7 +157,7 @@ namespace Manlaan.Mounts.Controls
                 }
                 else
                 {
-                    Mouse.SetPosition(GameService.Graphics.WindowWidth / 2, GameService.Graphics.WindowHeight / 2);
+                    Mouse.SetPosition(GameService.Graphics.WindowWidth / 2, GameService.Graphics.WindowHeight / 2, true);
                     SpawnPoint = new Point(GameService.Graphics.SpriteScreen.Width / 2, GameService.Graphics.SpriteScreen.Height / 2);
                 }
 
