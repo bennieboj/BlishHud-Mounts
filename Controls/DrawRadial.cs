@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Manlaan.Mounts.Controls
 {
@@ -136,9 +137,9 @@ namespace Manlaan.Mounts.Controls
             }
         }
 
-        public void TriggerSelectedMount()
+        public async Task TriggerSelectedMountAsync()
         {
-            SelectedMount?.Mount.DoHotKey();
+            await SelectedMount?.Mount.DoHotKey();
         }
 
         internal void Start()
@@ -165,9 +166,9 @@ namespace Manlaan.Mounts.Controls
             Visible = true;
         }
 
-        internal void Stop()
+        internal async Task StopAsync()
         {
-            TriggerSelectedMount();
+            await TriggerSelectedMountAsync();
             Visible = false;
         }
     }

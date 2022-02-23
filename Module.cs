@@ -75,8 +75,8 @@ namespace Manlaan.Mounts
 
         protected override void Initialize()
         {
-            GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += (sender, e) => HandleCombatChange(sender, e);
-            GameService.Input.Keyboard.KeyStateChanged += (sender, e) => HandleKeyBoardKeyChange(sender, e);
+            GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += async (sender, e) => await HandleCombatChangeAsync(sender, e);
+            GameService.Input.Keyboard.KeyStateChanged += async (sender, e) => await HandleKeyBoardKeyChangeAsync(sender, e);
 
             _helper = new Helper(ContentsManager);
             windowTab = new WindowTab("Mounts", ContentsManager.GetTexture("514394-grey.png"));
@@ -134,7 +134,7 @@ namespace Manlaan.Mounts
 
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), "Default Mount Binding", "");
             _settingDefaultMountBinding.Value.Enabled = true;
-            _settingDefaultMountBinding.Value.Activated += delegate { DoDefaultMountAction(); };
+            _settingDefaultMountBinding.Value.Activated += async delegate { await DoDefaultMountActionAsync(); };
             _settingDefaultMountChoice = settings.DefineSetting("DefaultMountChoice", "Disabled", "Default Mount Choice", "");
             _settingDefaultWaterMountChoice = settings.DefineSetting("DefaultWaterMountChoice", "Disabled", "Default Water Mount Choice", "");
             _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false, "Display Mount queuing", "");
@@ -312,7 +312,7 @@ namespace Manlaan.Mounts
                     Opacity = _settingOpacity.Value,
                     BasicTooltipText = mount.DisplayName
                 };
-                _btnMount.LeftMouseButtonPressed += delegate { mount.DoHotKey(); };
+                _btnMount.LeftMouseButtonPressed += async delegate { await mount.DoHotKey(); };
 
                 if (_settingOrientation.Value.Equals("Horizontal"))
                     curX += _settingImgWidth.Value;
@@ -383,7 +383,7 @@ namespace Manlaan.Mounts
             _radial.Parent = GameService.Graphics.SpriteScreen;
         }
 
-        private void HandleKeyBoardKeyChange(object sender, KeyboardEventArgs e)
+        private async Task HandleKeyBoardKeyChangeAsync(object sender, KeyboardEventArgs e)
         {
             var key = _settingDefaultMountBinding.Value.PrimaryKey;
             if (_settingDefaultMountBehaviour.Value == "Radial")
@@ -391,25 +391,25 @@ namespace Manlaan.Mounts
                 if (e.Key == key)
                 {
                     if (e.EventType == KeyboardEventType.KeyDown) _radial.Start();
-                    else if (e.EventType == KeyboardEventType.KeyUp) _radial.Stop();
+                    else if (e.EventType == KeyboardEventType.KeyUp) await _radial.StopAsync();
                 }
             }
         }
 
-        private void DoDefaultMountAction()
+        private async Task DoDefaultMountActionAsync()
         {
             if (_settingDefaultMountBehaviour.Value == "DefaultMount")
             {
-                _helper.GetDefaultMount()?.DoHotKey();
+                await _helper.GetDefaultMount()?.DoHotKey();
             }
 
         }
         
-        private void HandleCombatChange(object sender, ValueEventArgs<bool> e)
+        private async Task HandleCombatChangeAsync(object sender, ValueEventArgs<bool> e)
         {
             if (!e.Value)
             {
-                _mounts.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault()?.DoHotKey();
+                await _mounts.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault()?.DoHotKey();
                 foreach (var mount in _mounts)
                 {
                     mount.QueuedTimestamp = null;

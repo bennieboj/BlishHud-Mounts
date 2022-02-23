@@ -6,6 +6,7 @@ using Blish_HUD.Settings;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Threading.Tasks;
 
 namespace Manlaan.Mounts
 {
@@ -38,7 +39,7 @@ namespace Manlaan.Mounts
         public SettingEntry<KeyBinding> KeybindingSetting { get; private set; }
         public CornerIcon CornerIcon { get; private set; }
 
-        public void DoHotKey()
+        public async Task DoHotKey()
         {
             if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat)
             {
@@ -58,7 +59,7 @@ namespace Manlaan.Mounts
                     Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.SHIFT, true);
             }
             Blish_HUD.Controls.Intern.Keyboard.Press(ToVirtualKey(KeybindingSetting.Value.PrimaryKey), true);
-            System.Threading.Thread.Sleep(50);
+            await Task.Delay(50);
             Blish_HUD.Controls.Intern.Keyboard.Release(ToVirtualKey(KeybindingSetting.Value.PrimaryKey), true);
             if (KeybindingSetting.Value.ModifierKeys != ModifierKeys.None)
             {
@@ -81,7 +82,7 @@ namespace Manlaan.Mounts
                 HoverIcon = img,
                 Priority = 10
             };
-            CornerIcon.Click += delegate { DoHotKey(); };
+            CornerIcon.Click += async delegate { await DoHotKey(); };
         }
 
         public void DisposeCornerIcon()
