@@ -102,19 +102,21 @@ namespace Manlaan.Mounts.Views
                 curY = settingMount_Label.Bottom;
             }
 
+
+            int labelWidth2 = 200;
             Label settingDefaultSettingsMount_Label = new Label()
             {
                 Location = new Point(0, curY + 24),
-                Width = bindingWidth,
+                Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
-                Text = "Default mount settings: ",
+                Text = "Default mount settings: "
             };
             Label settingDefaultMount_Label = new Label()
             {
                 Location = new Point(0, settingDefaultSettingsMount_Label.Bottom + 6),
-                Width = bindingWidth,
+                Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
@@ -139,7 +141,7 @@ namespace Manlaan.Mounts.Views
             Label settingDefaultWaterMount_Label = new Label()
             {
                 Location = new Point(0, settingDefaultMount_Select.Bottom + 6),
-                Width = bindingWidth,
+                Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
@@ -164,7 +166,7 @@ namespace Manlaan.Mounts.Views
             Label settingDefaultMountKeybind_Label = new Label()
             {
                 Location = new Point(0, settingDefaultWaterMount_Select.Bottom + 6),
-                Width = bindingWidth,
+                Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
@@ -173,7 +175,7 @@ namespace Manlaan.Mounts.Views
             KeybindingAssigner settingDefaultMount_Keybind = new KeybindingAssigner()
             {
                 NameWidth = 0,
-                Size = new Point(bindingWidth, 20),
+                Size = new Point(labelWidth2, 20),
                 Parent = mountsLeftPanel,
                 KeyBinding = Module._settingDefaultMountBinding.Value,
                 Location = new Point(settingDefaultMountKeybind_Label.Right + 5, settingDefaultMountKeybind_Label.Top - 1),
@@ -181,7 +183,7 @@ namespace Manlaan.Mounts.Views
             Label settingDefaultMountBehaviour_Label = new Label()
             {
                 Location = new Point(0, settingDefaultMountKeybind_Label.Bottom + 6),
-                Width = bindingWidth,
+                Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
@@ -206,15 +208,15 @@ namespace Manlaan.Mounts.Views
             Label settingDisplayMountQueueing_Label = new Label()
             {
                 Location = new Point(0, settingDefaultMountBehaviour_Label.Bottom + 6),
-                Width = bindingWidth,
+                Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
-                Text = "Display Mount Queueing: ",
+                Text = "Display out of combat queueing:"
             };
             Checkbox settingDisplayMountQueueing_Checkbox = new Checkbox()
             {
-                Size = new Point(bindingWidth, 20),
+                Size = new Point(labelWidth2, 20),
                 Parent = mountsLeftPanel,
                 Checked = Module._settingDisplayMountQueueing.Value,
                 Location = new Point(settingDisplayMountQueueing_Label.Right + 5, settingDisplayMountQueueing_Label.Top - 1),
@@ -227,7 +229,7 @@ namespace Manlaan.Mounts.Views
             Label settingMountRadialSettingsMount_Label = new Label()
             {
                 Location = new Point(0, settingDisplayMountQueueing_Label.Bottom + 24),
-                Width = bindingWidth,
+                Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
@@ -236,7 +238,7 @@ namespace Manlaan.Mounts.Views
             Label settingMountRadialSpawnAtMouse_Label = new Label()
             {
                 Location = new Point(0, settingMountRadialSettingsMount_Label.Bottom + 6),
-                Width = bindingWidth,
+                Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
@@ -244,7 +246,7 @@ namespace Manlaan.Mounts.Views
             };
             Checkbox settingMountRadialSpawnAtMouse_Checkbox = new Checkbox()
             {
-                Size = new Point(bindingWidth, 20),
+                Size = new Point(labelWidth2, 20),
                 Parent = mountsLeftPanel,
                 Checked = Module._settingMountRadialSpawnAtMouse.Value,
                 Location = new Point(settingMountRadialSpawnAtMouse_Label.Right + 5, settingMountRadialSpawnAtMouse_Label.Top - 1),
@@ -255,7 +257,7 @@ namespace Manlaan.Mounts.Views
             Label settingMountRadialRadiusModifier_Label = new Label()
             {
                 Location = new Point(0, settingMountRadialSpawnAtMouse_Label.Bottom + 6),
-                Width = bindingWidth,
+                Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
@@ -274,7 +276,7 @@ namespace Manlaan.Mounts.Views
             Label settingMountRadialIconSizeModifier_Label = new Label()
             {
                 Location = new Point(0, settingMountRadialRadiusModifier_Label.Bottom + 6),
-                Width = bindingWidth,
+                Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
@@ -293,7 +295,7 @@ namespace Manlaan.Mounts.Views
         Label settingMountRadialIconOpacity_Label = new Label()
             {
                 Location = new Point(0, settingMountRadialIconSizeModifier_Label.Bottom + 6),
-                Width = bindingWidth,
+                Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
@@ -312,7 +314,7 @@ namespace Manlaan.Mounts.Views
             Label settingMountRadialCenterMountBehavior_Label = new Label()
             {
                 Location = new Point(0, settingMountRadialIconOpacity_Label.Bottom + 6),
-                Width = bindingWidth,
+                Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
