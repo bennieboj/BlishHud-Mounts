@@ -299,7 +299,7 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
-                Text = "Icon size: ",
+                Text = "Icon opacity: ",
             };
             TrackBar settingMountRadialIconOpacity_Slider = new TrackBar()
             {
