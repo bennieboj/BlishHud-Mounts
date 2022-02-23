@@ -61,6 +61,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<int> _settingImgWidth;
         public static SettingEntry<float> _settingOpacity;
 
+        private WindowTab windowTab;
         private Panel _mountPanel;
         private DrawRadial _radial;
         private LoadingSpinner _queueingSpinner;
@@ -78,6 +79,7 @@ namespace Manlaan.Mounts
             GameService.Input.Keyboard.KeyStateChanged += (sender, e) => HandleKeyBoardKeyChange(sender, e);
 
             _helper = new Helper(ContentsManager);
+            windowTab = new WindowTab("Mounts", ContentsManager.GetTexture("514394-grey.png"));
         }
 
 
@@ -194,15 +196,10 @@ namespace Manlaan.Mounts
             return new Views.DummySettingsView(ContentsManager);
         }
 
-        protected override async Task LoadAsync()
-        {
-
-        }
-
         protected override void OnModuleLoaded(EventArgs e)
         {
             DrawUI();
-            GameService.Overlay.BlishHudWindow.AddTab("Mounts", this.ContentsManager.GetTexture("514394-grey.png"), () => new Views.SettingsView());
+            GameService.Overlay.BlishHudWindow.AddTab(windowTab, () => new Views.SettingsView());
 
             // Base handler must be called
             base.OnModuleLoaded(e);
@@ -268,7 +265,8 @@ namespace Manlaan.Mounts
             _settingDrag.SettingChanged -= UpdateSettings;
             _settingImgWidth.SettingChanged -= UpdateSettings;
             _settingOpacity.SettingChanged -= UpdateSettings;
-
+            
+            GameService.Overlay.BlishHudWindow.RemoveTab(windowTab);
         }
 
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<string> e = null) {
