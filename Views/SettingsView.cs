@@ -290,9 +290,28 @@ namespace Manlaan.Mounts.Views
                 Parent = mountsLeftPanel,
             };
             settingMountRadialIconSizeModifier_Slider.ValueChanged += delegate { Module._settingMountRadialIconSizeModifier.Value = settingMountRadialIconSizeModifier_Slider.Value / 100; };
-            Label settingMountRadialCenterMountBehavior_Label = new Label()
+        Label settingMountRadialIconOpacity_Label = new Label()
             {
                 Location = new Point(0, settingMountRadialIconSizeModifier_Label.Bottom + 6),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsLeftPanel,
+                Text = "Icon size: ",
+            };
+            TrackBar settingMountRadialIconOpacity_Slider = new TrackBar()
+            {
+                Location = new Point(settingMountRadialIconOpacity_Label.Right + 5, settingMountRadialIconOpacity_Label.Top),
+                Width = 120,
+                MaxValue = 100,
+                MinValue = 5,
+                Value = Module._settingMountRadialIconOpacity.Value * 100,
+                Parent = mountsLeftPanel,
+            };
+            settingMountRadialIconOpacity_Slider.ValueChanged += delegate { Module._settingMountRadialIconOpacity.Value = settingMountRadialIconOpacity_Slider.Value / 100; };
+            Label settingMountRadialCenterMountBehavior_Label = new Label()
+            {
+                Location = new Point(0, settingMountRadialIconOpacity_Label.Bottom + 6),
                 Width = bindingWidth,
                 AutoSizeHeight = false,
                 WrapText = false,

@@ -50,6 +50,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<bool> _settingMountRadialSpawnAtMouse;
         public static SettingEntry<float> _settingMountRadialRadiusModifier;
         public static SettingEntry<float> _settingMountRadialIconSizeModifier;
+        public static SettingEntry<float> _settingMountRadialIconOpacity;
         public static SettingEntry<string> _settingMountRadialCenterMountBehavior;
         public static SettingEntry<string> _settingDisplay;
         public static SettingEntry<bool> _settingDisplayCornerIcons;
@@ -142,6 +143,8 @@ namespace Manlaan.Mounts
             _settingMountRadialIconSizeModifier.SetRange(0.05f, 1f);
             _settingMountRadialRadiusModifier = settings.DefineSetting("MountRadialRadiusModifier", 0.5f, "Radial radius", "");
             _settingMountRadialRadiusModifier.SetRange(0.2f, 1f);
+            _settingMountRadialIconOpacity = settings.DefineSetting("MountRadialIconOpacity", 0.5f, "Radial Icon Opacity", "");
+            _settingMountRadialIconOpacity.SetRange(0.05f, 1f);
             _settingMountRadialCenterMountBehavior = settings.DefineSetting("MountRadialCenterMountBehavior", "Default", "Determines the mount in the center of the radial.", "");
 
 
@@ -174,6 +177,7 @@ namespace Manlaan.Mounts
             _settingMountRadialIconSizeModifier.SettingChanged += UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged += UpdateSettings;
             _settingMountRadialCenterMountBehavior.SettingChanged += UpdateSettings;
+            _settingMountRadialIconOpacity.SettingChanged += UpdateSettings;
 
             _settingDisplay.SettingChanged += UpdateSettings;
             _settingDisplayCornerIcons.SettingChanged += UpdateSettings;
@@ -254,6 +258,7 @@ namespace Manlaan.Mounts
             _settingMountRadialIconSizeModifier.SettingChanged -= UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged -= UpdateSettings;
             _settingMountRadialCenterMountBehavior.SettingChanged -= UpdateSettings;
+            _settingMountRadialIconOpacity.SettingChanged -= UpdateSettings;
 
             _settingDisplay.SettingChanged -= UpdateSettings;
             _settingDisplayCornerIcons.SettingChanged -= UpdateSettings;

@@ -131,7 +131,7 @@ namespace Manlaan.Mounts.Controls
                     radialMount.Selected = radialMount.AngleBegin <= angle && radialMount.AngleEnd > angle;
                 }
 
-                _btnMount.Opacity = radialMount.Selected ? 1f : 0.5f;
+                _btnMount.Opacity = radialMount.Selected ? 1f : Module._settingMountRadialIconOpacity.Value;
                 AddChild(_btnMount);
             }
         }
