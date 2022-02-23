@@ -138,9 +138,9 @@ namespace Manlaan.Mounts
             _settingDefaultMountUseRadial = settings.DefineSetting("DefaultMountUseRadial", false, "Default Mount uses radial", "");
             _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "", "Default Mount button behaviour", "");
             _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, "Radial spawn at mouse", "");
-            _settingMountRadialIconSizeModifier = settings.DefineSetting("MountRadialIconSizeModifier", 1.0f, "Radial Icon Size", "");
+            _settingMountRadialIconSizeModifier = settings.DefineSetting("MountRadialIconSizeModifier", 0.5f, "Radial Icon Size", "");
             _settingMountRadialIconSizeModifier.SetRange(0.05f, 1f);
-            _settingMountRadialRadiusModifier = settings.DefineSetting("MountRadialRadiusModifier", 1.0f, "Radial radius", "");
+            _settingMountRadialRadiusModifier = settings.DefineSetting("MountRadialRadiusModifier", 0.5f, "Radial radius", "");
             _settingMountRadialRadiusModifier.SetRange(0.2f, 1f);
             _settingMountRadialCenterMountBehavior = settings.DefineSetting("MountRadialCenterMountBehavior", "Default", "Determines the mount in the center of the radial.", "");
 
