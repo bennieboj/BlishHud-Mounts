@@ -4,7 +4,7 @@ Add several display options related to mounts:
 ## Settings
 
 Keybinds:
-![](settings_keybinds.png) (thanks to Steve aka NecroNFriends#9475)
+![settings keybinds, credits to Steve aka NecroNFriends#9475](settings_keybinds.png)
 
 ## Credits
 - Ghost for the transparant mount art for Raptor, Springer, Skimmer, Jackal, Griffon, Roller Beetle, Skyscale and Warclaw (taken from https://github.com/Friendly0Fire/GW2Radial/blob/master/readme.md with FriendlyFire's permission.)
