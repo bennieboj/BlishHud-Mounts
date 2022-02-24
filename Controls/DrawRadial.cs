@@ -15,14 +15,14 @@ namespace Manlaan.Mounts.Controls
         public double AngleBegin { get; set; }
         public double AngleEnd { get; set; }
         public Mount Mount { get; set; }
-        public Texture Texture { get; set; }
+        public Texture2D Texture { get; set; }
         public int ImageX { get; set; }
         public int ImageY { get; set; }
         public bool Selected { get; set; }
         public bool Default { get; internal set; }
     }
 
-    internal class DrawRadial : Container
+    internal class DrawRadial : Control
     {
         private readonly Helper _helper;
         private List<RadialMount> RadialMounts = new List<RadialMount>();
@@ -46,12 +46,7 @@ namespace Manlaan.Mounts.Controls
             return CaptureType.Mouse;
         }
 
-        public override void UpdateContainer(GameTime gameTime)
-        {
-        }
-
-        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds)
-        {
+        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             RadialMounts.Clear();
             var mounts = Module._availableOrderedMounts;
 
@@ -100,7 +95,6 @@ namespace Manlaan.Mounts.Controls
                 currentAngle = angleEnd;
             }
 
-
             var mousePos = Input.Mouse.Position;
             var diff = mousePos - SpawnPoint;
             var angle = Math.Atan2(diff.Y, diff.X);
@@ -111,29 +105,18 @@ namespace Manlaan.Mounts.Controls
 
             var length = new Vector2(diff.Y, diff.X).Length();
             
-            Children.Clear();
             foreach (var radialMount in RadialMounts)
             {
-                Image _btnMount = new Image
-                {
-                    Parent = this,
-                    Texture = (Blish_HUD.Content.AsyncTexture2D)radialMount.Texture,
-                    Size = new Point(mountIconSize, mountIconSize),
-                    Location = new Point(radialMount.ImageX, radialMount.ImageY),
-                    BasicTooltipText = radialMount.Mount.DisplayName
-                };
-
-                if(length < mountIconSize*Math.Sqrt(2)/2)
+                if (length < mountIconSize * Math.Sqrt(2) / 2)
                 {
                     radialMount.Selected = radialMount.Default;
-                }
-                else
+                } 
+                else 
                 {
                     radialMount.Selected = radialMount.AngleBegin <= angle && radialMount.AngleEnd > angle;
                 }
 
-                _btnMount.Opacity = radialMount.Selected ? 1f : Module._settingMountRadialIconOpacity.Value;
-                AddChild(_btnMount);
+                spriteBatch.DrawOnCtrl(this, radialMount.Texture, new Rectangle(radialMount.ImageX, radialMount.ImageY, mountIconSize, mountIconSize), null, Color.White * (radialMount.Selected ? 1f : Module._settingMountRadialIconOpacity.Value));
             }
         }
 
