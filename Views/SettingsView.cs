@@ -10,9 +10,10 @@ namespace Manlaan.Mounts.Views
     class SettingsView : View
     {
         protected override void Build(Container buildPanel) {
-            int labelWidth = 100;
-            int orderWidth = 80;
-            int bindingWidth = 150;
+            int labelWidth                = 100;
+            int orderWidth                = 80;
+            int bindingWidth              = 150;
+            int mountsAndRadialInputWidth = 125;
 
             Panel mountsLeftPanel = new Panel() {
                 CanScroll = false,
@@ -125,8 +126,8 @@ namespace Manlaan.Mounts.Views
             Dropdown settingDefaultMount_Select = new Dropdown()
             {
                 Location = new Point(settingDefaultMount_Label.Right + 5, settingDefaultMount_Label.Top - 4),
-                Width = orderWidth,
-                Parent = mountsLeftPanel,
+                Width    = mountsAndRadialInputWidth,
+                Parent   = mountsLeftPanel,
             };
             settingDefaultMount_Select.Items.Add("Disabled");
             var mountNames = Module._mounts.Select(m => m.Name);
@@ -150,8 +151,8 @@ namespace Manlaan.Mounts.Views
             Dropdown settingDefaultWaterMount_Select = new Dropdown()
             {
                 Location = new Point(settingDefaultWaterMount_Label.Right + 5, settingDefaultWaterMount_Label.Top - 4),
-                Width = orderWidth,
-                Parent = mountsLeftPanel,
+                Width    = mountsAndRadialInputWidth,
+                Parent   = mountsLeftPanel,
             };
             settingDefaultWaterMount_Select.Items.Add("Disabled");
             var mountNamesWater = Module._mounts.Where(m => m.IsWaterMount).Select(m => m.Name);
@@ -174,11 +175,11 @@ namespace Manlaan.Mounts.Views
             };
             KeybindingAssigner settingDefaultMount_Keybind = new KeybindingAssigner()
             {
-                NameWidth = 0,
-                Size = new Point(labelWidth2, 20),
-                Parent = mountsLeftPanel,
+                NameWidth  = 0,
+                Size       = new Point(mountsAndRadialInputWidth, 20),
+                Parent     = mountsLeftPanel,
                 KeyBinding = Module._settingDefaultMountBinding.Value,
-                Location = new Point(settingDefaultMountKeybind_Label.Right + 5, settingDefaultMountKeybind_Label.Top - 1),
+                Location   = new Point(settingDefaultMountKeybind_Label.Right + 4, settingDefaultMountKeybind_Label.Top - 1),
             };
             Label settingDefaultMountBehaviour_Label = new Label()
             {
@@ -192,8 +193,8 @@ namespace Manlaan.Mounts.Views
             Dropdown settingDefaultMountBehaviour_Select = new Dropdown()
             {
                 Location = new Point(settingDefaultMountBehaviour_Label.Right + 5, settingDefaultMountBehaviour_Label.Top - 4),
-                Width = orderWidth,
-                Parent = mountsLeftPanel,
+                Width    = settingDefaultMount_Keybind.Width,
+                Parent   = mountsLeftPanel,
             };
             settingDefaultMountBehaviour_Select.Items.Add("Disabled");
             List<string> mountBehaviours = Module._mountBehaviour.ToList();
@@ -266,11 +267,11 @@ namespace Manlaan.Mounts.Views
             TrackBar settingMountRadialRadiusModifier_Slider = new TrackBar()
             {
                 Location = new Point(settingMountRadialRadiusModifier_Label.Right + 5, settingMountRadialRadiusModifier_Label.Top),
-                Width = 120,
+                Width    = mountsAndRadialInputWidth,
                 MaxValue = 100,
                 MinValue = 20,
-                Value = Module._settingMountRadialRadiusModifier.Value * 100,
-                Parent = mountsLeftPanel,
+                Value    = Module._settingMountRadialRadiusModifier.Value * 100,
+                Parent   = mountsLeftPanel,
             };
             settingMountRadialRadiusModifier_Slider.ValueChanged += delegate { Module._settingMountRadialRadiusModifier.Value = settingMountRadialRadiusModifier_Slider.Value / 100; };
             Label settingMountRadialIconSizeModifier_Label = new Label()
@@ -285,11 +286,11 @@ namespace Manlaan.Mounts.Views
             TrackBar settingMountRadialIconSizeModifier_Slider = new TrackBar()
             {
                 Location = new Point(settingMountRadialIconSizeModifier_Label.Right + 5, settingMountRadialIconSizeModifier_Label.Top),
-                Width = 120,
+                Width    = mountsAndRadialInputWidth,
                 MaxValue = 100,
                 MinValue = 5,
-                Value = Module._settingMountRadialIconSizeModifier.Value * 100,
-                Parent = mountsLeftPanel,
+                Value    = Module._settingMountRadialIconSizeModifier.Value * 100,
+                Parent   = mountsLeftPanel,
             };
             settingMountRadialIconSizeModifier_Slider.ValueChanged += delegate { Module._settingMountRadialIconSizeModifier.Value = settingMountRadialIconSizeModifier_Slider.Value / 100; };
         Label settingMountRadialIconOpacity_Label = new Label()
@@ -304,11 +305,11 @@ namespace Manlaan.Mounts.Views
             TrackBar settingMountRadialIconOpacity_Slider = new TrackBar()
             {
                 Location = new Point(settingMountRadialIconOpacity_Label.Right + 5, settingMountRadialIconOpacity_Label.Top),
-                Width = 120,
+                Width    = mountsAndRadialInputWidth,
                 MaxValue = 100,
                 MinValue = 5,
-                Value = Module._settingMountRadialIconOpacity.Value * 100,
-                Parent = mountsLeftPanel,
+                Value    = Module._settingMountRadialIconOpacity.Value * 100,
+                Parent   = mountsLeftPanel,
             };
             settingMountRadialIconOpacity_Slider.ValueChanged += delegate { Module._settingMountRadialIconOpacity.Value = settingMountRadialIconOpacity_Slider.Value / 100; };
             Label settingMountRadialCenterMountBehavior_Label = new Label()
@@ -323,8 +324,8 @@ namespace Manlaan.Mounts.Views
             Dropdown settingMountRadialCenterMountBehavior_Select = new Dropdown()
             {
                 Location = new Point(settingMountRadialCenterMountBehavior_Label.Right + 5, settingMountRadialCenterMountBehavior_Label.Top - 4),
-                Width = orderWidth,
-                Parent = mountsLeftPanel,
+                Width    = mountsAndRadialInputWidth,
+                Parent   = mountsLeftPanel,
             };
             foreach (string i in Module._mountRadialCenterMountBehavior)
             {
