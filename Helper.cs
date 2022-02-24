@@ -2,6 +2,7 @@
 using Blish_HUD.Modules.Managers;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Manlaan.Mounts
@@ -9,6 +10,8 @@ namespace Manlaan.Mounts
     internal class Helper
     {
         private readonly ContentsManager contentsManager;
+
+        private readonly Dictionary<string, Texture2D> _textureCache = new Dictionary<string, Texture2D>();
 
         public Helper(ContentsManager contentsManager)
         {
@@ -28,18 +31,27 @@ namespace Manlaan.Mounts
 
         public Texture2D GetImgFile(string filename)
         {
+            string textureName = filename;
+
             switch (Module._settingDisplay.Value)
             {
                 default:
                 case "Solid":
-                    return contentsManager.GetTexture(filename + ".png");
-
+                    textureName += ".png";
+                    break;
                 case "Transparent":
-                    return contentsManager.GetTexture(filename + "-trans.png");
-
+                    textureName += "-trans.png";
+                    break;
                 case "SolidText":
-                    return contentsManager.GetTexture(filename + "-text.png");
+                    textureName += "-text.png";
+                    break;
             }
+
+            if (!_textureCache.ContainsKey(textureName)) {
+                _textureCache[textureName] = contentsManager.GetTexture(textureName);
+            }
+
+            return _textureCache[textureName];
         }
 
         private bool IsPlayerInWvWMap()
