@@ -38,6 +38,8 @@ namespace Manlaan.Mounts
         public SettingEntry<int> OrderSetting { get; private set; }
         public SettingEntry<KeyBinding> KeybindingSetting { get; private set; }
         public CornerIcon CornerIcon { get; private set; }
+        public bool IsAvailable => OrderSetting.Value != 0 && IsKeybindSet;
+        public bool IsKeybindSet => KeybindingSetting.Value.ModifierKeys != ModifierKeys.None && KeybindingSetting.Value.PrimaryKey != Keys.None;
 
         public async Task DoHotKey()
         {

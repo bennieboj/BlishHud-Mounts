@@ -32,7 +32,7 @@ namespace Manlaan.Mounts
         #endregion
 
         internal static Collection<Mount> _mounts;
-        internal static List<Mount> _availableOrderedMounts => _mounts.Where(m => m.OrderSetting.Value != 0).OrderBy(m => m.OrderSetting.Value).ToList();
+        internal static List<Mount> _availableOrderedMounts => _mounts.Where(m => m.IsAvailable).OrderBy(m => m.OrderSetting.Value).ToList();
 
         public static int[] _mountOrder = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         public static string[] _mountDisplay = new string[] { "Transparent", "Solid", "SolidText" };
@@ -191,6 +191,7 @@ namespace Manlaan.Mounts
             _settingOpacity.SettingChanged += UpdateSettings;
 
         }
+
         public override IView GetSettingsView()
         {
             return new Views.DummySettingsView(ContentsManager);
@@ -351,10 +352,7 @@ namespace Manlaan.Mounts
         private void DrawCornerIcons() {
             foreach (Mount mount in _availableOrderedMounts)
             {
-                if (mount.OrderSetting.Value != 0)
-                {
-                    mount.CreateCornerIcon(_helper.GetImgFile(mount.ImageFileName));
-                }
+                mount.CreateCornerIcon(_helper.GetImgFile(mount.ImageFileName));
             }
 
         }
@@ -390,8 +388,8 @@ namespace Manlaan.Mounts
             {
                 if (e.Key == key)
                 {
-                    if (e.EventType == KeyboardEventType.KeyDown) _radial.Start();
-                    else if (e.EventType == KeyboardEventType.KeyUp) await _radial.StopAsync();
+                    if (e.EventType == KeyboardEventType.KeyDown) await _radial.Start();
+                    else if (e.EventType == KeyboardEventType.KeyUp) await _radial.Stop();
                 }
             }
         }

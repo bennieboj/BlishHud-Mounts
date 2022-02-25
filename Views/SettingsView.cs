@@ -71,7 +71,7 @@ namespace Manlaan.Mounts.Views
                     Parent = mountsLeftPanel,
                     Text = $"{mount.DisplayName}: ",
                 };
-                Dropdown settingRaptor_Select = new Dropdown()
+                Dropdown settingMount_Select = new Dropdown()
                 {
                     Location = new Point(settingMount_Label.Right + 5, settingMount_Label.Top - 4),
                     Width = orderWidth,
@@ -80,24 +80,26 @@ namespace Manlaan.Mounts.Views
                 foreach (int i in Module._mountOrder)
                 {
                     if (i == 0)
-                        settingRaptor_Select.Items.Add("Disabled");
+                        settingMount_Select.Items.Add("Disabled");
                     else
-                        settingRaptor_Select.Items.Add(i.ToString());
+                        settingMount_Select.Items.Add(i.ToString());
                 }
-                settingRaptor_Select.SelectedItem = mount.OrderSetting.Value == 0 ? "Disabled" : mount.OrderSetting.Value.ToString();
-                settingRaptor_Select.ValueChanged += delegate {
-                    if (settingRaptor_Select.SelectedItem.Equals("Disabled"))
+                settingMount_Select.SelectedItem = !mount.IsAvailable ? "Disabled" : mount.OrderSetting.Value.ToString();
+                settingMount_Select.ValueChanged += delegate {
+                    if (settingMount_Select.SelectedItem.Equals("Disabled"))
                         mount.OrderSetting.Value = 0;
                     else
-                        mount.OrderSetting.Value = int.Parse(settingRaptor_Select.SelectedItem);
+                        mount.OrderSetting.Value = int.Parse(settingMount_Select.SelectedItem);
                 };
-                KeybindingAssigner settingRaptor_Keybind = new KeybindingAssigner()
+                KeybindingAssigner settingRaptor_Keybind = new KeybindingAssigner(mount.KeybindingSetting.Value)
                 {
                     NameWidth = 0,
                     Size = new Point(bindingWidth, 20),
                     Parent = mountsLeftPanel,
-                    KeyBinding = mount.KeybindingSetting.Value,
-                    Location = new Point(settingRaptor_Select.Right + 5, settingMount_Label.Top - 1),
+                    Location = new Point(settingMount_Select.Right + 5, settingMount_Label.Top - 1),
+                };
+                settingRaptor_Keybind.BindingChanged += delegate {
+                    mount.KeybindingSetting.Value = settingRaptor_Keybind.KeyBinding;                    
                 };
 
                 curY = settingMount_Label.Bottom;

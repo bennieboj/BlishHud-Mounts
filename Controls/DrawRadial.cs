@@ -1,6 +1,7 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
 using Blish_HUD.Controls.Intern;
+using Gw2Sharp.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -125,8 +126,14 @@ namespace Manlaan.Mounts.Controls
             await (SelectedMount?.Mount.DoHotKey() ?? Task.CompletedTask);
         }
 
-        internal void Start()
+        internal async Task Start()
         {
+            if(GameService.Gw2Mumble.PlayerCharacter.CurrentMount != MountType.None)
+            {
+                await (Module._availableOrderedMounts.FirstOrDefault()?.DoHotKey() ?? Task.CompletedTask);
+                return;
+            }
+
             if (!Visible)
             {
                 _maxRadialDiameter = Math.Min(GameService.Graphics.SpriteScreen.Width, GameService.Graphics.SpriteScreen.Height);
@@ -149,7 +156,7 @@ namespace Manlaan.Mounts.Controls
             Visible = true;
         }
 
-        internal async Task StopAsync()
+        internal async Task Stop()
         {
             await TriggerSelectedMountAsync();
             Visible = false;
