@@ -3,6 +3,7 @@ using Blish_HUD.Controls;
 using Blish_HUD.Controls.Extern;
 using Blish_HUD.Input;
 using Blish_HUD.Settings;
+using Gw2Sharp.Models;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -49,7 +50,10 @@ namespace Manlaan.Mounts
                 return;
             }
 
-            LastUsedTimestamp = DateTime.UtcNow;
+            if (GameService.Gw2Mumble.PlayerCharacter.CurrentMount == MountType.None)
+            {
+                LastUsedTimestamp = DateTime.UtcNow;
+            }
 
             if (KeybindingSetting.Value.ModifierKeys != ModifierKeys.None)
             {

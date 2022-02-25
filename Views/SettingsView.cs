@@ -183,34 +183,9 @@ namespace Manlaan.Mounts.Views
                 KeyBinding = Module._settingDefaultMountBinding.Value,
                 Location   = new Point(settingDefaultMountKeybind_Label.Right + 4, settingDefaultMountKeybind_Label.Top - 1),
             };
-            Label settingDefaultMountBehaviour_Label = new Label()
-            {
-                Location = new Point(0, settingDefaultMountKeybind_Label.Bottom + 6),
-                Width = labelWidth2,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = mountsLeftPanel,
-                Text = "Keybind behaviour: ",
-            };
-            Dropdown settingDefaultMountBehaviour_Select = new Dropdown()
-            {
-                Location = new Point(settingDefaultMountBehaviour_Label.Right + 5, settingDefaultMountBehaviour_Label.Top - 4),
-                Width    = settingDefaultMount_Keybind.Width,
-                Parent   = mountsLeftPanel,
-            };
-            settingDefaultMountBehaviour_Select.Items.Add("Disabled");
-            List<string> mountBehaviours = Module._mountBehaviour.ToList();
-            foreach (string i in mountBehaviours)
-            {
-                settingDefaultMountBehaviour_Select.Items.Add(i.ToString());
-            }
-            settingDefaultMountBehaviour_Select.SelectedItem = mountBehaviours.Any(m => m == Module._settingDefaultMountBehaviour.Value) ? Module._settingDefaultMountBehaviour.Value : "Disabled";
-            settingDefaultMountBehaviour_Select.ValueChanged += delegate {
-                Module._settingDefaultMountBehaviour.Value = settingDefaultMountBehaviour_Select.SelectedItem;
-            };
             Label settingDisplayMountQueueing_Label = new Label()
             {
-                Location = new Point(0, settingDefaultMountBehaviour_Label.Bottom + 6),
+                Location = new Point(0, settingDefaultMountKeybind_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -295,7 +270,7 @@ namespace Manlaan.Mounts.Views
                 Parent   = mountsLeftPanel,
             };
             settingMountRadialIconSizeModifier_Slider.ValueChanged += delegate { Module._settingMountRadialIconSizeModifier.Value = settingMountRadialIconSizeModifier_Slider.Value / 100; };
-        Label settingMountRadialIconOpacity_Label = new Label()
+            Label settingMountRadialIconOpacity_Label = new Label()
             {
                 Location = new Point(0, settingMountRadialIconSizeModifier_Label.Bottom + 6),
                 Width = labelWidth2,
@@ -336,6 +311,25 @@ namespace Manlaan.Mounts.Views
             settingMountRadialCenterMountBehavior_Select.SelectedItem = Module._settingMountRadialCenterMountBehavior.Value;
             settingMountRadialCenterMountBehavior_Select.ValueChanged += delegate {
                 Module._settingMountRadialCenterMountBehavior.Value = settingMountRadialCenterMountBehavior_Select.SelectedItem;
+            };
+            Label settingMountRadialRemoveCenterMount_Label = new Label()
+            {
+                Location = new Point(0, settingMountRadialCenterMountBehavior_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsLeftPanel,
+                Text = "Remove center mount from radial: ",
+            };
+            Checkbox settingMountRadialRemoveCenterMount_Checkbox = new Checkbox()
+            {
+                Size = new Point(labelWidth2, 20),
+                Parent = mountsLeftPanel,
+                Checked = Module._settingMountRadialRemoveCenterMount.Value,
+                Location = new Point(settingMountRadialRemoveCenterMount_Label.Right + 5, settingMountRadialRemoveCenterMount_Label.Top - 1),
+            };
+            settingMountRadialRemoveCenterMount_Checkbox.CheckedChanged += delegate {
+                Module._settingMountRadialRemoveCenterMount.Value = settingMountRadialRemoveCenterMount_Checkbox.Checked;
             };
 
             #endregion

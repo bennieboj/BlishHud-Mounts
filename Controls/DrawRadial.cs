@@ -1,6 +1,7 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
 using Blish_HUD.Controls.Intern;
+using Blish_HUD.Input;
 using Gw2Sharp.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -29,6 +30,8 @@ namespace Manlaan.Mounts.Controls
         private List<RadialMount> RadialMounts = new List<RadialMount>();
         private RadialMount SelectedMount => RadialMounts.SingleOrDefault(m => m.Selected);
 
+        public override int ZIndex { get => base.ZIndex; set => base.ZIndex = value; }
+
         int radius = 0;
         int mountIconSize = 0;
         int _maxRadialDiameter = 0;
@@ -51,26 +54,16 @@ namespace Manlaan.Mounts.Controls
             RadialMounts.Clear();
             var mounts = Module._availableOrderedMounts;
 
-            if(Module._settingMountRadialCenterMountBehavior.Value != "None")
+            Mount mountToPutInCenter = _helper.GetCenterMount();
+            if (mountToPutInCenter != null)
             {
-                Mount mountToPutInCenter = null;
-                switch (Module._settingMountRadialCenterMountBehavior.Value)
-                {
-                    case "Default":
-                        mountToPutInCenter = _helper.GetDefaultMount();
-                        break;
-                    case "LastUsed":
-                        mountToPutInCenter = _helper.GetLastUsedMount();
-                        break;
-                }
-
-                if (mountToPutInCenter != null)
+                if (Module._settingMountRadialRemoveCenterMount.Value)
                 {
                     mounts.Remove(mountToPutInCenter);
-                    var texture = _helper.GetImgFile(mountToPutInCenter.ImageFileName);
-                    int loc = radius;
-                    RadialMounts.Add(new RadialMount { Texture = texture, Mount = mountToPutInCenter, ImageX = loc, ImageY = loc, Default = true });
                 }
+                var texture = _helper.GetImgFile(mountToPutInCenter.ImageFileName);
+                int loc = radius;
+                RadialMounts.Add(new RadialMount { Texture = texture, Mount = mountToPutInCenter, ImageX = loc, ImageY = loc, Default = true });
             }
 
 
@@ -126,40 +119,32 @@ namespace Manlaan.Mounts.Controls
             await (SelectedMount?.Mount.DoHotKey() ?? Task.CompletedTask);
         }
 
-        internal async Task Start()
+        protected override void OnShown(EventArgs e)
         {
-            if(GameService.Gw2Mumble.PlayerCharacter.CurrentMount != MountType.None)
+            _maxRadialDiameter = Math.Min(GameService.Graphics.SpriteScreen.Width, GameService.Graphics.SpriteScreen.Height);
+            mountIconSize = (int)(_maxRadialDiameter / 4 * Module._settingMountRadialIconSizeModifier.Value);
+            radius = (int)((_maxRadialDiameter / 2 - mountIconSize / 2) * Module._settingMountRadialRadiusModifier.Value);
+            Size = new Point(_maxRadialDiameter, _maxRadialDiameter);
+
+            if (Module._settingMountRadialSpawnAtMouse.Value)
             {
-                await (Module._availableOrderedMounts.FirstOrDefault()?.DoHotKey() ?? Task.CompletedTask);
-                return;
+                SpawnPoint = Input.Mouse.Position;
+            }
+            else
+            {
+                Mouse.SetPosition(GameService.Graphics.WindowWidth / 2, GameService.Graphics.WindowHeight / 2, true);
+                SpawnPoint = new Point(GameService.Graphics.SpriteScreen.Width / 2, GameService.Graphics.SpriteScreen.Height / 2);
             }
 
-            if (!Visible)
-            {
-                _maxRadialDiameter = Math.Min(GameService.Graphics.SpriteScreen.Width, GameService.Graphics.SpriteScreen.Height);
-                mountIconSize = (int)(_maxRadialDiameter / 4 * Module._settingMountRadialIconSizeModifier.Value);
-                radius = (int)((_maxRadialDiameter / 2 - mountIconSize / 2) * Module._settingMountRadialRadiusModifier.Value);
-                Size = new Point(_maxRadialDiameter, _maxRadialDiameter);
+            Location = new Point(SpawnPoint.X - radius - mountIconSize / 2, SpawnPoint.Y - radius - mountIconSize / 2);
 
-                if (Module._settingMountRadialSpawnAtMouse.Value)
-                {
-                    SpawnPoint = Input.Mouse.Position;
-                }
-                else
-                {
-                    Mouse.SetPosition(GameService.Graphics.WindowWidth / 2, GameService.Graphics.WindowHeight / 2, true);
-                    SpawnPoint = new Point(GameService.Graphics.SpriteScreen.Width / 2, GameService.Graphics.SpriteScreen.Height / 2);
-                }
-
-                Location = new Point(SpawnPoint.X - radius - mountIconSize/2, SpawnPoint.Y - radius - mountIconSize/2);
-            }
-            Visible = true;
+            base.OnShown(e);
         }
 
-        internal async Task Stop()
+        protected override void OnHidden(EventArgs e)
         {
-            await TriggerSelectedMountAsync();
-            Visible = false;
+            TriggerSelectedMountAsync(); // todo await????
+            base.OnHidden(e);
         }
     }
 }

@@ -69,7 +69,7 @@ namespace Manlaan.Mounts
             return Module._mounts.SingleOrDefault(m => m.IsWaterMount && m.Name == Module._settingDefaultWaterMountChoice.Value);
         }
 
-        internal Mount GetDefaultMount()
+        internal Mount GetInstantMount()
         {
             if (IsPlayerInWvWMap())
             {
@@ -81,16 +81,20 @@ namespace Manlaan.Mounts
                 return GetWaterMount();
             }
 
-            return Module._mounts.SingleOrDefault(m => m.Name == Module._settingDefaultMountChoice.Value);
+            return null;
         }
+
+        internal Mount GetCenterMount()
+        {
+            if (Module._settingMountRadialCenterMountBehavior.Value == "Default")
+                return Module._mounts.SingleOrDefault(m => m.Name == Module._settingDefaultMountChoice.Value);
+            if (Module._settingMountRadialCenterMountBehavior.Value == "LastUsed")
+                return GetLastUsedMount();
+             return null;
+        }      
 
         internal Mount GetLastUsedMount()
         {
-            if (IsPlayerUnderOrCloseToWater())
-            {
-                return GetWaterMount();
-            }
-
             return Module._mounts.Where(m => m.LastUsedTimestamp != null).OrderByDescending(m => m.LastUsedTimestamp).FirstOrDefault();
         }
     }

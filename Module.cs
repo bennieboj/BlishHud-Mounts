@@ -16,6 +16,7 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using Manlaan.Mounts.Controls;
 using System.Collections.Generic;
+using Gw2Sharp.Models;
 
 namespace Manlaan.Mounts
 {
@@ -36,7 +37,6 @@ namespace Manlaan.Mounts
 
         public static int[] _mountOrder = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         public static string[] _mountDisplay = new string[] { "Transparent", "Solid", "SolidText" };
-        public static string[] _mountBehaviour = new string[] { "DefaultMount", "Radial" };
         public static string[] _mountOrientation = new string[] { "Horizontal", "Vertical" };
         public static string[] _mountRadialCenterMountBehavior = new string[] { "None", "Default", "LastUsed" };
         public static SettingEntry<KeyBinding> InputQueuingKeybindSetting = null;
@@ -46,12 +46,12 @@ namespace Manlaan.Mounts
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
         public static SettingEntry<bool> _settingDisplayMountQueueing;
         public static SettingEntry<bool> _settingDefaultMountUseRadial;
-        public static SettingEntry<string> _settingDefaultMountBehaviour;
         public static SettingEntry<bool> _settingMountRadialSpawnAtMouse;
         public static SettingEntry<float> _settingMountRadialRadiusModifier;
         public static SettingEntry<float> _settingMountRadialIconSizeModifier;
         public static SettingEntry<float> _settingMountRadialIconOpacity;
         public static SettingEntry<string> _settingMountRadialCenterMountBehavior;
+        public static SettingEntry<bool> _settingMountRadialRemoveCenterMount;
         public static SettingEntry<string> _settingDisplay;
         public static SettingEntry<bool> _settingDisplayCornerIcons;
         public static SettingEntry<bool> _settingDisplayManualIcons;
@@ -76,7 +76,6 @@ namespace Manlaan.Mounts
         protected override void Initialize()
         {
             GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += async (sender, e) => await HandleCombatChangeAsync(sender, e);
-            GameService.Input.Keyboard.KeyStateChanged += async (sender, e) => await HandleKeyBoardKeyChangeAsync(sender, e);
 
             _helper = new Helper(ContentsManager);
             windowTab = new WindowTab("Mounts", ContentsManager.GetTexture("514394-grey.png"));
@@ -109,13 +108,6 @@ namespace Manlaan.Mounts
                 }
             }
         }
-        private void MigrateDefaultMountBehaviour()
-        {
-            if (_settingDefaultMountBehaviour.Value.Equals(""))
-            {
-                _settingDefaultMountBehaviour.Value = _settingDefaultMountUseRadial.Value ? "Radial" : "DefaultMount";
-            }
-        }
 
         protected override void DefineSettings(SettingCollection settings)
         {
@@ -133,13 +125,11 @@ namespace Manlaan.Mounts
             };
 
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), "Default Mount Binding", "");
-            _settingDefaultMountBinding.Value.Enabled = true;
             _settingDefaultMountBinding.Value.Activated += async delegate { await DoDefaultMountActionAsync(); };
             _settingDefaultMountChoice = settings.DefineSetting("DefaultMountChoice", "Disabled", "Default Mount Choice", "");
             _settingDefaultWaterMountChoice = settings.DefineSetting("DefaultWaterMountChoice", "Disabled", "Default Water Mount Choice", "");
             _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false, "Display Mount queuing", "");
             _settingDefaultMountUseRadial = settings.DefineSetting("DefaultMountUseRadial", false, "Default Mount uses radial", "");
-            _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "", "Default Mount button behaviour", "");
             _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, "Radial spawn at mouse", "");
             _settingMountRadialIconSizeModifier = settings.DefineSetting("MountRadialIconSizeModifier", 0.5f, "Radial Icon Size", "");
             _settingMountRadialIconSizeModifier.SetRange(0.05f, 1f);
@@ -148,6 +138,7 @@ namespace Manlaan.Mounts
             _settingMountRadialIconOpacity = settings.DefineSetting("MountRadialIconOpacity", 0.5f, "Radial Icon Opacity", "");
             _settingMountRadialIconOpacity.SetRange(0.05f, 1f);
             _settingMountRadialCenterMountBehavior = settings.DefineSetting("MountRadialCenterMountBehavior", "Default", "Determines the mount in the center of the radial.", "");
+            _settingMountRadialRemoveCenterMount = settings.DefineSetting("MountRadialRemoveCenterMount", true, "Removes center mount from radial", "");
 
 
             _settingDisplay = settings.DefineSetting("MountDisplay", "Transparent", "Display Type", "");
@@ -162,7 +153,6 @@ namespace Manlaan.Mounts
             _settingOpacity.SetRange(0f, 1f);
 
             MigrateDisplaySettings();
-            MigrateDefaultMountBehaviour();
 
             foreach (Mount m in _mounts)
             {
@@ -174,12 +164,12 @@ namespace Manlaan.Mounts
             _settingDefaultWaterMountChoice.SettingChanged += UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged += UpdateSettings;
             _settingDefaultMountUseRadial.SettingChanged += UpdateSettings;
-            _settingDefaultMountBehaviour.SettingChanged += UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged += UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged += UpdateSettings;
             _settingMountRadialCenterMountBehavior.SettingChanged += UpdateSettings;
             _settingMountRadialIconOpacity.SettingChanged += UpdateSettings;
+            _settingMountRadialRemoveCenterMount.SettingChanged += UpdateSettings;
 
             _settingDisplay.SettingChanged += UpdateSettings;
             _settingDisplayCornerIcons.SettingChanged += UpdateSettings;
@@ -231,6 +221,11 @@ namespace Manlaan.Mounts
             {
                 _queueingSpinner?.Show();
             }
+
+            if(_radial.Visible && !_settingDefaultMountBinding.Value.IsTriggering)
+            {
+                _radial.Hide();
+            }
         }
 
         /// <inheritdoc />
@@ -251,12 +246,12 @@ namespace Manlaan.Mounts
             _settingDefaultWaterMountChoice.SettingChanged -= UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged -= UpdateSettings;
             _settingDefaultMountUseRadial.SettingChanged -= UpdateSettings;
-            _settingDefaultMountBehaviour.SettingChanged -= UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged -= UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged -= UpdateSettings;
             _settingMountRadialCenterMountBehavior.SettingChanged -= UpdateSettings;
             _settingMountRadialIconOpacity.SettingChanged -= UpdateSettings;
+            _settingMountRadialRemoveCenterMount.SettingChanged -= UpdateSettings;
 
             _settingDisplay.SettingChanged -= UpdateSettings;
             _settingDisplayCornerIcons.SettingChanged -= UpdateSettings;
@@ -381,26 +376,22 @@ namespace Manlaan.Mounts
             _radial.Parent = GameService.Graphics.SpriteScreen;
         }
 
-        private async Task HandleKeyBoardKeyChangeAsync(object sender, KeyboardEventArgs e)
-        {
-            var key = _settingDefaultMountBinding.Value.PrimaryKey;
-            if (_settingDefaultMountBehaviour.Value == "Radial")
-            {
-                if (e.Key == key)
-                {
-                    if (e.EventType == KeyboardEventType.KeyDown) await _radial.Start();
-                    else if (e.EventType == KeyboardEventType.KeyUp) await _radial.Stop();
-                }
-            }
-        }
-
         private async Task DoDefaultMountActionAsync()
         {
-            if (_settingDefaultMountBehaviour.Value == "DefaultMount")
+            if (GameService.Gw2Mumble.PlayerCharacter.CurrentMount != MountType.None)
             {
-                await (_helper.GetDefaultMount()?.DoHotKey() ?? Task.CompletedTask);
+                await (_availableOrderedMounts.FirstOrDefault()?.DoHotKey() ?? Task.CompletedTask);
+                return;
             }
 
+            var instantMount = _helper.GetInstantMount();
+            if (instantMount != null)
+            {
+                await instantMount.DoHotKey();
+                return;
+            }
+
+            _radial.Show();
         }
         
         private async Task HandleCombatChangeAsync(object sender, ValueEventArgs<bool> e)
