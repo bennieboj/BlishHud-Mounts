@@ -15,7 +15,7 @@ namespace Manlaan.Mounts.Views
             int orderWidth                = 80;
             int bindingWidth              = 150;
             int mountsAndRadialInputWidth = 125;
-            Color mustMatchIngameColor = new Color(205, 24, 25);
+            Color mustMatchIngameColor = new Color(219, 70, 33);
 
             Panel mountsLeftPanel = new Panel() {
                 CanScroll = false,
