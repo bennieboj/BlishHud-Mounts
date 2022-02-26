@@ -44,7 +44,6 @@ namespace Manlaan.Mounts
         public static SettingEntry<string> _settingDefaultWaterMountChoice;
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
         public static SettingEntry<bool> _settingDisplayMountQueueing;
-        public static SettingEntry<bool> _settingDefaultMountUseRadial;
         public static SettingEntry<bool> _settingMountRadialSpawnAtMouse;
         public static SettingEntry<float> _settingMountRadialRadiusModifier;
         public static SettingEntry<float> _settingMountRadialIconSizeModifier;
@@ -130,32 +129,31 @@ namespace Manlaan.Mounts
                 new SiegeTurtle(settings, _helper)
             };
 
-            _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), "Default Mount Binding", "");
+            _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
             _settingDefaultMountBinding.Value.Activated += async delegate { await DoDefaultMountActionAsync(); };
-            _settingDefaultMountChoice = settings.DefineSetting("DefaultMountChoice", "Disabled", "Default Mount Choice", "");
-            _settingDefaultWaterMountChoice = settings.DefineSetting("DefaultWaterMountChoice", "Disabled", "Default Water Mount Choice", "");
-            _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false, "Display Mount queuing", "");
-            _settingDefaultMountUseRadial = settings.DefineSetting("DefaultMountUseRadial", false, "Default Mount uses radial", "");
-            _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, "Radial spawn at mouse", "");
-            _settingMountRadialIconSizeModifier = settings.DefineSetting("MountRadialIconSizeModifier", 0.5f, "Radial Icon Size", "");
+            _settingDefaultMountChoice = settings.DefineSetting("DefaultMountChoice", "Disabled", () => Strings.Setting_DefaultMountChoice, () => "");
+            _settingDefaultWaterMountChoice = settings.DefineSetting("DefaultWaterMountChoice", "Disabled", () => Strings.Setting_DefaultWaterMountChoice, () => "");
+            _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false, () => Strings.Setting_DisplayMountQueueing, () => "");
+            _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, () => Strings.Setting_MountRadialSpawnAtMouse, () => "");
+            _settingMountRadialIconSizeModifier = settings.DefineSetting("MountRadialIconSizeModifier", 0.5f, () => Strings.Setting_MountRadialIconSizeModifier, () => "");
             _settingMountRadialIconSizeModifier.SetRange(0.05f, 1f);
-            _settingMountRadialRadiusModifier = settings.DefineSetting("MountRadialRadiusModifier", 0.5f, "Radial radius", "");
+            _settingMountRadialRadiusModifier = settings.DefineSetting("MountRadialRadiusModifier", 0.5f, () => Strings.Setting_MountRadialRadiusModifier, () => "");
             _settingMountRadialRadiusModifier.SetRange(0.2f, 1f);
-            _settingMountRadialIconOpacity = settings.DefineSetting("MountRadialIconOpacity", 0.5f, "Radial Icon Opacity", "");
+            _settingMountRadialIconOpacity = settings.DefineSetting("MountRadialIconOpacity", 0.5f, () => Strings.Setting_MountRadialIconOpacity, () => "");
             _settingMountRadialIconOpacity.SetRange(0.05f, 1f);
-            _settingMountRadialCenterMountBehavior = settings.DefineSetting("MountRadialCenterMountBehavior", "Default", "Determines the mount in the center of the radial.", "");
-            _settingMountRadialRemoveCenterMount = settings.DefineSetting("MountRadialRemoveCenterMount", true, "Removes center mount from radial", "");
-            _settingMountRadialToggleActionCameraKeyBinding = settings.DefineSetting("MountRadialToggleActionCameraKeyBinding", new KeyBinding(Keys.F10), "Ingame KeyBind to toggle action camera", "");
+            _settingMountRadialCenterMountBehavior = settings.DefineSetting("MountRadialCenterMountBehavior", "Default", () => Strings.Setting_MountRadialCenterMountBehavior, () => "");
+            _settingMountRadialRemoveCenterMount = settings.DefineSetting("MountRadialRemoveCenterMount", true, () => Strings.Setting_MountRadialRemoveCenterMount, () => "");
+            _settingMountRadialToggleActionCameraKeyBinding = settings.DefineSetting("MountRadialToggleActionCameraKeyBinding", new KeyBinding(Keys.F10), () => Strings.Setting_MountRadialToggleActionCameraKeyBinding, () => "");
 
-            _settingDisplay = settings.DefineSetting("MountDisplay", "Transparent", "Display Type", "");
-            _settingDisplayCornerIcons = settings.DefineSetting("MountDisplayCornerIcons", false, "Display corner icons", "");
-            _settingDisplayManualIcons = settings.DefineSetting("MountDisplayManualIcons", false, "Display manual icons", "");
-            _settingOrientation = settings.DefineSetting("Orientation", "Horizontal", "Manual Orientation", "");
-            _settingLoc = settings.DefineSetting("MountLoc", new Point(100, 100), "Window Location", "");
-            _settingDrag = settings.DefineSetting("MountDrag", false, "Enable Dragging (White Box)", "");
-            _settingImgWidth = settings.DefineSetting("MountImgWidth", 50, "Manual Icon Width", "");
+            _settingDisplay = settings.DefineSetting("MountDisplay", "Transparent", () => Strings.Setting_MountDisplay, () => "");
+            _settingDisplayCornerIcons = settings.DefineSetting("MountDisplayCornerIcons", false, () => Strings.Setting_MountDisplayCornerIcons, () => "");
+            _settingDisplayManualIcons = settings.DefineSetting("MountDisplayManualIcons", false, () => Strings.Setting_MountDisplayManualIcons, () => "");
+            _settingOrientation = settings.DefineSetting("Orientation", "Horizontal", () => Strings.Setting_Orientation, () => "");
+            _settingLoc = settings.DefineSetting("MountLoc", new Point(100, 100), () => Strings.Setting_MountLoc, () => "");
+            _settingDrag = settings.DefineSetting("MountDrag", false, () => Strings.Setting_MountDrag, () => "");
+            _settingImgWidth = settings.DefineSetting("MountImgWidth", 50, () => Strings.Setting_MountImgWidth, () => "");
             _settingImgWidth.SetRange(0, 200);
-            _settingOpacity = settings.DefineSetting("MountOpacity", 1.0f, "Manual Opacity", "");
+            _settingOpacity = settings.DefineSetting("MountOpacity", 1.0f, () => Strings.Setting_MountOpacity, () => "");
             _settingOpacity.SetRange(0f, 1f);
 
             MigrateDisplaySettings();
@@ -168,7 +166,6 @@ namespace Manlaan.Mounts
             _settingDefaultMountChoice.SettingChanged += UpdateSettings;
             _settingDefaultWaterMountChoice.SettingChanged += UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged += UpdateSettings;
-            _settingDefaultMountUseRadial.SettingChanged += UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged += UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged += UpdateSettings;
@@ -249,7 +246,6 @@ namespace Manlaan.Mounts
             _settingDefaultMountChoice.SettingChanged -= UpdateSettings;
             _settingDefaultWaterMountChoice.SettingChanged -= UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged -= UpdateSettings;
-            _settingDefaultMountUseRadial.SettingChanged -= UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged -= UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged -= UpdateSettings;

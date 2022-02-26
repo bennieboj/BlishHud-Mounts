@@ -42,6 +42,9 @@ namespace Manlaan.Mounts.Controls
             Visible = false;
             Padding = Thickness.Zero;
             _helper = helper;
+
+            Shown += async (sender, e) => await HandleShown(sender, e);
+            Hidden += async (sender, e) => await HandleHidden(sender, e);
         }
 
         protected override CaptureType CapturesInput()
@@ -118,13 +121,14 @@ namespace Manlaan.Mounts.Controls
             await (SelectedMount?.Mount.DoHotKey() ?? Task.CompletedTask);
         }
 
-        protected override void OnShown(EventArgs e)
+
+        private async Task HandleShown(object sender, EventArgs e)
         {
             var isCursorVisible = GameService.Input.Mouse.CursorIsVisible;
             if (!isCursorVisible)
             {
                 IsActionCamToggledOnMount = true;
-                _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding); //todo await???
+                await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding); //todo await???
             }
 
             _maxRadialDiameter = Math.Min(GameService.Graphics.SpriteScreen.Width, GameService.Graphics.SpriteScreen.Height);
@@ -143,19 +147,16 @@ namespace Manlaan.Mounts.Controls
             }
 
             Location = new Point(SpawnPoint.X - radius - mountIconSize / 2, SpawnPoint.Y - radius - mountIconSize / 2);
-
-            base.OnShown(e);
         }
 
-        protected override void OnHidden(EventArgs e)
+        private async Task HandleHidden(object sender, EventArgs e)
         {
             if (IsActionCamToggledOnMount)
             {
-                _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding); //todo await???
+                await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding);
                 IsActionCamToggledOnMount = false;
             }
-            TriggerSelectedMountAsync(); // todo await????
-            base.OnHidden(e);
+            await TriggerSelectedMountAsync();
         }
     }
 }

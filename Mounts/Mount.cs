@@ -24,8 +24,8 @@ namespace Manlaan.Mounts
             ImageFileName = imageFileName;
             IsWaterMount = isUnderwaterMount;
             IsWvWMount = isWvWMount;
-            OrderSetting = settingCollection.DefineSetting($"Mount{name}Order2", defaultOrderSetting, $"{displayName} Order", "");
-            KeybindingSetting = settingCollection.DefineSetting($"Mount{name}Binding", new KeyBinding(Keys.None), $"{displayName} Binding", "");
+            OrderSetting = settingCollection.DefineSetting($"Mount{name}Order2", defaultOrderSetting, () => $"{displayName} Order", () => "");
+            KeybindingSetting = settingCollection.DefineSetting($"Mount{name}Binding", new KeyBinding(Keys.None), () => $"{displayName} Binding", () => "");
         }
 
         public string Name { get; private set; }
