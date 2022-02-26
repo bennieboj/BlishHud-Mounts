@@ -3,16 +3,19 @@ using Microsoft.Xna.Framework;
 using Blish_HUD.Settings.UI.Views;
 using Blish_HUD.Graphics.UI;
 using System.Linq;
+using Blish_HUD;
 
 namespace Manlaan.Mounts.Views
 {
     class SettingsView : View
     {
         protected override void Build(Container buildPanel) {
-            int labelWidth                = 100;
+            int labelWidth                = 150;
+            int labelWidth2               = 250;
             int orderWidth                = 80;
             int bindingWidth              = 150;
             int mountsAndRadialInputWidth = 125;
+            Color mustMatchIngameColor = new Color(205, 24, 25);
 
             Panel mountsLeftPanel = new Panel() {
                 CanScroll = false,
@@ -41,13 +44,14 @@ namespace Manlaan.Mounts.Views
             Label keybindWarning_Label = new Label()
             {
                 Location = new Point(5, 2),
-                Width = 330,
+                Width = 300,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
-                Text = "MOUNT KEYBINDS MUST MATCH INGAME KEYBINDS",
-                TextColor = Color.Red,
-                HorizontalAlignment = HorizontalAlignment.Center,
+                Text = "These must match in-game key binding",
+                Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Regular),
+                TextColor = mustMatchIngameColor,
+                HorizontalAlignment = HorizontalAlignment.Center
             };
             Label settingOrderLeft_Label = new Label() {
                 Location = new Point(labelWidth + 5, keybindWarning_Label.Bottom + 6),
@@ -64,7 +68,7 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
-                Text = "Key Binding",
+                Text = "In-game key binding",
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
 
@@ -106,6 +110,7 @@ namespace Manlaan.Mounts.Views
                     NameWidth = 0,
                     Size = new Point(bindingWidth, 20),
                     Parent = mountsLeftPanel,
+                    BackgroundColor = mustMatchIngameColor,
                     Location = new Point(settingMount_Select.Right + 5, settingMount_Label.Top - 1),
                 };
                 settingRaptor_Keybind.BindingChanged += delegate {
@@ -115,8 +120,7 @@ namespace Manlaan.Mounts.Views
                 curY = settingMount_Label.Bottom;
             }
 
-
-            int labelWidth2 = 200;
+                        
             Label settingDefaultSettingsMount_Label = new Label()
             {
                 Location = new Point(0, curY + 24),
@@ -183,7 +187,7 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
-                Text = "Keybind: ",
+                Text = "Key binding: ",
             };
             KeybindingAssigner settingDefaultMount_Keybind = new KeybindingAssigner(Module._settingDefaultMountBinding.Value)
             {
@@ -347,13 +351,14 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
-                Text = "Action camera keybind: ",
+                Text = "In-game action camera key binding: ",
             };
             KeybindingAssigner settingMountRadialToggleActionCameraKeyBinding_Keybind = new KeybindingAssigner(Module._settingMountRadialToggleActionCameraKeyBinding.Value)
             {
                 NameWidth = 0,
                 Size = new Point(mountsAndRadialInputWidth, 20),
                 Parent = mountsLeftPanel,
+                BackgroundColor = mustMatchIngameColor,
                 Location = new Point(settingMountRadialToggleActionCameraKeyBinding_Label.Right + 4, settingMountRadialToggleActionCameraKeyBinding_Label.Top - 1),
             };
 
