@@ -1,8 +1,6 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
 using Blish_HUD.Controls.Intern;
-using Blish_HUD.Input;
-using Gw2Sharp.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -31,6 +29,7 @@ namespace Manlaan.Mounts.Controls
         private RadialMount SelectedMount => RadialMounts.SingleOrDefault(m => m.Selected);
 
         public override int ZIndex { get => base.ZIndex; set => base.ZIndex = value; }
+        public bool IsActionCamToggledOnMount { get; private set; }
 
         int radius = 0;
         int mountIconSize = 0;
@@ -121,12 +120,19 @@ namespace Manlaan.Mounts.Controls
 
         protected override void OnShown(EventArgs e)
         {
+            var isCursorVisible = GameService.Input.Mouse.CursorIsVisible;
+            if (!isCursorVisible)
+            {
+                IsActionCamToggledOnMount = true;
+                _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding); //todo await???
+            }
+
             _maxRadialDiameter = Math.Min(GameService.Graphics.SpriteScreen.Width, GameService.Graphics.SpriteScreen.Height);
             mountIconSize = (int)(_maxRadialDiameter / 4 * Module._settingMountRadialIconSizeModifier.Value);
             radius = (int)((_maxRadialDiameter / 2 - mountIconSize / 2) * Module._settingMountRadialRadiusModifier.Value);
             Size = new Point(_maxRadialDiameter, _maxRadialDiameter);
 
-            if (Module._settingMountRadialSpawnAtMouse.Value)
+            if (Module._settingMountRadialSpawnAtMouse.Value && isCursorVisible)
             {
                 SpawnPoint = Input.Mouse.Position;
             }
@@ -143,6 +149,11 @@ namespace Manlaan.Mounts.Controls
 
         protected override void OnHidden(EventArgs e)
         {
+            if (IsActionCamToggledOnMount)
+            {
+                _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding); //todo await???
+                IsActionCamToggledOnMount = false;
+            }
             TriggerSelectedMountAsync(); // todo await????
             base.OnHidden(e);
         }

@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Blish_HUD.Settings.UI.Views;
 using Blish_HUD.Graphics.UI;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace Manlaan.Mounts.Views
 {
@@ -19,7 +18,7 @@ namespace Manlaan.Mounts.Views
                 CanScroll = false,
                 Parent = buildPanel,
                 HeightSizingMode = SizingMode.AutoSize,
-                Width = 330,
+                Width = 400,
                 Location = new Point(10, 10),
             };
             Panel otherPanel = new Panel() {
@@ -39,8 +38,19 @@ namespace Manlaan.Mounts.Views
             DisplayManualPanelIfNeeded(manualPanel);
 
             #region Mounts Panel
+            Label keybindWarning_Label = new Label()
+            {
+                Location = new Point(5, 2),
+                Width = 330,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsLeftPanel,
+                Text = "MOUNT KEYBINDS MUST MATCH INGAME KEYBINDS",
+                TextColor = Color.Red,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            };
             Label settingOrderLeft_Label = new Label() {
-                Location = new Point(labelWidth + 5, 2),
+                Location = new Point(labelWidth + 5, keybindWarning_Label.Bottom + 6),
                 Width = orderWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -175,12 +185,11 @@ namespace Manlaan.Mounts.Views
                 Parent = mountsLeftPanel,
                 Text = "Keybind: ",
             };
-            KeybindingAssigner settingDefaultMount_Keybind = new KeybindingAssigner()
+            KeybindingAssigner settingDefaultMount_Keybind = new KeybindingAssigner(Module._settingDefaultMountBinding.Value)
             {
                 NameWidth  = 0,
                 Size       = new Point(mountsAndRadialInputWidth, 20),
                 Parent     = mountsLeftPanel,
-                KeyBinding = Module._settingDefaultMountBinding.Value,
                 Location   = new Point(settingDefaultMountKeybind_Label.Right + 4, settingDefaultMountKeybind_Label.Top - 1),
             };
             Label settingDisplayMountQueueing_Label = new Label()
@@ -330,6 +339,22 @@ namespace Manlaan.Mounts.Views
             };
             settingMountRadialRemoveCenterMount_Checkbox.CheckedChanged += delegate {
                 Module._settingMountRadialRemoveCenterMount.Value = settingMountRadialRemoveCenterMount_Checkbox.Checked;
+            };
+            Label settingMountRadialToggleActionCameraKeyBinding_Label = new Label()
+            {
+                Location = new Point(0, settingMountRadialRemoveCenterMount_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsLeftPanel,
+                Text = "Action camera keybind: ",
+            };
+            KeybindingAssigner settingMountRadialToggleActionCameraKeyBinding_Keybind = new KeybindingAssigner(Module._settingMountRadialToggleActionCameraKeyBinding.Value)
+            {
+                NameWidth = 0,
+                Size = new Point(mountsAndRadialInputWidth, 20),
+                Parent = mountsLeftPanel,
+                Location = new Point(settingMountRadialToggleActionCameraKeyBinding_Label.Right + 4, settingMountRadialToggleActionCameraKeyBinding_Label.Top - 1),
             };
 
             #endregion

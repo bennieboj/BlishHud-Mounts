@@ -1,13 +1,18 @@
 ﻿using Blish_HUD;
+using Blish_HUD.Controls.Extern;
+using Blish_HUD.Input;
 using Blish_HUD.Modules.Managers;
+using Blish_HUD.Settings;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Manlaan.Mounts
 {
-    internal class Helper
+    public class Helper
     {
         private readonly ContentsManager contentsManager;
 
@@ -96,6 +101,44 @@ namespace Manlaan.Mounts
         internal Mount GetLastUsedMount()
         {
             return Module._mounts.Where(m => m.LastUsedTimestamp != null).OrderByDescending(m => m.LastUsedTimestamp).FirstOrDefault();
+        }
+
+        public async Task TriggerKeybind(SettingEntry<KeyBinding> keybindingSetting)
+        {
+            if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
+            {
+                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
+                    Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.MENU, true);
+                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
+                    Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.CONTROL, true);
+                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
+                    Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.SHIFT, true);
+            }
+            Blish_HUD.Controls.Intern.Keyboard.Press(ToVirtualKey(keybindingSetting.Value.PrimaryKey), true);
+            await Task.Delay(50);
+            Blish_HUD.Controls.Intern.Keyboard.Release(ToVirtualKey(keybindingSetting.Value.PrimaryKey), true);
+            if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
+            {
+                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
+                    Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.SHIFT, true);
+                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
+                    Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.CONTROL, true);
+                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
+                    Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.MENU, true);
+            }
+        }
+
+
+        private VirtualKeyShort ToVirtualKey(Keys key)
+        {
+            try
+            {
+                return (VirtualKeyShort)key;
+            }
+            catch
+            {
+                return new VirtualKeyShort();
+            }
         }
     }
 }

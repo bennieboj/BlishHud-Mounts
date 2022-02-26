@@ -23,6 +23,16 @@
 }
 /*
     "changelog": {
+        "1.2.10": "2022-02-26: disable action cam when displaying radial
+                  ignore "spawn radial at mouse" setting when action cam is enabled
+                  clarified mount keybind settings to match ingame settings
+                  ",
+        "1.2.9": "2022-02-25: Avoid loading textures multiple times + don't reinstantiate controls every time (thanks freesnow)
+                  Dismount when already mounted, don't show radial
+                  hide mount when no keybind specified in settings
+                  added option to add radial center mount without removing it from the list
+                  automatically trigger wvw mount or default water mount without showing radial
+                  ",
         "1.2.8": "2022-02-23: Clarified mount queuing naming
                   made default radial size in options smaller
                   added option for transparancy

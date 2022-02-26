@@ -39,7 +39,6 @@ namespace Manlaan.Mounts
         public static string[] _mountDisplay = new string[] { "Transparent", "Solid", "SolidText" };
         public static string[] _mountOrientation = new string[] { "Horizontal", "Vertical" };
         public static string[] _mountRadialCenterMountBehavior = new string[] { "None", "Default", "LastUsed" };
-        public static SettingEntry<KeyBinding> InputQueuingKeybindSetting = null;
 
         public static SettingEntry<string> _settingDefaultMountChoice;
         public static SettingEntry<string> _settingDefaultWaterMountChoice;
@@ -52,6 +51,8 @@ namespace Manlaan.Mounts
         public static SettingEntry<float> _settingMountRadialIconOpacity;
         public static SettingEntry<string> _settingMountRadialCenterMountBehavior;
         public static SettingEntry<bool> _settingMountRadialRemoveCenterMount;
+        public static SettingEntry<KeyBinding> _settingMountRadialToggleActionCameraKeyBinding;
+
         public static SettingEntry<string> _settingDisplay;
         public static SettingEntry<bool> _settingDisplayCornerIcons;
         public static SettingEntry<bool> _settingDisplayManualIcons;
@@ -61,7 +62,9 @@ namespace Manlaan.Mounts
         public static SettingEntry<int> _settingImgWidth;
         public static SettingEntry<float> _settingOpacity;
 
+#pragma warning disable CS0618 // Type or member is obsolete
         private WindowTab windowTab;
+#pragma warning restore CS0618 // Type or member is obsolete
         private Panel _mountPanel;
         private DrawRadial _radial;
         private LoadingSpinner _queueingSpinner;
@@ -71,14 +74,17 @@ namespace Manlaan.Mounts
         private Point _dragStart = Point.Zero;
 
         [ImportingConstructor]
-        public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) : base(moduleParameters) { }
+        public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) : base(moduleParameters) {
+            _helper = new Helper(ContentsManager);
+        }
 
         protected override void Initialize()
         {
             GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += async (sender, e) => await HandleCombatChangeAsync(sender, e);
 
-            _helper = new Helper(ContentsManager);
+#pragma warning disable CS0618 // Type or member is obsolete
             windowTab = new WindowTab("Mounts", ContentsManager.GetTexture("514394-grey.png"));
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
 
@@ -113,15 +119,15 @@ namespace Manlaan.Mounts
         {
             _mounts = new Collection<Mount>
             {
-                new Raptor(settings),
-                new Springer(settings),
-                new Skimmer(settings),
-                new Jackal(settings),
-                new Griffon(settings),
-                new RollerBeetle(settings),
-                new Warclaw(settings),
-                new Skyscale(settings),
-                new SiegeTurtle(settings)
+                new Raptor(settings, _helper),
+                new Springer(settings, _helper),
+                new Skimmer(settings, _helper),
+                new Jackal(settings, _helper),
+                new Griffon(settings, _helper),
+                new RollerBeetle(settings, _helper),
+                new Warclaw(settings, _helper),
+                new Skyscale(settings, _helper),
+                new SiegeTurtle(settings, _helper)
             };
 
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), "Default Mount Binding", "");
@@ -139,7 +145,7 @@ namespace Manlaan.Mounts
             _settingMountRadialIconOpacity.SetRange(0.05f, 1f);
             _settingMountRadialCenterMountBehavior = settings.DefineSetting("MountRadialCenterMountBehavior", "Default", "Determines the mount in the center of the radial.", "");
             _settingMountRadialRemoveCenterMount = settings.DefineSetting("MountRadialRemoveCenterMount", true, "Removes center mount from radial", "");
-
+            _settingMountRadialToggleActionCameraKeyBinding = settings.DefineSetting("MountRadialToggleActionCameraKeyBinding", new KeyBinding(Keys.F10), "Ingame KeyBind to toggle action camera", "");
 
             _settingDisplay = settings.DefineSetting("MountDisplay", "Transparent", "Display Type", "");
             _settingDisplayCornerIcons = settings.DefineSetting("MountDisplayCornerIcons", false, "Display corner icons", "");
@@ -159,7 +165,6 @@ namespace Manlaan.Mounts
                 m.OrderSetting.SettingChanged += UpdateSettings;
                 m.KeybindingSetting.SettingChanged += UpdateSettings;
             }
-            _settingDefaultMountBinding.SettingChanged += UpdateSettings;
             _settingDefaultMountChoice.SettingChanged += UpdateSettings;
             _settingDefaultWaterMountChoice.SettingChanged += UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged += UpdateSettings;
@@ -241,7 +246,6 @@ namespace Manlaan.Mounts
                 m.DisposeCornerIcon();
             }
 
-            _settingDefaultMountBinding.SettingChanged -= UpdateSettings;
             _settingDefaultMountChoice.SettingChanged -= UpdateSettings;
             _settingDefaultWaterMountChoice.SettingChanged -= UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged -= UpdateSettings;
