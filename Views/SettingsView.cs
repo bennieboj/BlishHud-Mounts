@@ -4,24 +4,36 @@ using Blish_HUD.Settings.UI.Views;
 using Blish_HUD.Graphics.UI;
 using System.Linq;
 using Blish_HUD;
+using Blish_HUD.Modules.Managers;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Manlaan.Mounts.Views
 {
     class SettingsView : View
     {
+        private ContentsManager ContentsManager { get; }
+
+        private Texture2D anetTexture { get; }
+
+        public SettingsView(ContentsManager contentsManager)
+        {
+            ContentsManager = contentsManager;
+            anetTexture = contentsManager.GetTexture("1441452.png");
+        }
+
+
         protected override void Build(Container buildPanel) {
             int labelWidth                = 150;
             int labelWidth2               = 250;
             int orderWidth                = 80;
-            int bindingWidth              = 150;
+            int bindingWidth              = 170;
             int mountsAndRadialInputWidth = 125;
-            Color mustMatchIngameColor = new Color(219, 70, 33);
 
             Panel mountsLeftPanel = new Panel() {
                 CanScroll = false,
                 Parent = buildPanel,
                 HeightSizingMode = SizingMode.AutoSize,
-                Width = 400,
+                Width = 420,
                 Location = new Point(10, 10),
             };
             Panel otherPanel = new Panel() {
@@ -41,17 +53,22 @@ namespace Manlaan.Mounts.Views
             DisplayManualPanelIfNeeded(manualPanel);
 
             #region Mounts Panel
+            var anetImage = new Image
+            {
+                Parent = mountsLeftPanel,
+                Size = new Point(16, 16),
+                Location = new Point(5, 2),
+                Texture = anetTexture,
+            };
             Label keybindWarning_Label = new Label()
             {
-                Location = new Point(5, 2),
+                Location = new Point(anetImage.Right + 3, anetImage.Bottom - 16),
                 Width = 300,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsLeftPanel,
-                Text = "These must match in-game key binding",
-                Font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Regular),
-                TextColor = mustMatchIngameColor,
-                HorizontalAlignment = HorizontalAlignment.Center
+                Text = "must match in-game key binding",
+                HorizontalAlignment = HorizontalAlignment.Left
             };
             Label settingOrderLeft_Label = new Label() {
                 Location = new Point(labelWidth + 5, keybindWarning_Label.Bottom + 6),
@@ -70,6 +87,13 @@ namespace Manlaan.Mounts.Views
                 Parent = mountsLeftPanel,
                 Text = "In-game key binding",
                 HorizontalAlignment = HorizontalAlignment.Center,
+            };
+            new Image
+            {
+                Parent = mountsLeftPanel,
+                Size = new Point(16, 16),
+                Location = new Point(settingBindingLeft_Label.Right - 20, settingBindingLeft_Label.Bottom - 16),
+                Texture = anetTexture,
             };
 
             int curY = settingOrderLeft_Label.Bottom;
@@ -110,7 +134,6 @@ namespace Manlaan.Mounts.Views
                     NameWidth = 0,
                     Size = new Point(bindingWidth, 20),
                     Parent = mountsLeftPanel,
-                    BackgroundColor = mustMatchIngameColor,
                     Location = new Point(settingMount_Select.Right + 5, settingMount_Label.Top - 1),
                 };
                 settingRaptor_Keybind.BindingChanged += delegate {
@@ -353,12 +376,18 @@ namespace Manlaan.Mounts.Views
                 Parent = mountsLeftPanel,
                 Text = "In-game action camera key binding: ",
             };
+            new Image
+            {
+                Parent = mountsLeftPanel,
+                Size = new Point(16, 16),
+                Location = new Point(settingMountRadialToggleActionCameraKeyBinding_Label.Right - 32, settingMountRadialToggleActionCameraKeyBinding_Label.Bottom - 16),
+                Texture = anetTexture,
+            };
             KeybindingAssigner settingMountRadialToggleActionCameraKeyBinding_Keybind = new KeybindingAssigner(Module._settingMountRadialToggleActionCameraKeyBinding.Value)
             {
                 NameWidth = 0,
                 Size = new Point(mountsAndRadialInputWidth, 20),
                 Parent = mountsLeftPanel,
-                BackgroundColor = mustMatchIngameColor,
                 Location = new Point(settingMountRadialToggleActionCameraKeyBinding_Label.Right + 4, settingMountRadialToggleActionCameraKeyBinding_Label.Top - 1),
             };
 

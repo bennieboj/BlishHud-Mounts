@@ -195,7 +195,7 @@ namespace Manlaan.Mounts
         protected override void OnModuleLoaded(EventArgs e)
         {
             DrawUI();
-            GameService.Overlay.BlishHudWindow.AddTab(windowTab, () => new Views.SettingsView());
+            GameService.Overlay.BlishHudWindow.AddTab(windowTab, () => new Views.SettingsView(ContentsManager));
 
             // Base handler must be called
             base.OnModuleLoaded(e);
