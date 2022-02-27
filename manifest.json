@@ -32,6 +32,7 @@
                   added keybind behaviour back
                   mount available fix
                   added some debug logging
+                  do not send mount keybind to game, option will be enabled later (issue in core)
                   require blishhud 0.11.6
                   ",
         "1.2.10": "2022-02-26:

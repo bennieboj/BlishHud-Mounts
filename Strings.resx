@@ -132,6 +132,9 @@
   <data name="Setting_DisplayMountQueueing" xml:space="preserve">
     <value>Display Mount queuing</value>
   </data>
+  <data name="Setting_MountBlockKeybindFromGame" xml:space="preserve">
+    <value>Do not send keybind to game</value>
+  </data>
   <data name="Setting_MountDisplay" xml:space="preserve">
     <value>Display Type</value>
   </data>

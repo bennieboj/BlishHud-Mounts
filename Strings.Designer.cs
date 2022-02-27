@@ -106,6 +106,15 @@ namespace Manlaan.Mounts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Do not send keybind to game.
+        /// </summary>
+        internal static string Setting_MountBlockKeybindFromGame {
+            get {
+                return ResourceManager.GetString("Setting_MountBlockKeybindFromGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Display Type.
         /// </summary>
         internal static string Setting_MountDisplay {
