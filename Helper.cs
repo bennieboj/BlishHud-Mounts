@@ -1,14 +1,22 @@
 ﻿using Blish_HUD;
+using Blish_HUD.Controls.Extern;
+using Blish_HUD.Input;
 using Blish_HUD.Modules.Managers;
+using Blish_HUD.Settings;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Manlaan.Mounts
 {
-    internal class Helper
+    public class Helper
     {
         private readonly ContentsManager contentsManager;
+
+        private readonly Dictionary<string, Texture2D> _textureCache = new Dictionary<string, Texture2D>();
 
         public Helper(ContentsManager contentsManager)
         {
@@ -28,18 +36,27 @@ namespace Manlaan.Mounts
 
         public Texture2D GetImgFile(string filename)
         {
+            string textureName = filename;
+
             switch (Module._settingDisplay.Value)
             {
                 default:
                 case "Solid":
-                    return contentsManager.GetTexture(filename + ".png");
-
+                    textureName += ".png";
+                    break;
                 case "Transparent":
-                    return contentsManager.GetTexture(filename + "-trans.png");
-
+                    textureName += "-trans.png";
+                    break;
                 case "SolidText":
-                    return contentsManager.GetTexture(filename + "-text.png");
+                    textureName += "-text.png";
+                    break;
             }
+
+            if (!_textureCache.ContainsKey(textureName)) {
+                _textureCache[textureName] = contentsManager.GetTexture(textureName);
+            }
+
+            return _textureCache[textureName];
         }
 
         private bool IsPlayerInWvWMap()
@@ -57,7 +74,7 @@ namespace Manlaan.Mounts
             return Module._mounts.SingleOrDefault(m => m.IsWaterMount && m.Name == Module._settingDefaultWaterMountChoice.Value);
         }
 
-        internal Mount GetDefaultMount()
+        internal Mount GetInstantMount()
         {
             if (IsPlayerInWvWMap())
             {
@@ -69,17 +86,63 @@ namespace Manlaan.Mounts
                 return GetWaterMount();
             }
 
-            return Module._mounts.SingleOrDefault(m => m.Name == Module._settingDefaultMountChoice.Value);
+            return null;
         }
 
+        internal Mount GetCenterMount()
+        {
+            if (Module._settingMountRadialCenterMountBehavior.Value == "Default")
+                return GetDefaultMount();
+            if (Module._settingMountRadialCenterMountBehavior.Value == "LastUsed")
+                return GetLastUsedMount();
+             return null;
+        }
+
+        internal Mount GetDefaultMount()
+        {
+            return Module._mounts.SingleOrDefault(m => m.Name == Module._settingDefaultMountChoice.Value);
+        }
         internal Mount GetLastUsedMount()
         {
-            if (IsPlayerUnderOrCloseToWater())
-            {
-                return GetWaterMount();
-            }
-
             return Module._mounts.Where(m => m.LastUsedTimestamp != null).OrderByDescending(m => m.LastUsedTimestamp).FirstOrDefault();
+        }
+
+        public async Task TriggerKeybind(SettingEntry<KeyBinding> keybindingSetting)
+        {
+            if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
+            {
+                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
+                    Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.MENU, true);
+                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
+                    Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.CONTROL, true);
+                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
+                    Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.SHIFT, true);
+            }
+            Blish_HUD.Controls.Intern.Keyboard.Press(ToVirtualKey(keybindingSetting.Value.PrimaryKey), true);
+            await Task.Delay(50);
+            Blish_HUD.Controls.Intern.Keyboard.Release(ToVirtualKey(keybindingSetting.Value.PrimaryKey), true);
+            if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
+            {
+                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
+                    Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.SHIFT, true);
+                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
+                    Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.CONTROL, true);
+                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
+                    Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.MENU, true);
+            }
+        }
+
+
+        private VirtualKeyShort ToVirtualKey(Keys key)
+        {
+            try
+            {
+                return (VirtualKeyShort)key;
+            }
+            catch
+            {
+                return new VirtualKeyShort();
+            }
         }
     }
 }

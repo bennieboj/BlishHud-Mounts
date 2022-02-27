@@ -1,13 +1,13 @@
 {
   "name": "Mounts",
-  "version": "1.2.7",
+  "version": "1.2.12",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
 
   "description": "Mount icons + radial",
   "dependencies": {
-    "bh.blishhud": ">=0.11.4"
+    "bh.blishhud": ">=0.11.6"
   },
   "url": "https://github.com/manlaan/BlishHud-Mounts",
   "contributors": [
@@ -23,6 +23,38 @@
 }
 /*
     "changelog": {
+        "1.2.12": "2022-02-27:stable release",
+        "1.2.11": "2022-02-27:
+                  fix keybind not being enabled
+                  fix default mount order duplicate number
+                  fix automatically setting mount order to disabled when no keybind set
+                  fix center mount displaying even when not available
+                  added keybind behaviour back
+                  mount available fix
+                  added some debug logging
+                  do not send mount keybind to game, option will be enabled later (issue in core)
+                  require blishhud 0.11.6
+                  ",
+        "1.2.10": "2022-02-26:
+                  disable action cam when displaying radial
+                  ignore "spawn radial at mouse" setting when action cam is enabled
+                  clarified requirement of mount keybind settings to match ingame settings
+                  ",
+        "1.2.9": "2022-02-25:
+                  Avoid loading textures multiple times + don't reinstantiate controls every time (thanks freesnow)
+                  Dismount when already mounted, don't show radial
+                  hide mount when no keybind specified in settings
+                  added option to add radial center mount without removing it from the list
+                  automatically trigger wvw mount or default water mount without showing radial
+                  ",
+        "1.2.8": "2022-02-23:
+                  Clarified mount queuing naming
+                  made default radial size in options smaller
+                  added option for transparancy
+                  add updated transparant icons with outline
+                  correctly unload settings icon tab
+                  make event handlers async
+                  ",
         "1.2.7": "2022-02-18: Added Behaviors for Radial/Default + Center Radial: None, Default, LastUsed",
         "1.2.6": "2022-02-14: Made settings icon grey + fix bug with mount queuring",
         "1.2.5": "2022-02-11: Added customizations, moved settings",
