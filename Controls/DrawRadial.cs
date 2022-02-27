@@ -24,6 +24,7 @@ namespace Manlaan.Mounts.Controls
 
     internal class DrawRadial : Control
     {
+        private static readonly Logger Logger = Logger.GetLogger<DrawRadial>();
         private readonly Helper _helper;
         private List<RadialMount> RadialMounts = new List<RadialMount>();
         private RadialMount SelectedMount => RadialMounts.SingleOrDefault(m => m.Selected);
@@ -124,11 +125,13 @@ namespace Manlaan.Mounts.Controls
 
         private async Task HandleShown(object sender, EventArgs e)
         {
+            Logger.Debug("HandleShown entered");
             var isCursorVisible = GameService.Input.Mouse.CursorIsVisible;
             if (!isCursorVisible)
             {
                 IsActionCamToggledOnMount = true;
-                await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding); //todo await???
+                await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding);
+                Logger.Debug("HandleShown turned off action cam");
             }
 
             _maxRadialDiameter = Math.Min(GameService.Graphics.SpriteScreen.Width, GameService.Graphics.SpriteScreen.Height);
@@ -151,10 +154,12 @@ namespace Manlaan.Mounts.Controls
 
         private async Task HandleHidden(object sender, EventArgs e)
         {
+            Logger.Debug("HandleHidden entered");
             if (IsActionCamToggledOnMount)
             {
                 await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding);
                 IsActionCamToggledOnMount = false;
+                Logger.Debug("HandleHidden turned back on action cam");
             }
             await TriggerSelectedMountAsync();
         }

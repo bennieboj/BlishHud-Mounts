@@ -23,12 +23,15 @@
 }
 /*
     "changelog": {
-        "1.2.11": "2022-02-26:
+        "1.2.12": "2022-02-27:stable release",
+        "1.2.11": "2022-02-27:
                   fix keybind not being enabled
                   fix default mount order duplicate number
                   fix automatically setting mount order to disabled when no keybind set
                   fix center mount displaying even when not available
                   added keybind behaviour back
+                  mount available fix
+                  added some debug logging
                   require blishhud 0.11.6
                   ",
         "1.2.10": "2022-02-26:

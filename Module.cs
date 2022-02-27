@@ -382,9 +382,11 @@ namespace Manlaan.Mounts
 
         private async Task DoDefaultMountActionAsync()
         {
+            Logger.Debug("DoDefaultMountActionAsync entered");
             if (GameService.Gw2Mumble.PlayerCharacter.CurrentMount != MountType.None)
             {
                 await (_availableOrderedMounts.FirstOrDefault()?.DoHotKey() ?? Task.CompletedTask);
+                Logger.Debug("DoDefaultMountActionAsync dismounted");
                 return;
             }
 
@@ -392,6 +394,7 @@ namespace Manlaan.Mounts
             if (instantMount != null)
             {
                 await instantMount.DoHotKey();
+                Logger.Debug("DoDefaultMountActionAsync instantmount");
                 return;
             }
 
@@ -399,9 +402,11 @@ namespace Manlaan.Mounts
             {
                 case "DefaultMount":
                     await (_helper.GetDefaultMount()?.DoHotKey() ?? Task.CompletedTask);
+                    Logger.Debug("DoDefaultMountActionAsync defaultmount");
                     break;
                 case "Radial":
                     _radial.Show();
+                    Logger.Debug("DoDefaultMountActionAsync radial");
                     break;
             }
             return;
