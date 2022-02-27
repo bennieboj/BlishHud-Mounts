@@ -1,6 +1,6 @@
 {
   "name": "Mounts",
-  "version": "1.2.10",
+  "version": "1.2.11",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -23,7 +23,7 @@
 }
 /*
     "changelog": {
-        "1.2.10": "2022-02-26:
+        "1.2.11": "2022-02-26:
                   fix keybind not being enabled
                   fix default mount order duplicate number
                   fix automatically setting mount order to disabled when no keybind set
