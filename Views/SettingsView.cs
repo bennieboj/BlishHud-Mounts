@@ -6,6 +6,7 @@ using System.Linq;
 using Blish_HUD;
 using Blish_HUD.Modules.Managers;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace Manlaan.Mounts.Views
 {
@@ -122,7 +123,7 @@ namespace Manlaan.Mounts.Views
                     else
                         settingMount_Select.Items.Add(i.ToString());
                 }
-                settingMount_Select.SelectedItem = !mount.IsAvailable ? "Disabled" : mount.OrderSetting.Value.ToString();
+                settingMount_Select.SelectedItem = mount.OrderSetting.Value == 0 ? "Disabled" : mount.OrderSetting.Value.ToString();
                 settingMount_Select.ValueChanged += delegate {
                     if (settingMount_Select.SelectedItem.Equals("Disabled"))
                         mount.OrderSetting.Value = 0;
@@ -219,9 +220,36 @@ namespace Manlaan.Mounts.Views
                 Parent     = mountsLeftPanel,
                 Location   = new Point(settingDefaultMountKeybind_Label.Right + 4, settingDefaultMountKeybind_Label.Top - 1),
             };
-            Label settingDisplayMountQueueing_Label = new Label()
+
+            Label settingDefaultMountBehaviour_Label = new Label()
             {
                 Location = new Point(0, settingDefaultMountKeybind_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsLeftPanel,
+                Text = "Keybind behaviour: ",
+            };
+            Dropdown settingDefaultMountBehaviour_Select = new Dropdown()
+            {
+                Location = new Point(settingDefaultMountBehaviour_Label.Right + 5, settingDefaultMountBehaviour_Label.Top - 4),
+                Width = settingDefaultMount_Keybind.Width,
+                Parent = mountsLeftPanel,
+            };
+            settingDefaultMountBehaviour_Select.Items.Add("Disabled");
+            List<string> mountBehaviours = Module._mountBehaviour.ToList();
+            foreach (string i in mountBehaviours)
+            {
+                settingDefaultMountBehaviour_Select.Items.Add(i.ToString());
+            }
+            settingDefaultMountBehaviour_Select.SelectedItem = mountBehaviours.Any(m => m == Module._settingDefaultMountBehaviour.Value) ? Module._settingDefaultMountBehaviour.Value : "Disabled";
+            settingDefaultMountBehaviour_Select.ValueChanged += delegate {
+                Module._settingDefaultMountBehaviour.Value = settingDefaultMountBehaviour_Select.SelectedItem;
+            };
+
+            Label settingDisplayMountQueueing_Label = new Label()
+            {
+                Location = new Point(0, settingDefaultMountBehaviour_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,

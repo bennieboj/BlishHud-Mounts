@@ -61,6 +61,15 @@ namespace Manlaan.Mounts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Default Mount button behaviour.
+        /// </summary>
+        internal static string Setting_DefaultMountBehaviour {
+            get {
+                return ResourceManager.GetString("Setting_DefaultMountBehaviour", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Default Mount Binding.
         /// </summary>
         internal static string Setting_DefaultMountBinding {

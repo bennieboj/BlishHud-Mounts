@@ -57,7 +57,7 @@ namespace Manlaan.Mounts.Controls
             var mounts = Module._availableOrderedMounts;
 
             Mount mountToPutInCenter = _helper.GetCenterMount();
-            if (mountToPutInCenter != null)
+            if (mountToPutInCenter != null && mountToPutInCenter.IsAvailable)
             {
                 if (Module._settingMountRadialRemoveCenterMount.Value)
                 {

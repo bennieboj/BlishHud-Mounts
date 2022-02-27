@@ -31,7 +31,6 @@ namespace Manlaan.Mounts
         public string Name { get; private set; }
         public string DisplayName { get; private set; }
         public string ImageFileName { get; private set; }
-        public bool IsDisabled { get; private set; }
         public DateTime? QueuedTimestamp { get; internal set; }
         public DateTime? LastUsedTimestamp { get; internal set; }
         public bool IsWaterMount { get; private set; }
@@ -109,35 +108,35 @@ namespace Manlaan.Mounts
 
     public class Griffon : Mount
     {
-        public Griffon(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Griffon", "Griffon", "griffon", false, false, 4)
+        public Griffon(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Griffon", "Griffon", "griffon", false, false, 5)
         {
         }
     }
 
     public class RollerBeetle : Mount
     {
-        public RollerBeetle(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Roller", "Roller Beetle", "roller", false, false, 5)
+        public RollerBeetle(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Roller", "Roller Beetle", "roller", false, false, 6)
         {
         }
     }
 
     public class Warclaw : Mount
     {
-        public Warclaw(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Warclaw", "Warclaw", "warclaw", false, true, 6)
+        public Warclaw(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Warclaw", "Warclaw", "warclaw", false, true, 7)
         {
         }
     }
 
     public class Skyscale : Mount
     {
-        public Skyscale(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Skyscale", "Skyscale", "skyscale", false, false, 7)
+        public Skyscale(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Skyscale", "Skyscale", "skyscale", false, false, 8)
         {
         }
     }
 
     public class SiegeTurtle : Mount
     {
-        public SiegeTurtle(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Turtle", "Siege Turtle", "turtle", true, false, 8)
+        public SiegeTurtle(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Turtle", "Siege Turtle", "turtle", true, false, 9)
         {
         }
     }

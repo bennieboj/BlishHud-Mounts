@@ -92,12 +92,16 @@ namespace Manlaan.Mounts
         internal Mount GetCenterMount()
         {
             if (Module._settingMountRadialCenterMountBehavior.Value == "Default")
-                return Module._mounts.SingleOrDefault(m => m.Name == Module._settingDefaultMountChoice.Value);
+                return GetDefaultMount();
             if (Module._settingMountRadialCenterMountBehavior.Value == "LastUsed")
                 return GetLastUsedMount();
              return null;
-        }      
+        }
 
+        internal Mount GetDefaultMount()
+        {
+            return Module._mounts.SingleOrDefault(m => m.Name == Module._settingDefaultMountChoice.Value);
+        }
         internal Mount GetLastUsedMount()
         {
             return Module._mounts.Where(m => m.LastUsedTimestamp != null).OrderByDescending(m => m.LastUsedTimestamp).FirstOrDefault();

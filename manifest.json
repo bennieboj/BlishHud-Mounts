@@ -7,7 +7,7 @@
 
   "description": "Mount icons + radial",
   "dependencies": {
-    "bh.blishhud": ">=0.11.5"
+    "bh.blishhud": ">=0.11.6"
   },
   "url": "https://github.com/manlaan/BlishHud-Mounts",
   "contributors": [
@@ -23,17 +23,28 @@
 }
 /*
     "changelog": {
-        "1.2.10": "2022-02-26: disable action cam when displaying radial
+        "1.2.10": "2022-02-26:
+                  fix keybind not being enabled
+                  fix default mount order duplicate number
+                  fix automatically setting mount order to disabled when no keybind set
+                  fix center mount displaying even when not available
+                  added keybind behaviour back
+                  require blishhud 0.11.6
+                  ",
+        "1.2.10": "2022-02-26:
+                  disable action cam when displaying radial
                   ignore "spawn radial at mouse" setting when action cam is enabled
                   clarified requirement of mount keybind settings to match ingame settings
                   ",
-        "1.2.9": "2022-02-25: Avoid loading textures multiple times + don't reinstantiate controls every time (thanks freesnow)
+        "1.2.9": "2022-02-25:
+                  Avoid loading textures multiple times + don't reinstantiate controls every time (thanks freesnow)
                   Dismount when already mounted, don't show radial
                   hide mount when no keybind specified in settings
                   added option to add radial center mount without removing it from the list
                   automatically trigger wvw mount or default water mount without showing radial
                   ",
-        "1.2.8": "2022-02-23: Clarified mount queuing naming
+        "1.2.8": "2022-02-23:
+                  Clarified mount queuing naming
                   made default radial size in options smaller
                   added option for transparancy
                   add updated transparant icons with outline
