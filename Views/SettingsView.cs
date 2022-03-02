@@ -384,26 +384,6 @@ namespace Manlaan.Mounts.Views
                 Parent = defaultMountPanel,
                 Location = new Point(settingDefaultMountKeybind_Label.Right + 4, settingDefaultMountKeybind_Label.Top - 1),
             };
-            //Label settingMountBlockKeybindFromGame_Label = new Label()
-            //{
-            //    Location = new Point(0, settingDefaultMountKeybind_Label.Bottom + 6),
-            //    Width = labelWidth2,
-            //    AutoSizeHeight = false,
-            //    WrapText = false,
-            //    Parent = defaultMountPanel,
-            //    Text = "Do not send keybind to game:"
-            //};
-            //Checkbox settingMountBlockKeybindFromGame_Checkbox = new Checkbox()
-            //{
-            //    Size = new Point(labelWidth2, 20),
-            //    Parent = defaultMountPanel,
-            //    Checked = Module._settingMountBlockKeybindFromGame.Value,
-            //    Location = new Point(settingMountBlockKeybindFromGame_Label.Right + 5, settingMountBlockKeybindFromGame_Label.Top - 1),
-            //};
-            //settingMountBlockKeybindFromGame_Checkbox.CheckedChanged += delegate {
-            //    Module._settingMountBlockKeybindFromGame.Value = settingMountBlockKeybindFromGame_Checkbox.Checked;
-            //    Module._settingDefaultMountBinding.Value.BlockSequenceFromGw2 = settingMountBlockKeybindFromGame_Checkbox.Checked;
-            //};
             Label settingDefaultMountBehaviour_Label = new Label()
             {
                 Location = new Point(0, settingDefaultMountKeybind_Label.Bottom + 6),

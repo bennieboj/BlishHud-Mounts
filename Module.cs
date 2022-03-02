@@ -135,7 +135,6 @@ namespace Manlaan.Mounts
             _settingMountBlockKeybindFromGame = settings.DefineSetting("MountBlockKeybindFromGame", false, () => Strings.Setting_MountBlockKeybindFromGame, () => "");
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
             _settingDefaultMountBinding.Value.Enabled = true;
-            _settingDefaultMountBinding.Value.BlockSequenceFromGw2 = true; //_settingMountBlockKeybindFromGame.Value; https://github.com/blish-hud/Blish-HUD/issues/617
             _settingDefaultMountBinding.Value.Activated += async delegate { await DoDefaultMountActionAsync(); };
             _settingDefaultMountChoice = settings.DefineSetting("DefaultMountChoice", "Disabled", () => Strings.Setting_DefaultMountChoice, () => "");
             _settingDefaultWaterMountChoice = settings.DefineSetting("DefaultWaterMountChoice", "Disabled", () => Strings.Setting_DefaultWaterMountChoice, () => "");
