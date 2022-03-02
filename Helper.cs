@@ -17,6 +17,7 @@ namespace Manlaan.Mounts
         private readonly ContentsManager contentsManager;
 
         private readonly Dictionary<string, Texture2D> _textureCache = new Dictionary<string, Texture2D>();
+        private static readonly Logger Logger = Logger.GetLogger<Helper>();
 
         public Helper(ContentsManager contentsManager)
         {
@@ -109,8 +110,10 @@ namespace Manlaan.Mounts
 
         public async Task TriggerKeybind(SettingEntry<KeyBinding> keybindingSetting)
         {
+            Logger.Debug("TriggerKeybind entered");
             if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
             {
+                Logger.Debug($"TriggerKeybind press modfiers {keybindingSetting.Value.ModifierKeys}");
                 if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
                     Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.MENU, true);
                 if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
@@ -118,11 +121,14 @@ namespace Manlaan.Mounts
                 if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
                     Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.SHIFT, true);
             }
+            Logger.Debug($"TriggerKeybind press PrimaryKey {keybindingSetting.Value.PrimaryKey}");
             Blish_HUD.Controls.Intern.Keyboard.Press(ToVirtualKey(keybindingSetting.Value.PrimaryKey), true);
             await Task.Delay(50);
+            Logger.Debug($"TriggerKeybind release modfiers {keybindingSetting.Value.ModifierKeys}");
             Blish_HUD.Controls.Intern.Keyboard.Release(ToVirtualKey(keybindingSetting.Value.PrimaryKey), true);
             if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
             {
+                Logger.Debug($"TriggerKeybind release modfiers {keybindingSetting.Value.ModifierKeys}");
                 if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
                     Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.SHIFT, true);
                 if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
