@@ -133,7 +133,7 @@ namespace Manlaan.Mounts
                 }
                 Logger.Debug($"TriggerKeybind press PrimaryKey {keybindingSetting.Value.PrimaryKey}");
                 Blish_HUD.Controls.Intern.Keyboard.Press(ToVirtualKey(keybindingSetting.Value.PrimaryKey), true);
-                await Task.Delay(100);
+                await Task.Delay(50);
                 Logger.Debug($"TriggerKeybind release PrimaryKey {keybindingSetting.Value.PrimaryKey}");
                 Blish_HUD.Controls.Intern.Keyboard.Release(ToVirtualKey(keybindingSetting.Value.PrimaryKey), true);
                 if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
