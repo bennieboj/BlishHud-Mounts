@@ -312,7 +312,7 @@ namespace Manlaan.Mounts
                     Opacity = _settingOpacity.Value,
                     BasicTooltipText = mount.DisplayName
                 };
-                _btnMount.LeftMouseButtonPressed += async delegate { await mount.DoHotKey(); };
+                _btnMount.LeftMouseButtonPressed += async delegate { await mount.DoMountAction(); };
 
                 if (_settingOrientation.Value.Equals("Horizontal"))
                     curX += _settingImgWidth.Value;
@@ -390,7 +390,7 @@ namespace Manlaan.Mounts
             Logger.Debug("DoDefaultMountActionAsync entered");
             if (GameService.Gw2Mumble.PlayerCharacter.CurrentMount != MountType.None)
             {
-                await (_availableOrderedMounts.FirstOrDefault()?.DoHotKey() ?? Task.CompletedTask);
+                await (_availableOrderedMounts.FirstOrDefault()?.DoUnmountAction() ?? Task.CompletedTask);
                 Logger.Debug("DoDefaultMountActionAsync dismounted");
                 return;
             }
@@ -398,7 +398,7 @@ namespace Manlaan.Mounts
             var instantMount = _helper.GetInstantMount();
             if (instantMount != null)
             {
-                await instantMount.DoHotKey();
+                await instantMount.DoMountAction();
                 Logger.Debug("DoDefaultMountActionAsync instantmount");
                 return;
             }
@@ -406,7 +406,7 @@ namespace Manlaan.Mounts
             var defaultMount = _helper.GetDefaultMount();
             if (defaultMount != null && GameService.Input.Mouse.CameraDragging)
             {
-                await (defaultMount?.DoHotKey() ?? Task.CompletedTask);
+                await (defaultMount?.DoMountAction() ?? Task.CompletedTask);
                 Logger.Debug("DoDefaultMountActionAsync CameraDragging defaultmount");
                 return;
             }
@@ -414,7 +414,7 @@ namespace Manlaan.Mounts
             switch (_settingDefaultMountBehaviour.Value)
             {
                 case "DefaultMount":
-                    await (defaultMount?.DoHotKey() ?? Task.CompletedTask);
+                    await (defaultMount?.DoMountAction() ?? Task.CompletedTask);
                     Logger.Debug("DoDefaultMountActionAsync DefaultMountBehaviour defaultmount");
                     break;
                 case "Radial":
@@ -429,7 +429,7 @@ namespace Manlaan.Mounts
         {
             if (!e.Value)
             {
-                await (_mounts.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault()?.DoHotKey() ?? Task.CompletedTask);
+                await (_mounts.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault()?.DoMountAction() ?? Task.CompletedTask);
                 foreach (var mount in _mounts)
                 {
                     mount.QueuedTimestamp = null;

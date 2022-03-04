@@ -43,7 +43,12 @@ namespace Manlaan.Mounts
         public bool IsAvailable => OrderSetting.Value != 0 && IsKeybindSet;
         public bool IsKeybindSet => KeybindingSetting.Value.ModifierKeys != ModifierKeys.None || KeybindingSetting.Value.PrimaryKey != Keys.None;
 
-        public async Task DoHotKey()
+        public async Task DoUnmountAction()
+        {
+            await _helper.TriggerKeybind(KeybindingSetting);
+        }
+
+        public async Task DoMountAction()
         {
             if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat)
             {
@@ -69,7 +74,7 @@ namespace Manlaan.Mounts
                 HoverIcon = img,
                 Priority = 10
             };
-            CornerIcon.Click += async delegate { await DoHotKey(); };
+            CornerIcon.Click += async delegate { await DoMountAction(); };
         }
 
         public void DisposeCornerIcon()
