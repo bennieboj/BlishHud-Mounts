@@ -43,7 +43,6 @@ namespace Manlaan.Mounts
 
         public static SettingEntry<string> _settingDefaultMountChoice;
         public static SettingEntry<string> _settingDefaultWaterMountChoice;
-        public static SettingEntry<bool> _settingMountBlockKeybindFromGame;
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
         public static SettingEntry<bool> _settingDisplayMountQueueing;
         public static SettingEntry<string> _settingDefaultMountBehaviour;
@@ -132,10 +131,8 @@ namespace Manlaan.Mounts
                 new SiegeTurtle(settings, _helper)
             };
 
-            _settingMountBlockKeybindFromGame = settings.DefineSetting("MountBlockKeybindFromGame", false, () => Strings.Setting_MountBlockKeybindFromGame, () => "");
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
             _settingDefaultMountBinding.Value.Enabled = true;
-            _settingDefaultMountBinding.Value.BlockSequenceFromGw2 = true; //_settingMountBlockKeybindFromGame.Value; https://github.com/blish-hud/Blish-HUD/issues/617
             _settingDefaultMountBinding.Value.Activated += async delegate { await DoDefaultMountActionAsync(); };
             _settingDefaultMountChoice = settings.DefineSetting("DefaultMountChoice", "Disabled", () => Strings.Setting_DefaultMountChoice, () => "");
             _settingDefaultWaterMountChoice = settings.DefineSetting("DefaultWaterMountChoice", "Disabled", () => Strings.Setting_DefaultWaterMountChoice, () => "");
@@ -315,7 +312,7 @@ namespace Manlaan.Mounts
                     Opacity = _settingOpacity.Value,
                     BasicTooltipText = mount.DisplayName
                 };
-                _btnMount.LeftMouseButtonPressed += async delegate { await mount.DoHotKey(); };
+                _btnMount.LeftMouseButtonPressed += async delegate { await mount.DoMountAction(); };
 
                 if (_settingOrientation.Value.Equals("Horizontal"))
                     curX += _settingImgWidth.Value;
@@ -385,10 +382,15 @@ namespace Manlaan.Mounts
 
         private async Task DoDefaultMountActionAsync()
         {
+            if (_helper.IsKeybindBeingTriggered())
+            {
+                Logger.Debug("DoDefaultMountActionAsync IsKeybindBeingTriggered");
+                return;
+            }
             Logger.Debug("DoDefaultMountActionAsync entered");
             if (GameService.Gw2Mumble.PlayerCharacter.CurrentMount != MountType.None)
             {
-                await (_availableOrderedMounts.FirstOrDefault()?.DoHotKey() ?? Task.CompletedTask);
+                await (_availableOrderedMounts.FirstOrDefault()?.DoUnmountAction() ?? Task.CompletedTask);
                 Logger.Debug("DoDefaultMountActionAsync dismounted");
                 return;
             }
@@ -396,20 +398,28 @@ namespace Manlaan.Mounts
             var instantMount = _helper.GetInstantMount();
             if (instantMount != null)
             {
-                await instantMount.DoHotKey();
+                await instantMount.DoMountAction();
                 Logger.Debug("DoDefaultMountActionAsync instantmount");
+                return;
+            }
+
+            var defaultMount = _helper.GetDefaultMount();
+            if (defaultMount != null && GameService.Input.Mouse.CameraDragging)
+            {
+                await (defaultMount?.DoMountAction() ?? Task.CompletedTask);
+                Logger.Debug("DoDefaultMountActionAsync CameraDragging defaultmount");
                 return;
             }
 
             switch (_settingDefaultMountBehaviour.Value)
             {
                 case "DefaultMount":
-                    await (_helper.GetDefaultMount()?.DoHotKey() ?? Task.CompletedTask);
-                    Logger.Debug("DoDefaultMountActionAsync defaultmount");
+                    await (defaultMount?.DoMountAction() ?? Task.CompletedTask);
+                    Logger.Debug("DoDefaultMountActionAsync DefaultMountBehaviour defaultmount");
                     break;
                 case "Radial":
                     _radial.Show();
-                    Logger.Debug("DoDefaultMountActionAsync radial");
+                    Logger.Debug("DoDefaultMountActionAsync DefaultMountBehaviour radial");
                     break;
             }
             return;
@@ -419,7 +429,7 @@ namespace Manlaan.Mounts
         {
             if (!e.Value)
             {
-                await (_mounts.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault()?.DoHotKey() ?? Task.CompletedTask);
+                await (_mounts.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault()?.DoMountAction() ?? Task.CompletedTask);
                 foreach (var mount in _mounts)
                 {
                     mount.QueuedTimestamp = null;
