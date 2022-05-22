@@ -25,13 +25,11 @@ namespace Manlaan.Mounts
 
         Gw2Sharp.Models.MapType[] warclawOnlyMaps = {
                 Gw2Sharp.Models.MapType.RedBorderlands,
-                Gw2Sharp.Models.MapType.RedHome,
                 Gw2Sharp.Models.MapType.BlueBorderlands,
-                Gw2Sharp.Models.MapType.BlueHome,
                 Gw2Sharp.Models.MapType.GreenBorderlands,
-                Gw2Sharp.Models.MapType.GreenHome,
                 Gw2Sharp.Models.MapType.EternalBattlegrounds,
                 Gw2Sharp.Models.MapType.Center,
+                Gw2Sharp.Models.MapType.WvwLounge
             };
 
         public Texture2D GetImgFile(string filename)
