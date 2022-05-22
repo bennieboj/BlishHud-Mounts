@@ -1,6 +1,6 @@
 {
   "name": "Mounts",
-  "version": "1.2.16",
+  "version": "1.2.17",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -23,6 +23,7 @@
 }
 /*
     "changelog": {
+        "1.2.17": "2022-05-22:treat wvw lounge as a warclaw only map",
         "1.2.15": "2022-03-13:stable release",
         "1.2.14": "2022-03-04:
                   don't queue unmounting when in combat
