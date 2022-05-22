@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Manlaan.Mounts
@@ -16,7 +17,10 @@ namespace Manlaan.Mounts
     {
         private readonly ContentsManager contentsManager;
 
+        private static SemaphoreSlim keybindSemaphore = new SemaphoreSlim(1, 1);
+
         private readonly Dictionary<string, Texture2D> _textureCache = new Dictionary<string, Texture2D>();
+        private static readonly Logger Logger = Logger.GetLogger<Helper>();
 
         public Helper(ContentsManager contentsManager)
         {
@@ -105,28 +109,45 @@ namespace Manlaan.Mounts
             return Module._mounts.Where(m => m.LastUsedTimestamp != null).OrderByDescending(m => m.LastUsedTimestamp).FirstOrDefault();
         }
 
+        public bool IsKeybindBeingTriggered() {
+            return keybindSemaphore.CurrentCount != 1;
+        }
+
         public async Task TriggerKeybind(SettingEntry<KeyBinding> keybindingSetting)
         {
-            if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
+            try
             {
-                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
-                    Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.MENU, true);
-                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
-                    Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.CONTROL, true);
-                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
-                    Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.SHIFT, true);
+                await keybindSemaphore.WaitAsync();
+                Logger.Debug("TriggerKeybind entered");
+                if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
+                {
+                    Logger.Debug($"TriggerKeybind press modifiers {keybindingSetting.Value.ModifierKeys}");
+                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
+                        Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.MENU, true);
+                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
+                        Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.CONTROL, true);
+                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
+                        Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.SHIFT, true);
+                }
+                Logger.Debug($"TriggerKeybind press PrimaryKey {keybindingSetting.Value.PrimaryKey}");
+                Blish_HUD.Controls.Intern.Keyboard.Press(ToVirtualKey(keybindingSetting.Value.PrimaryKey), true);
+                await Task.Delay(50);
+                Logger.Debug($"TriggerKeybind release PrimaryKey {keybindingSetting.Value.PrimaryKey}");
+                Blish_HUD.Controls.Intern.Keyboard.Release(ToVirtualKey(keybindingSetting.Value.PrimaryKey), true);
+                if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
+                {
+                    Logger.Debug($"TriggerKeybind release modifiers {keybindingSetting.Value.ModifierKeys}");
+                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
+                        Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.SHIFT, true);
+                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
+                        Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.CONTROL, true);
+                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
+                        Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.MENU, true);
+                }
             }
-            Blish_HUD.Controls.Intern.Keyboard.Press(ToVirtualKey(keybindingSetting.Value.PrimaryKey), true);
-            await Task.Delay(50);
-            Blish_HUD.Controls.Intern.Keyboard.Release(ToVirtualKey(keybindingSetting.Value.PrimaryKey), true);
-            if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
+            finally
             {
-                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
-                    Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.SHIFT, true);
-                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
-                    Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.CONTROL, true);
-                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
-                    Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.MENU, true);
+                keybindSemaphore.Release();
             }
         }
 
