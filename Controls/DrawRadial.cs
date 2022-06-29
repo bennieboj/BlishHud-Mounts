@@ -1,6 +1,7 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
 using Blish_HUD.Controls.Intern;
+using Blish_HUD.Modules.Managers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -45,7 +46,6 @@ namespace Manlaan.Mounts.Controls
             Padding = Thickness.Zero;
             _helper = helper;
             _textureCache = textureCache;
-
             Shown += async (sender, e) => await HandleShown(sender, e);
             Hidden += async (sender, e) => await HandleHidden(sender, e);
         }
@@ -71,8 +71,8 @@ namespace Manlaan.Mounts.Controls
                 RadialMounts.Add(new RadialMount { Texture = texture, Mount = mountToPutInCenter, ImageX = loc, ImageY = loc, Default = true });
             }
 
-
-            double currentAngle = 0;
+            double startAngle = Math.PI * Math.Floor(Module._settingMountRadialStartAngle.Value * 360) / 180.0;
+            double currentAngle = startAngle;
             var partAngleStep = Math.PI * 2 / mounts.Count();
             foreach (var mount in mounts)
             {
@@ -97,10 +97,11 @@ namespace Manlaan.Mounts.Controls
             var mousePos = Input.Mouse.Position;
             var diff = mousePos - SpawnPoint;
             var angle = Math.Atan2(diff.Y, diff.X);
-            if (angle < 0)
+            while (angle < startAngle)
             {
-                angle += Math.PI * 2;
+                angle += Math.PI * 2; 
             }
+
 
             var length = new Vector2(diff.Y, diff.X).Length();
             
@@ -117,6 +118,17 @@ namespace Manlaan.Mounts.Controls
 
                 spriteBatch.DrawOnCtrl(this, radialMount.Texture, new Rectangle(radialMount.ImageX, radialMount.ImageY, mountIconSize, mountIconSize), null, Color.White * (radialMount.Selected ? 1f : Module._settingMountRadialIconOpacity.Value));
             }
+
+            //DrawDbg(spriteBatch, 00, $"AngleBegin: {RadialMounts[8].AngleBegin}");
+            //DrawDbg(spriteBatch, 30, $"AngleEnd: {RadialMounts[8].AngleEnd}");
+            //DrawDbg(spriteBatch, 60, $"startangle {startAngle}");
+            //DrawDbg(spriteBatch, 90, $"angle {angle}");
+        }
+
+        private void DrawDbg(SpriteBatch spriteBatch, int position, string s)
+        {
+            spriteBatch.DrawStringOnCtrl(this, s, GameService.Content.DefaultFont32, new Rectangle(new Point(0, position), new Point(400, 400)), Color.Red);
+
         }
 
         public async Task TriggerSelectedMountAsync()

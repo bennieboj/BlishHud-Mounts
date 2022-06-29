@@ -232,6 +232,15 @@ namespace Manlaan.Mounts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Radial start angle.
+        /// </summary>
+        internal static string Setting_MountRadialStartAngle {
+            get {
+                return ResourceManager.GetString("Setting_MountRadialStartAngle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ingame KeyBind to toggle action camera.
         /// </summary>
         internal static string Setting_MountRadialToggleActionCameraKeyBinding {

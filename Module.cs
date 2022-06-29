@@ -48,6 +48,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<string> _settingDefaultMountBehaviour;
         public static SettingEntry<bool> _settingMountRadialSpawnAtMouse;
         public static SettingEntry<float> _settingMountRadialRadiusModifier;
+        public static SettingEntry<float> _settingMountRadialStartAngle;
         public static SettingEntry<float> _settingMountRadialIconSizeModifier;
         public static SettingEntry<float> _settingMountRadialIconOpacity;
         public static SettingEntry<string> _settingMountRadialCenterMountBehavior;
@@ -145,6 +146,8 @@ namespace Manlaan.Mounts
             _settingMountRadialIconSizeModifier.SetRange(0.05f, 1f);
             _settingMountRadialRadiusModifier = settings.DefineSetting("MountRadialRadiusModifier", 0.5f, () => Strings.Setting_MountRadialRadiusModifier, () => "");
             _settingMountRadialRadiusModifier.SetRange(0.2f, 1f);
+            _settingMountRadialStartAngle = settings.DefineSetting("MountRadialStartAngle", 0.0f, () => Strings.Setting_MountRadialStartAngle, () => "");
+            _settingMountRadialStartAngle.SetRange(0.0f, 1.0f);
             _settingMountRadialIconOpacity = settings.DefineSetting("MountRadialIconOpacity", 0.5f, () => Strings.Setting_MountRadialIconOpacity, () => "");
             _settingMountRadialIconOpacity.SetRange(0.05f, 1f);
             _settingMountRadialCenterMountBehavior = settings.DefineSetting("MountRadialCenterMountBehavior", "Default", () => Strings.Setting_MountRadialCenterMountBehavior, () => "");
@@ -175,6 +178,7 @@ namespace Manlaan.Mounts
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged += UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged += UpdateSettings;
+            _settingMountRadialStartAngle.SettingChanged += UpdateSettings;
             _settingMountRadialCenterMountBehavior.SettingChanged += UpdateSettings;
             _settingMountRadialIconOpacity.SettingChanged += UpdateSettings;
             _settingMountRadialRemoveCenterMount.SettingChanged += UpdateSettings;
@@ -256,6 +260,7 @@ namespace Manlaan.Mounts
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged -= UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged -= UpdateSettings;
+            _settingMountRadialStartAngle.SettingChanged -= UpdateSettings;
             _settingMountRadialCenterMountBehavior.SettingChanged -= UpdateSettings;
             _settingMountRadialIconOpacity.SettingChanged -= UpdateSettings;
             _settingMountRadialRemoveCenterMount.SettingChanged -= UpdateSettings;
