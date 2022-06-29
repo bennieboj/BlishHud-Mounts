@@ -70,13 +70,15 @@ namespace Manlaan.Mounts
         private DrawRadial _radial;
         private LoadingSpinner _queueingSpinner;
         private Helper _helper;
+        private TextureCache _textureCache;
 
         private bool _dragging;
         private Point _dragStart = Point.Zero;
 
         [ImportingConstructor]
-        public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) : base(moduleParameters) {
-            _helper = new Helper(ContentsManager);
+        public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) : base(moduleParameters)
+        {
+            _helper = new Helper();
         }
 
         protected override void Initialize()
@@ -195,6 +197,7 @@ namespace Manlaan.Mounts
 
         protected override void OnModuleLoaded(EventArgs e)
         {
+            _textureCache = new TextureCache(ContentsManager);
             DrawUI();
             GameService.Overlay.BlishHudWindow.AddTab(windowTab, () => new Views.SettingsView(ContentsManager));
 
@@ -302,7 +305,7 @@ namespace Manlaan.Mounts
             };
 
             foreach (Mount mount in _availableOrderedMounts) {
-                Texture2D img = _helper.GetImgFile(mount.ImageFileName);
+                Texture2D img = _textureCache.GetImgFile(mount.ImageFileName);
                 Image _btnMount = new Image
                 {
                     Parent = _mountPanel,
@@ -351,7 +354,7 @@ namespace Manlaan.Mounts
         private void DrawCornerIcons() {
             foreach (Mount mount in _availableOrderedMounts)
             {
-                mount.CreateCornerIcon(_helper.GetImgFile(mount.ImageFileName));
+                mount.CreateCornerIcon(_textureCache.GetImgFile(mount.ImageFileName));
             }
 
         }
@@ -376,7 +379,7 @@ namespace Manlaan.Mounts
             _queueingSpinner.Hide();
 
             _radial?.Dispose();
-            _radial = new DrawRadial(_helper);
+            _radial = new DrawRadial(_helper, _textureCache);
             _radial.Parent = GameService.Graphics.SpriteScreen;
         }
 

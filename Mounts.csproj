@@ -137,6 +137,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
+    <Compile Include="TextureCache.cs" />
     <Compile Include="Views\DummySettingsView.cs" />
     <Compile Include="Views\SettingsView.cs" />
   </ItemGroup>
