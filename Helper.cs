@@ -1,12 +1,9 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls.Extern;
 using Blish_HUD.Input;
-using Blish_HUD.Modules.Managers;
 using Blish_HUD.Settings;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,17 +12,9 @@ namespace Manlaan.Mounts
 {
     public class Helper
     {
-        private readonly ContentsManager contentsManager;
-
         private static SemaphoreSlim keybindSemaphore = new SemaphoreSlim(1, 1);
 
-        private readonly Dictionary<string, Texture2D> _textureCache = new Dictionary<string, Texture2D>();
         private static readonly Logger Logger = Logger.GetLogger<Helper>();
-
-        public Helper(ContentsManager contentsManager)
-        {
-            this.contentsManager = contentsManager;
-        }
 
         Gw2Sharp.Models.MapType[] warclawOnlyMaps = {
                 Gw2Sharp.Models.MapType.RedBorderlands,
@@ -35,31 +24,6 @@ namespace Manlaan.Mounts
                 Gw2Sharp.Models.MapType.Center,
                 Gw2Sharp.Models.MapType.WvwLounge
             };
-
-        public Texture2D GetImgFile(string filename)
-        {
-            string textureName = filename;
-
-            switch (Module._settingDisplay.Value)
-            {
-                default:
-                case "Solid":
-                    textureName += ".png";
-                    break;
-                case "Transparent":
-                    textureName += "-trans.png";
-                    break;
-                case "SolidText":
-                    textureName += "-text.png";
-                    break;
-            }
-
-            if (!_textureCache.ContainsKey(textureName)) {
-                _textureCache[textureName] = contentsManager.GetTexture(textureName);
-            }
-
-            return _textureCache[textureName];
-        }
 
         private bool IsPlayerInWvWMap()
         {

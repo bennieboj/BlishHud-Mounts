@@ -26,6 +26,7 @@ namespace Manlaan.Mounts.Controls
     {
         private static readonly Logger Logger = Logger.GetLogger<DrawRadial>();
         private readonly Helper _helper;
+        private readonly TextureCache _textureCache;
         private List<RadialMount> RadialMounts = new List<RadialMount>();
         private RadialMount SelectedMount => RadialMounts.SingleOrDefault(m => m.Selected);
 
@@ -38,11 +39,12 @@ namespace Manlaan.Mounts.Controls
 
         private Point SpawnPoint = default;
 
-        public DrawRadial(Helper helper)
+        public DrawRadial(Helper helper, TextureCache textureCache)
         {
             Visible = false;
             Padding = Thickness.Zero;
             _helper = helper;
+            _textureCache = textureCache;
 
             Shown += async (sender, e) => await HandleShown(sender, e);
             Hidden += async (sender, e) => await HandleHidden(sender, e);
@@ -64,7 +66,7 @@ namespace Manlaan.Mounts.Controls
                 {
                     mounts.Remove(mountToPutInCenter);
                 }
-                var texture = _helper.GetImgFile(mountToPutInCenter.ImageFileName);
+                var texture = _textureCache.GetImgFile(mountToPutInCenter.ImageFileName);
                 int loc = radius;
                 RadialMounts.Add(new RadialMount { Texture = texture, Mount = mountToPutInCenter, ImageX = loc, ImageY = loc, Default = true });
             }
@@ -76,7 +78,7 @@ namespace Manlaan.Mounts.Controls
             {
                 var angleMid = currentAngle + partAngleStep / 2;
                 var angleEnd = currentAngle + partAngleStep;
-                var texture = _helper.GetImgFile(mount.ImageFileName);
+                var texture = _textureCache.GetImgFile(mount.ImageFileName);
 
                 int x = (int)Math.Round(radius + radius * Math.Cos(angleMid));
                 int y = (int)Math.Round(radius + radius * Math.Sin(angleMid));
