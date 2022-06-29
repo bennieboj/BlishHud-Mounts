@@ -479,9 +479,28 @@ namespace Manlaan.Mounts.Views
                 Parent = radialPanel,
             };
             settingMountRadialRadiusModifier_Slider.ValueChanged += delegate { Module._settingMountRadialRadiusModifier.Value = settingMountRadialRadiusModifier_Slider.Value / 100; };
-            Label settingMountRadialIconSizeModifier_Label = new Label()
+            Label settingMountRadialStartAngle_Label = new Label()
             {
                 Location = new Point(0, settingMountRadialRadiusModifier_Label.Bottom + 6),
+                Width = labelWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = radialPanel,
+                Text = "Start angle: ",
+            };
+            TrackBar settingMountRadialStartAngle_Slider = new TrackBar()
+            {
+                Location = new Point(settingMountRadialStartAngle_Label.Right + 5, settingMountRadialStartAngle_Label.Top),
+                Width = mountsAndRadialInputWidth,
+                MaxValue = 360,
+                MinValue = 0,
+                Value = Module._settingMountRadialStartAngle.Value * 360,
+                Parent = radialPanel,
+            };
+            settingMountRadialStartAngle_Slider.ValueChanged += delegate { Module._settingMountRadialStartAngle.Value = settingMountRadialStartAngle_Slider.Value / 360; };
+            Label settingMountRadialIconSizeModifier_Label = new Label()
+            {
+                Location = new Point(0, settingMountRadialStartAngle_Label.Bottom + 6),
                 Width = labelWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
