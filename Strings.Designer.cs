@@ -61,6 +61,15 @@ namespace Manlaan.Mounts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Default Flying Mount Choice.
+        /// </summary>
+        internal static string Setting_DefaultFlyingMountChoice {
+            get {
+                return ResourceManager.GetString("Setting_DefaultFlyingMountChoice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Default Mount button behaviour.
         /// </summary>
         internal static string Setting_DefaultMountBehaviour {

@@ -16,13 +16,14 @@ namespace Manlaan.Mounts
 
         public Mount(SettingCollection settingCollection, Helper helper,
             string name, string displayName, string imageFileName,
-            bool isUnderwaterMount, bool isWvWMount, int defaultOrderSetting)
+            bool isUnderwaterMount, bool isFlyingMount, bool isWvWMount, int defaultOrderSetting)
         {
             _helper = helper;
             Name = name;
             DisplayName = displayName;
             ImageFileName = imageFileName;
             IsWaterMount = isUnderwaterMount;
+            IsFlyingMount = isFlyingMount;
             IsWvWMount = isWvWMount;
             OrderSetting = settingCollection.DefineSetting($"Mount{name}Order2", defaultOrderSetting, () => $"{displayName} Order", () => "");
             KeybindingSetting = settingCollection.DefineSetting($"Mount{name}Binding", new KeyBinding(Keys.None), () => $"{displayName} Binding", () => "");
@@ -34,6 +35,7 @@ namespace Manlaan.Mounts
         public DateTime? QueuedTimestamp { get; internal set; }
         public DateTime? LastUsedTimestamp { get; internal set; }
         public bool IsWaterMount { get; private set; }
+        public bool IsFlyingMount { get; private set; }
         public bool IsWvWMount { get; private set; }
 
 
@@ -85,63 +87,63 @@ namespace Manlaan.Mounts
 
     public class Raptor : Mount
     {
-        public Raptor(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Raptor", "Raptor", "raptor", false, false, 1)
+        public Raptor(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Raptor", "Raptor", "raptor", false, false, false, 1)
         {
         }
     }
 
     public class Springer : Mount
     {
-        public Springer(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Springer", "Springer", "springer", false, false, 2)
+        public Springer(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Springer", "Springer", "springer", false, false, false, 2)
         {
         }
     }
 
     public class Skimmer : Mount
     {
-        public Skimmer(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Skimmer", "Skimmer", "skimmer", true, false, 3)
+        public Skimmer(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Skimmer", "Skimmer", "skimmer", true, false, false, 3)
         {
         }
     }
 
     public class Jackal : Mount
     {
-        public Jackal(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Jackal", "Jackal", "jackal", false, false, 4)
+        public Jackal(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Jackal", "Jackal", "jackal", false, false, false, 4)
         {
         }
     }
 
     public class Griffon : Mount
     {
-        public Griffon(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Griffon", "Griffon", "griffon", false, false, 5)
+        public Griffon(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Griffon", "Griffon", "griffon", false, true, false, 5)
         {
         }
     }
 
     public class RollerBeetle : Mount
     {
-        public RollerBeetle(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Roller", "Roller Beetle", "roller", false, false, 6)
+        public RollerBeetle(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Roller", "Roller Beetle", "roller", false, false, false, 6)
         {
         }
     }
 
     public class Warclaw : Mount
     {
-        public Warclaw(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Warclaw", "Warclaw", "warclaw", false, true, 7)
+        public Warclaw(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Warclaw", "Warclaw", "warclaw", false, false, true, 7)
         {
         }
     }
 
     public class Skyscale : Mount
     {
-        public Skyscale(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Skyscale", "Skyscale", "skyscale", false, false, 8)
+        public Skyscale(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Skyscale", "Skyscale", "skyscale", false, true, false, 8)
         {
         }
     }
 
     public class SiegeTurtle : Mount
     {
-        public SiegeTurtle(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Turtle", "Siege Turtle", "turtle", true, false, 9)
+        public SiegeTurtle(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Turtle", "Siege Turtle", "turtle", true, false, false, 9)
         {
         }
     }
