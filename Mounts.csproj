@@ -128,6 +128,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\DebugControl.cs" />
     <Compile Include="Controls\DrawRadial.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Module.cs" />

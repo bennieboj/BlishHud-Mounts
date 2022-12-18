@@ -68,10 +68,14 @@ namespace Manlaan.Mounts
         private WindowTab windowTab;
 #pragma warning restore CS0618 // Type or member is obsolete
         private Panel _mountPanel;
+        private DebugControl _dbg;
         private DrawRadial _radial;
         private LoadingSpinner _queueingSpinner;
         private Helper _helper;
         private TextureCache _textureCache;
+
+        private float _lastZPosition = 0.0f;
+        private double _lastUpdateSeconds = 0.0f;
 
         private bool _dragging;
         private Point _dragStart = Point.Zero;
@@ -211,6 +215,27 @@ namespace Manlaan.Mounts
 
         protected override void Update(GameTime gameTime)
         {
+            var currentZPosition = GameService.Gw2Mumble.PlayerCharacter.Position.Z;
+            var currentUpdateSeconds = gameTime.TotalGameTime.TotalSeconds;
+            var secondsDiff = currentUpdateSeconds - _lastUpdateSeconds;
+            var zPositionDiff = currentZPosition - _lastZPosition;
+            var velocity = zPositionDiff / secondsDiff;
+
+            if (_dbg != null)
+            {
+                string text = $"diffZ{zPositionDiff.ToString("#.##").PadLeft(6, '\x2007')} diffS{secondsDiff.ToString("#.##").PadLeft(6, '\x2007')} velocity{velocity.ToString("#.##").PadLeft(6, '\x2007')}";
+
+                _dbg.Content = new string[] {
+                    $"currZ {currentZPosition.ToString("#.##")}",
+                    $"currS {currentUpdateSeconds.ToString("#.##")}",
+                    $"diffZ {zPositionDiff.ToString("#.##")}",
+                    $"diffS {secondsDiff.ToString("#.##")}",
+                    $"velocity {velocity.ToString("#.##")}",
+                };
+            }
+            _lastZPosition = currentZPosition;
+            _lastUpdateSeconds = currentUpdateSeconds;
+
             if (_mountPanel != null)
             {
                 if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen)
@@ -371,6 +396,13 @@ namespace Manlaan.Mounts
             {
                 mount.DisposeCornerIcon();
             }
+
+            //_dbg = new DebugControl()
+            //{
+            //    Parent = GameService.Graphics.SpriteScreen,
+            //    Location = new Point(0, 0),
+            //    Size = new Point(500, 500)
+            //};
 
             if (_settingDisplayCornerIcons.Value)
                 DrawCornerIcons();
