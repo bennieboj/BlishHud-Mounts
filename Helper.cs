@@ -29,10 +29,19 @@ namespace Manlaan.Mounts
         {
             return Array.Exists(warclawOnlyMaps, mapType => mapType == GameService.Gw2Mumble.CurrentMap.Type);
         }
+        private bool IsPlayerGlidingOrFalling()
+        {
+            return Module.IsPlayerGlidingOrFalling;
+        }
 
         private bool IsPlayerUnderOrCloseToWater()
         {
             return GameService.Gw2Mumble.PlayerCharacter.Position.Z <= 0;
+        }
+
+        private Mount GetFlyingMount()
+        {
+            return Module._mounts.SingleOrDefault(m => m.IsFlyingMount && m.Name == Module._settingDefaultFlyingMountChoice.Value);
         }
 
         private static Mount GetWaterMount()
@@ -45,6 +54,11 @@ namespace Manlaan.Mounts
             if (IsPlayerInWvWMap())
             {
                 return Module._mounts.Single(m => m.IsWvWMount);
+            }
+
+            if (IsPlayerGlidingOrFalling())
+            {
+                return GetFlyingMount();
             }
 
             if (IsPlayerUnderOrCloseToWater())

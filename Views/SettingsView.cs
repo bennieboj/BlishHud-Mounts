@@ -368,9 +368,34 @@ namespace Manlaan.Mounts.Views
             settingDefaultWaterMount_Select.ValueChanged += delegate {
                 Module._settingDefaultWaterMountChoice.Value = settingDefaultWaterMount_Select.SelectedItem;
             };
+            Label settingDefaultFlyingMount_Label = new Label()
+            {
+                Location = new Point(0, settingDefaultWaterMount_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Default flying mount: ",
+            };
+            Dropdown settingDefaultFlyingMount_Select = new Dropdown()
+            {
+                Location = new Point(settingDefaultFlyingMount_Label.Right + 5, settingDefaultFlyingMount_Label.Top - 4),
+                Width = mountsAndRadialInputWidth,
+                Parent = defaultMountPanel,
+            };
+            settingDefaultFlyingMount_Select.Items.Add("Disabled");
+            var mountNamesFlying = Module._mounts.Where(m => m.IsFlyingMount).Select(m => m.Name);
+            foreach (string i in mountNamesFlying)
+            {
+                settingDefaultFlyingMount_Select.Items.Add(i.ToString());
+            }
+            settingDefaultFlyingMount_Select.SelectedItem = mountNamesFlying.Any(m => m == Module._settingDefaultFlyingMountChoice.Value) ? Module._settingDefaultFlyingMountChoice.Value : "Disabled";
+            settingDefaultFlyingMount_Select.ValueChanged += delegate {
+                Module._settingDefaultFlyingMountChoice.Value = settingDefaultFlyingMount_Select.SelectedItem;
+            };
             Label settingDefaultMountKeybind_Label = new Label()
             {
-                Location = new Point(0, settingDefaultWaterMount_Select.Bottom + 6),
+                Location = new Point(0, settingDefaultFlyingMount_Select.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,

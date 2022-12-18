@@ -43,6 +43,7 @@ namespace Manlaan.Mounts
 
         public static SettingEntry<string> _settingDefaultMountChoice;
         public static SettingEntry<string> _settingDefaultWaterMountChoice;
+        public static SettingEntry<string> _settingDefaultFlyingMountChoice;
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
         public static SettingEntry<bool> _settingDisplayMountQueueing;
         public static SettingEntry<string> _settingDefaultMountBehaviour;
@@ -76,6 +77,7 @@ namespace Manlaan.Mounts
 
         private float _lastZPosition = 0.0f;
         private double _lastUpdateSeconds = 0.0f;
+        public static bool IsPlayerGlidingOrFalling;
 
         private bool _dragging;
         private Point _dragStart = Point.Zero;
@@ -143,6 +145,7 @@ namespace Manlaan.Mounts
             _settingDefaultMountBinding.Value.Activated += async delegate { await DoDefaultMountActionAsync(); };
             _settingDefaultMountChoice = settings.DefineSetting("DefaultMountChoice", "Disabled", () => Strings.Setting_DefaultMountChoice, () => "");
             _settingDefaultWaterMountChoice = settings.DefineSetting("DefaultWaterMountChoice", "Disabled", () => Strings.Setting_DefaultWaterMountChoice, () => "");
+            _settingDefaultFlyingMountChoice = settings.DefineSetting("DefaultFlyingMountChoice", "Disabled", () => Strings.Setting_DefaultFlyingMountChoice, () => "");
             _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "Radial", () => Strings.Setting_DefaultMountBehaviour, () => "");
             _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false, () => Strings.Setting_DisplayMountQueueing, () => "");
             _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, () => Strings.Setting_MountRadialSpawnAtMouse, () => "");
@@ -178,6 +181,7 @@ namespace Manlaan.Mounts
             }
             _settingDefaultMountChoice.SettingChanged += UpdateSettings;
             _settingDefaultWaterMountChoice.SettingChanged += UpdateSettings;
+            _settingDefaultFlyingMountChoice.SettingChanged += UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged += UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged += UpdateSettings;
@@ -219,20 +223,14 @@ namespace Manlaan.Mounts
             var currentUpdateSeconds = gameTime.TotalGameTime.TotalSeconds;
             var secondsDiff = currentUpdateSeconds - _lastUpdateSeconds;
             var zPositionDiff = currentZPosition - _lastZPosition;
-            var velocity = zPositionDiff / secondsDiff;
-
-            if (_dbg != null)
+            
+            if(zPositionDiff != 0 && secondsDiff != 0)
             {
-                string text = $"diffZ{zPositionDiff.ToString("#.##").PadLeft(6, '\x2007')} diffS{secondsDiff.ToString("#.##").PadLeft(6, '\x2007')} velocity{velocity.ToString("#.##").PadLeft(6, '\x2007')}";
-
-                _dbg.Content = new string[] {
-                    $"currZ {currentZPosition.ToString("#.##")}",
-                    $"currS {currentUpdateSeconds.ToString("#.##")}",
-                    $"diffZ {zPositionDiff.ToString("#.##")}",
-                    $"diffS {secondsDiff.ToString("#.##")}",
-                    $"velocity {velocity.ToString("#.##")}",
-                };
+                var velocity = zPositionDiff / secondsDiff;
+                IsPlayerGlidingOrFalling = velocity < -2.5;
+                Logger.Debug($"fallingOrGliding {IsPlayerGlidingOrFalling} currZ {currentZPosition.ToString("#.##")} currS {currentUpdateSeconds.ToString("#.##")} diffZ {zPositionDiff.ToString("#.##")} diffS {secondsDiff.ToString("#.##")} velocity {velocity.ToString("#.#######")} {velocity}");
             }
+
             _lastZPosition = currentZPosition;
             _lastUpdateSeconds = currentUpdateSeconds;
 
@@ -281,6 +279,7 @@ namespace Manlaan.Mounts
 
             _settingDefaultMountChoice.SettingChanged -= UpdateSettings;
             _settingDefaultWaterMountChoice.SettingChanged -= UpdateSettings;
+            _settingDefaultFlyingMountChoice.SettingChanged -= UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged -= UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged -= UpdateSettings;
@@ -403,6 +402,18 @@ namespace Manlaan.Mounts
             //    Location = new Point(0, 0),
             //    Size = new Point(500, 500)
             //};
+
+            //if (_dbg != null)
+            //{
+            //    IEnumerable<string> debugList = new List<string> {
+            //        $"currZ {currentZPosition.ToString("#.##")}",
+            //        };
+            //    if (IsPlayerGlidingOrFalling)
+            //    {
+            //        debugList = debugList.Append($"fallingOrGliding {IsPlayerGlidingOrFalling}");
+            //    }
+            //    _dbg.Content = debugList;
+            //}
 
             if (_settingDisplayCornerIcons.Value)
                 DrawCornerIcons();

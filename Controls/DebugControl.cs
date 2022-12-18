@@ -2,17 +2,18 @@
 using Blish_HUD.Controls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace Manlaan.Mounts.Controls
 {
     internal class DebugControl : Control
     {
-        public string[] Content { get; set; }
+        public IEnumerable<string> Content { get; set; }
 
         public DebugControl()
         {
             Visible = true;
-            Content = new string[] { };
+            Content = new List<string>();
         }
 
         protected override CaptureType CapturesInput()
