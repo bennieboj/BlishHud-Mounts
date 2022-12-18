@@ -433,11 +433,6 @@ namespace Manlaan.Mounts
 
         private async Task DoDefaultMountActionAsync()
         {
-            if (_helper.IsKeybindBeingTriggered())
-            {
-                Logger.Debug("DoDefaultMountActionAsync IsKeybindBeingTriggered");
-                return;
-            }
             Logger.Debug("DoDefaultMountActionAsync entered");
             if (GameService.Gw2Mumble.PlayerCharacter.CurrentMount != MountType.None)
             {
