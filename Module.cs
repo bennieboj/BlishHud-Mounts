@@ -56,6 +56,8 @@ namespace Manlaan.Mounts
         public static SettingEntry<bool> _settingMountRadialRemoveCenterMount;
         public static SettingEntry<KeyBinding> _settingMountRadialToggleActionCameraKeyBinding;
 
+        public static SettingEntry<bool> _settingDisplayModuleOnLoadingScreen;
+        public static SettingEntry<bool> _settingMountAutomaticallyAfterLoadingScreen;
         public static SettingEntry<string> _settingDisplay;
         public static SettingEntry<bool> _settingDisplayCornerIcons;
         public static SettingEntry<bool> _settingDisplayManualIcons;
@@ -79,6 +81,8 @@ namespace Manlaan.Mounts
         private double _lastUpdateSeconds = 0.0f;
         public static bool IsPlayerGlidingOrFalling;
 
+        private bool _lastIsMountSwitchable = false;
+        
         private bool _dragging;
         private Point _dragStart = Point.Zero;
 
@@ -161,6 +165,9 @@ namespace Manlaan.Mounts
             _settingMountRadialRemoveCenterMount = settings.DefineSetting("MountRadialRemoveCenterMount", true, () => Strings.Setting_MountRadialRemoveCenterMount, () => "");
             _settingMountRadialToggleActionCameraKeyBinding = settings.DefineSetting("MountRadialToggleActionCameraKeyBinding", new KeyBinding(Keys.F10), () => Strings.Setting_MountRadialToggleActionCameraKeyBinding, () => "");
 
+
+            _settingDisplayModuleOnLoadingScreen = settings.DefineSetting("DisplayModuleOnLoadingScreen", false, () => Strings.Setting_DisplayModuleOnLoadingScreen, () => "");
+            _settingMountAutomaticallyAfterLoadingScreen = settings.DefineSetting("MountAutomaticallyAfterLoadingScreen", false, () => Strings.Setting_MountAutomaticallyAfterLoadingScreen, () => "");
             _settingDisplay = settings.DefineSetting("MountDisplay", "Transparent", () => Strings.Setting_MountDisplay, () => "");
             _settingDisplayCornerIcons = settings.DefineSetting("MountDisplayCornerIcons", false, () => Strings.Setting_MountDisplayCornerIcons, () => "");
             _settingDisplayManualIcons = settings.DefineSetting("MountDisplayManualIcons", false, () => Strings.Setting_MountDisplayManualIcons, () => "");
@@ -182,6 +189,8 @@ namespace Manlaan.Mounts
             _settingDefaultMountChoice.SettingChanged += UpdateSettings;
             _settingDefaultWaterMountChoice.SettingChanged += UpdateSettings;
             _settingDefaultFlyingMountChoice.SettingChanged += UpdateSettings;
+            _settingDisplayModuleOnLoadingScreen.SettingChanged += UpdateSettings;
+            _settingMountAutomaticallyAfterLoadingScreen.SettingChanged += UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged += UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged += UpdateSettings;
@@ -234,34 +243,69 @@ namespace Manlaan.Mounts
             _lastZPosition = currentZPosition;
             _lastUpdateSeconds = currentUpdateSeconds;
 
-            if (_mountPanel != null)
+            var isMountSwitchable = IsMountSwitchable();
+            var moduleHidden = _lastIsMountSwitchable && !isMountSwitchable;
+            var moduleShown = !_lastIsMountSwitchable && isMountSwitchable;
+            var currentMount = GameService.Gw2Mumble.PlayerCharacter.CurrentMount;
+            if (moduleHidden && currentMount != MountType.None)
             {
-                if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen)
-                {
-                    _mountPanel.Show();
-                }
-                else
-                {
-                    _mountPanel.Hide();
-                }
-                if (_dragging)
-                {
-                    var nOffset = InputService.Input.Mouse.Position - _dragStart;
-                    _mountPanel.Location += nOffset;
-
-                    _dragStart = InputService.Input.Mouse.Position;
-                }
+                _helper.MountOnHide = _mounts.Single(m => m.MountType == currentMount);
+            }
+            if (moduleShown && currentMount == MountType.None)
+            {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                _helper.MountOnHide?.DoMountAction();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                _helper.MountOnHide = null;
             }
 
-            if(_settingDisplayMountQueueing.Value && _mounts.Any(m => m.QueuedTimestamp != null))
+            _lastIsMountSwitchable = isMountSwitchable;
+
+            bool shouldShowModule = ShouldShowModule();
+            if (shouldShowModule)
+            {
+                _mountPanel?.Show();
+                foreach (var mount in _availableOrderedMounts)
+                {
+                    mount.CornerIcon?.Show();
+                }
+            }
+            else
+            {
+                _mountPanel?.Hide();
+                foreach (var mount in _availableOrderedMounts)
+                {
+                    mount.CornerIcon?.Hide();
+                }
+            }
+            
+            if (_dragging)
+            {
+                var nOffset = InputService.Input.Mouse.Position - _dragStart;
+                _mountPanel.Location += nOffset;
+
+                _dragStart = InputService.Input.Mouse.Position;
+            }
+
+            if (_settingDisplayMountQueueing.Value && _mounts.Any(m => m.QueuedTimestamp != null))
             {
                 _queueingSpinner?.Show();
             }
 
-            if(_radial.Visible && !_settingDefaultMountBinding.Value.IsTriggering)
+            if(_radial.Visible && !_settingDefaultMountBinding.Value.IsTriggering || !shouldShowModule)
             {
                 _radial.Hide();
             }
+        }
+
+        public static bool ShouldShowModule()
+        {
+            return _settingDisplayModuleOnLoadingScreen.Value || IsMountSwitchable();
+        }
+
+        public static bool IsMountSwitchable()
+        {
+            return GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen;
         }
 
         /// <inheritdoc />
@@ -289,6 +333,8 @@ namespace Manlaan.Mounts
             _settingMountRadialIconOpacity.SettingChanged -= UpdateSettings;
             _settingMountRadialRemoveCenterMount.SettingChanged -= UpdateSettings;
 
+            _settingDisplayModuleOnLoadingScreen.SettingChanged -= UpdateSettings;
+            _settingMountAutomaticallyAfterLoadingScreen.SettingChanged -= UpdateSettings;
             _settingDisplay.SettingChanged -= UpdateSettings;
             _settingDisplayCornerIcons.SettingChanged -= UpdateSettings;
             _settingDisplayManualIcons.SettingChanged -= UpdateSettings;
@@ -412,7 +458,7 @@ namespace Manlaan.Mounts
             //    {
             //        debugList = debugList.Append($"fallingOrGliding {IsPlayerGlidingOrFalling}");
             //    }
-            //    _dbg.Content = debugList;
+            //    _dbg.StringsToDisplay = debugList;
             //}
 
             if (_settingDisplayCornerIcons.Value)
@@ -464,8 +510,11 @@ namespace Manlaan.Mounts
                     Logger.Debug("DoDefaultMountActionAsync DefaultMountBehaviour defaultmount");
                     break;
                 case "Radial":
-                    _radial.Show();
-                    Logger.Debug("DoDefaultMountActionAsync DefaultMountBehaviour radial");
+                    if (ShouldShowModule())
+                    {
+                        _radial.Show();
+                        Logger.Debug("DoDefaultMountActionAsync DefaultMountBehaviour radial");
+                    }
                     break;
             }
             return;

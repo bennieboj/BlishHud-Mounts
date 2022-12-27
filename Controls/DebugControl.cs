@@ -8,12 +8,12 @@ namespace Manlaan.Mounts.Controls
 {
     internal class DebugControl : Control
     {
-        public IEnumerable<string> Content { get; set; }
+        public IEnumerable<string> StringsToDisplay { get; set; }
 
         public DebugControl()
         {
             Visible = true;
-            Content = new List<string>();
+            StringsToDisplay = new List<string>();
         }
 
         protected override CaptureType CapturesInput()
@@ -24,7 +24,7 @@ namespace Manlaan.Mounts.Controls
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) 
         {
             int i = 0;
-            foreach (var item in Content)
+            foreach (var item in StringsToDisplay)
             {
                 DrawDbg(spriteBatch, i, item);
                 i += 30;

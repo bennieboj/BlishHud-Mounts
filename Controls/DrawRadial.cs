@@ -175,7 +175,14 @@ namespace Manlaan.Mounts.Controls
                 IsActionCamToggledOnMount = false;
                 Logger.Debug("HandleHidden turned back on action cam");
             }
-            await TriggerSelectedMountAsync();
+            if (Module.IsMountSwitchable())
+            {
+                await TriggerSelectedMountAsync();
+            }
+            else
+            {
+                _helper.MountOnHide = SelectedMount?.Mount;
+            }
         }
     }
 }
