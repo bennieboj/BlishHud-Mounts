@@ -453,6 +453,48 @@ namespace Manlaan.Mounts.Views
             settingDisplayMountQueueing_Checkbox.CheckedChanged += delegate {
                 Module._settingDisplayMountQueueing.Value = settingDisplayMountQueueing_Checkbox.Checked;
             };
+
+
+            Label settingDisplayModuleOnLoadingScreen_Label = new Label()
+            {
+                Location = new Point(0, settingDisplayMountQueueing_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Display module on loading screen:"
+            };
+            Checkbox settingDisplayModuleOnLoadingScreen_Checkbox = new Checkbox()
+            {
+                Size = new Point(labelWidth2, 20),
+                Parent = defaultMountPanel,
+                Checked = Module._settingDisplayModuleOnLoadingScreen.Value,
+                Location = new Point(settingDisplayModuleOnLoadingScreen_Label.Right + 5, settingDisplayModuleOnLoadingScreen_Label.Top - 1),
+            };
+            settingDisplayModuleOnLoadingScreen_Checkbox.CheckedChanged += delegate {
+                Module._settingDisplayModuleOnLoadingScreen.Value = settingDisplayModuleOnLoadingScreen_Checkbox.Checked;
+            };
+
+
+            Label settingMountAutomaticallyAfterLoadingScreen_Label = new Label()
+            {
+                Location = new Point(0, settingDisplayModuleOnLoadingScreen_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Mount automatically after loading screen:"
+            };
+            Checkbox settingMountAutomaticallyAfterLoadingScreen_Checkbox = new Checkbox()
+            {
+                Size = new Point(labelWidth2, 20),
+                Parent = defaultMountPanel,
+                Checked = Module._settingMountAutomaticallyAfterLoadingScreen.Value,
+                Location = new Point(settingMountAutomaticallyAfterLoadingScreen_Label.Right + 5, settingMountAutomaticallyAfterLoadingScreen_Label.Top - 1),
+            };
+            settingMountAutomaticallyAfterLoadingScreen_Checkbox.CheckedChanged += delegate {
+                Module._settingMountAutomaticallyAfterLoadingScreen.Value = settingMountAutomaticallyAfterLoadingScreen_Checkbox.Checked;
+            };
         }
 
         private void BuildRadialPanel(Container radialPanel, int labelWidth, int mountsAndRadialInputWidth)

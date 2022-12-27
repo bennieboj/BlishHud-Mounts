@@ -23,6 +23,7 @@
 }
 /*
     "changelog": {
+        "1.2.21": "2022-12-27:add options to hide module on world map+loading screen, automatically load last mount after loading screen",
         "1.2.20": "2022-12-18:add default flying mount + remove semaphore, only send events to gw2, not system",
         "1.2.19": "2022-06-29:add radial start angle option",
         "1.2.18": "2022-06-29:preload textures",

@@ -106,11 +106,29 @@ namespace Manlaan.Mounts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Display module on loading screen.
+        /// </summary>
+        internal static string Setting_DisplayModuleOnLoadingScreen {
+            get {
+                return ResourceManager.GetString("Setting_DisplayModuleOnLoadingScreen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Display Mount queuing.
         /// </summary>
         internal static string Setting_DisplayMountQueueing {
             get {
                 return ResourceManager.GetString("Setting_DisplayMountQueueing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mount automatically after loading screen.
+        /// </summary>
+        internal static string Setting_MountAutomaticallyAfterLoadingScreen {
+            get {
+                return ResourceManager.GetString("Setting_MountAutomaticallyAfterLoadingScreen", resourceCulture);
             }
         }
         

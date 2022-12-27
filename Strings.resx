@@ -132,8 +132,14 @@
   <data name="Setting_DefaultWaterMountChoice" xml:space="preserve">
     <value>Default Water Mount Choice</value>
   </data>
+  <data name="Setting_DisplayModuleOnLoadingScreen" xml:space="preserve">
+    <value>Display module on loading screen</value>
+  </data>
   <data name="Setting_DisplayMountQueueing" xml:space="preserve">
     <value>Display Mount queuing</value>
+  </data>
+  <data name="Setting_MountAutomaticallyAfterLoadingScreen" xml:space="preserve">
+    <value>Mount automatically after loading screen</value>
   </data>
   <data name="Setting_MountBlockKeybindFromGame" xml:space="preserve">
     <value>Do not send keybind to game</value>
