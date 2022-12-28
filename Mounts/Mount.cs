@@ -61,6 +61,12 @@ namespace Manlaan.Mounts
                 return;
             }
 
+            if (!Module.IsMountSwitchable())
+            {
+                _helper.MountOnHide = this;
+                return;
+            }
+
             if (GameService.Gw2Mumble.PlayerCharacter.CurrentMount == MountType.None)
             {
                 LastUsedTimestamp = DateTime.UtcNow;
