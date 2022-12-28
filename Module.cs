@@ -246,12 +246,7 @@ namespace Manlaan.Mounts
             var isMountSwitchable = IsMountSwitchable();
             var moduleHidden = _lastIsMountSwitchable && !isMountSwitchable;
             var moduleShown = !_lastIsMountSwitchable && isMountSwitchable;
-            var currentMount = GameService.Gw2Mumble.PlayerCharacter.CurrentMount;
-            if (moduleHidden && currentMount != MountType.None)
-            {
-                _helper.MountOnHide = _mounts.Single(m => m.MountType == currentMount);
-            }
-            if (moduleShown && currentMount == MountType.None)
+            if (moduleShown && GameService.Gw2Mumble.PlayerCharacter.CurrentMount == MountType.None)
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 _helper.MountOnHide?.DoMountAction();
@@ -449,11 +444,9 @@ namespace Manlaan.Mounts
             //    Size = new Point(500, 500)
             //};
 
-            //if (_dbg != null)
+            //if (_dbg != null && DebugService.EnableAdditionalDebugDisplay.Value || ApplicationSettings.Instance.DebugEnabled)
             //{
-            //    IEnumerable<string> debugList = new List<string> {
-            //        $"currZ {currentZPosition.ToString("#.##")}",
-            //        };
+            //    IEnumerable<string> debugList = new List<string>();
             //    if (IsPlayerGlidingOrFalling)
             //    {
             //        debugList = debugList.Append($"fallingOrGliding {IsPlayerGlidingOrFalling}");
