@@ -14,6 +14,7 @@ namespace Manlaan.Mounts
     {
         private static readonly Logger Logger = Logger.GetLogger<Helper>();
         public Mount MountOnHide = null;
+        public string CharacterNameOnHide;
 
         Gw2Sharp.Models.MapType[] warclawOnlyMaps = {
                 Gw2Sharp.Models.MapType.RedBorderlands,

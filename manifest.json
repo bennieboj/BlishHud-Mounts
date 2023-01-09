@@ -1,6 +1,6 @@
 {
   "name": "Mounts",
-  "version": "1.2.23",
+  "version": "1.2.24",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -23,6 +23,7 @@
 }
 /*
     "changelog": {
+        "1.2.24": "2023-01-09:fix not respecting automount setting + avoid automount when swapping characters",
         "1.2.23": "2023-01-03:fix automatically load last mount after loading screen not working for different map + prevent trying to dismount when not possible",
         "1.2.22": "2022-12-28:fix automatically load last mount after loading screen not working for icons",
         "1.2.21": "2022-12-27:add options to hide module on world map+loading screen, automatically load last mount after loading screen",
