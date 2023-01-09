@@ -247,11 +247,13 @@ namespace Manlaan.Mounts
             var moduleHidden = _lastIsMountSwitchable && !isMountSwitchable;
             var moduleShown = !_lastIsMountSwitchable && isMountSwitchable;
             var currentMount = GameService.Gw2Mumble.PlayerCharacter.CurrentMount;
+            var currentCharacterName = GameService.Gw2Mumble.PlayerCharacter.Name;
             if (moduleHidden && currentMount != MountType.None)
             {
                 _helper.MountOnHide = _mounts.Single(m => m.MountType == currentMount);
+                _helper.CharacterNameOnHide = currentCharacterName;
             }
-            if (moduleShown && currentMount == MountType.None)
+            if (moduleShown && currentMount == MountType.None && _settingMountAutomaticallyAfterLoadingScreen.Value && currentCharacterName == _helper.CharacterNameOnHide)
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 _helper.MountOnHide?.DoMountAction();
