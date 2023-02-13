@@ -512,7 +512,7 @@ namespace Manlaan.Mounts
                 case "Radial":
                     if (ShouldShowModule())
                     {
-                        _radial.Show();
+                        _radial?.Show();
                         Logger.Debug("DoDefaultMountActionAsync DefaultMountBehaviour radial");
                     }
                     break;
