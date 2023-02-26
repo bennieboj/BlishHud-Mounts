@@ -118,7 +118,6 @@ namespace Manlaan.Mounts.Controls
                 spriteBatch.DrawOnCtrl(this, radialMount.Texture, new Rectangle(radialMount.ImageX, radialMount.ImageY, mountIconSize, mountIconSize), null, Color.White * (radialMount.Selected ? 1f : Module._settingMountRadialIconOpacity.Value));
             }
 
-            DrawDbg(spriteBatch, 00, IsActionCamToggledOnMount?$"IsActionCamToggledOnMount":"");
             //DrawDbg(spriteBatch, 00, $"AngleBegin: {RadialMounts[8].AngleBegin}");
             //DrawDbg(spriteBatch, 30, $"AngleEnd: {RadialMounts[8].AngleEnd}");
             //DrawDbg(spriteBatch, 60, $"startangle {startAngle}");

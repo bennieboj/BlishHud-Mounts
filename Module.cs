@@ -235,11 +235,14 @@ namespace Manlaan.Mounts
             var secondsDiff = currentUpdateSeconds - _lastUpdateSeconds;
             var zPositionDiff = currentZPosition - _lastZPosition;
             
-            if(zPositionDiff != 0 && secondsDiff != 0)
+            if (zPositionDiff < -0.0001 && secondsDiff != 0)
             {
                 var velocity = zPositionDiff / secondsDiff;
                 IsPlayerGlidingOrFalling = velocity < -2.5;
-                Logger.Debug($"fallingOrGliding {IsPlayerGlidingOrFalling} currZ {currentZPosition.ToString("#.##")} currS {currentUpdateSeconds.ToString("#.##")} diffZ {zPositionDiff.ToString("#.##")} diffS {secondsDiff.ToString("#.##")} velocity {velocity.ToString("#.#######")} {velocity}");
+            }
+            else
+            {
+                IsPlayerGlidingOrFalling = false;
             }
 
             _lastZPosition = currentZPosition;
