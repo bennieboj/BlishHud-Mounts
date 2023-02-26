@@ -1,7 +1,6 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
 using Blish_HUD.Controls.Intern;
-using Blish_HUD.Modules.Managers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -66,7 +65,7 @@ namespace Manlaan.Mounts.Controls
                 {
                     mounts.Remove(mountToPutInCenter);
                 }
-                var texture = _textureCache.GetImgFile(mountToPutInCenter.ImageFileName);
+                var texture = _textureCache.GetMountImgFile(mountToPutInCenter.ImageFileName);
                 int loc = radius;
                 RadialMounts.Add(new RadialMount { Texture = texture, Mount = mountToPutInCenter, ImageX = loc, ImageY = loc, Default = true });
             }
@@ -78,7 +77,7 @@ namespace Manlaan.Mounts.Controls
             {
                 var angleMid = currentAngle + partAngleStep / 2;
                 var angleEnd = currentAngle + partAngleStep;
-                var texture = _textureCache.GetImgFile(mount.ImageFileName);
+                var texture = _textureCache.GetMountImgFile(mount.ImageFileName);
 
                 int x = (int)Math.Round(radius + radius * Math.Cos(angleMid));
                 int y = (int)Math.Round(radius + radius * Math.Sin(angleMid));
@@ -94,7 +93,7 @@ namespace Manlaan.Mounts.Controls
                 currentAngle = angleEnd;
             }
 
-            var mousePos = Input.Mouse.Position;
+            var mousePos = Input.Mouse.PositionRaw;
             var diff = mousePos - SpawnPoint;
             var angle = Math.Atan2(diff.Y, diff.X);
             while (angle < startAngle)
@@ -119,6 +118,7 @@ namespace Manlaan.Mounts.Controls
                 spriteBatch.DrawOnCtrl(this, radialMount.Texture, new Rectangle(radialMount.ImageX, radialMount.ImageY, mountIconSize, mountIconSize), null, Color.White * (radialMount.Selected ? 1f : Module._settingMountRadialIconOpacity.Value));
             }
 
+            DrawDbg(spriteBatch, 00, IsActionCamToggledOnMount?$"IsActionCamToggledOnMount":"");
             //DrawDbg(spriteBatch, 00, $"AngleBegin: {RadialMounts[8].AngleBegin}");
             //DrawDbg(spriteBatch, 30, $"AngleEnd: {RadialMounts[8].AngleEnd}");
             //DrawDbg(spriteBatch, 60, $"startangle {startAngle}");
@@ -140,8 +140,7 @@ namespace Manlaan.Mounts.Controls
         private async Task HandleShown(object sender, EventArgs e)
         {
             Logger.Debug("HandleShown entered");
-            var isCursorVisible = GameService.Input.Mouse.CursorIsVisible;
-            if (!isCursorVisible)
+            if (!GameService.Input.Mouse.CursorIsVisible && !Module._settingMountRadialToggleActionCameraKeyBinding.IsNull)
             {
                 IsActionCamToggledOnMount = true;
                 await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding);
@@ -153,9 +152,9 @@ namespace Manlaan.Mounts.Controls
             radius = (int)((_maxRadialDiameter / 2 - mountIconSize / 2) * Module._settingMountRadialRadiusModifier.Value);
             Size = new Point(_maxRadialDiameter, _maxRadialDiameter);
 
-            if (Module._settingMountRadialSpawnAtMouse.Value && isCursorVisible)
+            if (Module._settingMountRadialSpawnAtMouse.Value)
             {
-                SpawnPoint = Input.Mouse.Position;
+                SpawnPoint = Input.Mouse.PositionRaw;
             }
             else
             {

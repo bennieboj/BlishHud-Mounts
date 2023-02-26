@@ -74,6 +74,7 @@ namespace Manlaan.Mounts
         private DebugControl _dbg;
         private DrawRadial _radial;
         private LoadingSpinner _queueingSpinner;
+        private DrawMouseCursor _drawMouseCursor;
         private Helper _helper;
         private TextureCache _textureCache;
 
@@ -197,6 +198,7 @@ namespace Manlaan.Mounts
             _settingMountRadialRadiusModifier.SettingChanged += UpdateSettings;
             _settingMountRadialStartAngle.SettingChanged += UpdateSettings;
             _settingMountRadialCenterMountBehavior.SettingChanged += UpdateSettings;
+            _settingMountRadialToggleActionCameraKeyBinding.SettingChanged += UpdateSettings;
             _settingMountRadialIconOpacity.SettingChanged += UpdateSettings;
             _settingMountRadialRemoveCenterMount.SettingChanged += UpdateSettings;
 
@@ -294,7 +296,17 @@ namespace Manlaan.Mounts
                 _queueingSpinner?.Show();
             }
 
-            if(_radial.Visible && !_settingDefaultMountBinding.Value.IsTriggering || !shouldShowModule)
+            if (GameService.Input.Mouse.CameraDragging && _radial.Visible && !GameService.Input.Mouse.CursorIsVisible)
+            {
+                _drawMouseCursor.Location = new Point(GameService.Input.Mouse.PositionRaw.X, GameService.Input.Mouse.PositionRaw.Y);
+                _drawMouseCursor.Show();
+            }
+            else
+            {
+                _drawMouseCursor.Hide();
+            }
+
+            if (_radial.Visible && !_settingDefaultMountBinding.Value.IsTriggering || !shouldShowModule)
             {
                 _radial.Hide();
             }
@@ -332,6 +344,7 @@ namespace Manlaan.Mounts
             _settingMountRadialRadiusModifier.SettingChanged -= UpdateSettings;
             _settingMountRadialStartAngle.SettingChanged -= UpdateSettings;
             _settingMountRadialCenterMountBehavior.SettingChanged -= UpdateSettings;
+            _settingMountRadialToggleActionCameraKeyBinding.SettingChanged -= UpdateSettings;
             _settingMountRadialIconOpacity.SettingChanged -= UpdateSettings;
             _settingMountRadialRemoveCenterMount.SettingChanged -= UpdateSettings;
 
@@ -382,7 +395,7 @@ namespace Manlaan.Mounts
             };
 
             foreach (Mount mount in _availableOrderedMounts) {
-                Texture2D img = _textureCache.GetImgFile(mount.ImageFileName);
+                Texture2D img = _textureCache.GetMountImgFile(mount.ImageFileName);
                 Image _btnMount = new Image
                 {
                     Parent = _mountPanel,
@@ -431,7 +444,7 @@ namespace Manlaan.Mounts
         private void DrawCornerIcons() {
             foreach (Mount mount in _availableOrderedMounts)
             {
-                mount.CreateCornerIcon(_textureCache.GetImgFile(mount.ImageFileName));
+                mount.CreateCornerIcon(_textureCache.GetMountImgFile(mount.ImageFileName));
             }
 
         }
@@ -472,6 +485,11 @@ namespace Manlaan.Mounts
             _queueingSpinner.Parent = GameService.Graphics.SpriteScreen;
             _queueingSpinner.Hide();
 
+            _drawMouseCursor?.Dispose();
+            _drawMouseCursor = new DrawMouseCursor(_textureCache);
+            _drawMouseCursor.Parent = GameService.Graphics.SpriteScreen;
+            _drawMouseCursor.Hide();
+
             _radial?.Dispose();
             _radial = new DrawRadial(_helper, _textureCache);
             _radial.Parent = GameService.Graphics.SpriteScreen;
@@ -496,12 +514,12 @@ namespace Manlaan.Mounts
             }
 
             var defaultMount = _helper.GetDefaultMount();
-            if (defaultMount != null && GameService.Input.Mouse.CameraDragging)
-            {
-                await (defaultMount?.DoMountAction() ?? Task.CompletedTask);
-                Logger.Debug("DoDefaultMountActionAsync CameraDragging defaultmount");
-                return;
-            }
+            //if (defaultMount != null && GameService.Input.Mouse.CameraDragging)
+            //{
+            //    await (defaultMount?.DoMountAction() ?? Task.CompletedTask);
+            //    Logger.Debug("DoDefaultMountActionAsync CameraDragging defaultmount");
+            //    return;
+            //}
 
             switch (_settingDefaultMountBehaviour.Value)
             {
