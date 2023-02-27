@@ -179,7 +179,9 @@ namespace Manlaan.Mounts.Controls
             }
             else
             {
+                Logger.Debug($"HandleHidden IsMountSwitchable false, storing mount: {SelectedMount?.Mount.DisplayName}");
                 _helper.MountOnHide = SelectedMount?.Mount;
+                _helper.CharacterNameOnHide = GameService.Gw2Mumble.PlayerCharacter.Name;
             }
         }
     }
