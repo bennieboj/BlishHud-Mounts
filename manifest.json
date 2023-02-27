@@ -1,6 +1,6 @@
 {
   "name": "Mounts",
-  "version": "1.2.25",
+  "version": "1.2.26",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -23,6 +23,7 @@
 }
 /*
     "changelog": {
+        "1.2.26": "2023-02-27:allow radial when dragging camera + add some more filtering for flying + allow swapping on loading screen when MountAutomaticallyAfterLoadingScreen is not enabled + allow selecting mount on loading screen correctly",
         "1.2.25": "2023-02-13:add null check",
         "1.2.24": "2023-01-09:fix not respecting automount setting + avoid automount when swapping characters",
         "1.2.23": "2023-01-03:fix automatically load last mount after loading screen not working for different map + prevent trying to dismount when not possible",
