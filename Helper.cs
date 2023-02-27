@@ -13,8 +13,8 @@ namespace Manlaan.Mounts
     public class Helper
     {
         private static readonly Logger Logger = Logger.GetLogger<Helper>();
-        public Mount MountOnHide = null;
-        public string CharacterNameOnHide;
+        private Mount MountOnHide = null;
+        private string CharacterNameOnHide;
 
         Gw2Sharp.Models.MapType[] warclawOnlyMaps = {
                 Gw2Sharp.Models.MapType.RedBorderlands,
@@ -128,6 +128,28 @@ namespace Manlaan.Mounts
             {
                 return new VirtualKeyShort();
             }
+        }
+
+        internal void StoreMountForLaterUse(Mount mount, string characterName)
+        {
+            MountOnHide = mount;
+            CharacterNameOnHide = characterName;
+        }
+
+        internal bool IsCharacterTheSameAfterMapLoad(string characterName)
+        {
+            return CharacterNameOnHide == characterName;
+        }
+
+        internal Task DoMountActionForLaterUse()
+        {
+            return MountOnHide?.DoMountAction();
+        }
+
+        internal void ClearMountForLaterUse()
+        {
+            MountOnHide = null;
+            CharacterNameOnHide = null;
         }
     }
 }

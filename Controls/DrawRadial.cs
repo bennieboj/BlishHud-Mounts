@@ -173,16 +173,7 @@ namespace Manlaan.Mounts.Controls
                 IsActionCamToggledOnMount = false;
                 Logger.Debug("HandleHidden turned back on action cam");
             }
-            if (Module.IsMountSwitchable())
-            {
-                await TriggerSelectedMountAsync();
-            }
-            else
-            {
-                Logger.Debug($"HandleHidden IsMountSwitchable false, storing mount: {SelectedMount?.Mount.DisplayName}");
-                _helper.MountOnHide = SelectedMount?.Mount;
-                _helper.CharacterNameOnHide = GameService.Gw2Mumble.PlayerCharacter.Name;
-            }
+            await TriggerSelectedMountAsync();
         }
     }
 }

@@ -13,6 +13,7 @@ namespace Manlaan.Mounts
     public abstract class Mount
     {
         private readonly Helper _helper;
+        private static readonly Logger Logger = Logger.GetLogger<Mount>();
 
         public Mount(SettingCollection settingCollection, Helper helper,
             string name, string displayName, string imageFileName,
@@ -63,7 +64,8 @@ namespace Manlaan.Mounts
 
             if (!Module.IsMountSwitchable())
             {
-                _helper.MountOnHide = this;
+                _helper.StoreMountForLaterUse(this, GameService.Gw2Mumble.PlayerCharacter.Name);
+                Logger.Debug($"DoMountAction StoreMountForLaterUse: {DisplayName}");
                 return;
             }
 
