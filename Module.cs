@@ -298,15 +298,15 @@ namespace Manlaan.Mounts
                 _queueingSpinner?.Show();
             }
 
-            if (GameService.Input.Mouse.CameraDragging && _radial.Visible && !GameService.Input.Mouse.CursorIsVisible)
-            {
-                _drawMouseCursor.Location = new Point(GameService.Input.Mouse.PositionRaw.X, GameService.Input.Mouse.PositionRaw.Y);
-                _drawMouseCursor.Show();
-            }
-            else
-            {
-                _drawMouseCursor.Hide();
-            }
+            //if (GameService.Input.Mouse.CameraDragging && _radial.Visible && !GameService.Input.Mouse.CursorIsVisible)
+            //{
+            //    _drawMouseCursor.Location = new Point(GameService.Input.Mouse.PositionRaw.X, GameService.Input.Mouse.PositionRaw.Y);
+            //    _drawMouseCursor.Show();
+            //}
+            //else
+            //{
+            //    _drawMouseCursor.Hide();
+            //}
 
             if (_radial.Visible && !_settingDefaultMountBinding.Value.IsTriggering || !shouldShowModule)
             {
