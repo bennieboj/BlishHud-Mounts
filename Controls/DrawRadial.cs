@@ -93,7 +93,7 @@ namespace Manlaan.Mounts.Controls
                 currentAngle = angleEnd;
             }
 
-            var mousePos = Input.Mouse.PositionRaw;
+            var mousePos = Input.Mouse.Position;
             var diff = mousePos - SpawnPoint;
             var angle = Math.Atan2(diff.Y, diff.X);
             while (angle < startAngle)
@@ -153,7 +153,7 @@ namespace Manlaan.Mounts.Controls
 
             if (Module._settingMountRadialSpawnAtMouse.Value)
             {
-                SpawnPoint = Input.Mouse.PositionRaw;
+                SpawnPoint = Input.Mouse.Position;
             }
             else
             {
