@@ -17,6 +17,7 @@ using System.Collections.ObjectModel;
 using Manlaan.Mounts.Controls;
 using System.Collections.Generic;
 using Gw2Sharp.Models;
+using Manlaan.Mounts.Views;
 
 namespace Manlaan.Mounts
 {
@@ -34,6 +35,8 @@ namespace Manlaan.Mounts
 
         internal static Collection<Mount> _mounts;
         internal static List<Mount> _availableOrderedMounts => _mounts.Where(m => m.IsAvailable).OrderBy(m => m.OrderSetting.Value).ToList();
+
+        private TabbedWindow2 _settingsWindow;
 
         public static int[] _mountOrder = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         public static string[] _mountDisplay = new string[] { "Transparent", "Solid", "SolidText" };
@@ -67,9 +70,6 @@ namespace Manlaan.Mounts
         public static SettingEntry<int> _settingImgWidth;
         public static SettingEntry<float> _settingOpacity;
 
-#pragma warning disable CS0618 // Type or member is obsolete
-        private WindowTab windowTab;
-#pragma warning restore CS0618 // Type or member is obsolete
         private Panel _mountPanel;
         private DebugControl _dbg;
         private DrawRadial _radial;
@@ -97,9 +97,23 @@ namespace Manlaan.Mounts
         {
             GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += async (sender, e) => await HandleCombatChangeAsync(sender, e);
 
-#pragma warning disable CS0618 // Type or member is obsolete
-            windowTab = new WindowTab("Mounts", ContentsManager.GetTexture("514394-grey.png"));
-#pragma warning restore CS0618 // Type or member is obsolete
+            var mountsIcon = ContentsManager.GetTexture("514394-grey.png");
+
+            _settingsWindow = new TabbedWindow2(
+                                    ContentsManager.GetTexture("156006.png"),
+                                    new Rectangle(35, 36, 1100, 840),
+                                    new Rectangle(95, 42, 983 + 38, 792)
+                                   )
+            {
+                Title = "Mounts",
+                Parent = GameService.Graphics.SpriteScreen,
+                Location = new Point(100, 100),
+                Emblem = mountsIcon,
+                Id = $"{this.Namespace}_SettingsWindow",
+                SavesPosition = true,
+            };
+
+            _settingsWindow.Tabs.Add(new Tab(mountsIcon, () => new SettingsView(ContentsManager), Strings.Window_AllSettingsTab));
         }
 
 
@@ -215,14 +229,19 @@ namespace Manlaan.Mounts
 
         public override IView GetSettingsView()
         {
-            return new Views.DummySettingsView(ContentsManager);
+            var dummySettingWindow = new DummySettingsView();
+            dummySettingWindow.OnSettingsButtonClicked += (args, sender) =>
+            {
+                _settingsWindow.SelectedTab = _settingsWindow.Tabs.First();
+                _settingsWindow.Show();
+            };
+            return dummySettingWindow;
         }
 
         protected override void OnModuleLoaded(EventArgs e)
         {
             _textureCache = new TextureCache(ContentsManager);
             DrawUI();
-            GameService.Overlay.BlishHudWindow.AddTab(windowTab, () => new Views.SettingsView(ContentsManager));
 
             // Base handler must be called
             base.OnModuleLoaded(e);
@@ -360,8 +379,6 @@ namespace Manlaan.Mounts
             _settingDrag.SettingChanged -= UpdateSettings;
             _settingImgWidth.SettingChanged -= UpdateSettings;
             _settingOpacity.SettingChanged -= UpdateSettings;
-            
-            GameService.Overlay.BlishHudWindow.RemoveTab(windowTab);
         }
 
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<string> e = null) {
