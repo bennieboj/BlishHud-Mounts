@@ -18,6 +18,7 @@ using Manlaan.Mounts.Controls;
 using System.Collections.Generic;
 using Gw2Sharp.Models;
 using Manlaan.Mounts.Views;
+using Blish_HUD.Content;
 
 namespace Manlaan.Mounts
 {
@@ -100,9 +101,9 @@ namespace Manlaan.Mounts
             var mountsIcon = ContentsManager.GetTexture("514394-grey.png");
 
             _settingsWindow = new TabbedWindow2(
-                                    ContentsManager.GetTexture("156006.png"),
-                                    new Rectangle(35, 36, 1100, 840),
-                                    new Rectangle(95, 42, 983 + 38, 792)
+                                    ContentsManager.GetTexture("156006-big.png"),
+                                    new Rectangle(35, 36, 1300, 900),
+                                    new Rectangle(95, 42, 1183 + 38, 792)
                                    )
             {
                 Title = "Mounts",
@@ -113,7 +114,7 @@ namespace Manlaan.Mounts
                 SavesPosition = true,
             };
 
-            _settingsWindow.Tabs.Add(new Tab(mountsIcon, () => new SettingsView(ContentsManager), Strings.Window_AllSettingsTab));
+            _settingsWindow.Tabs.Add(new Tab(ContentsManager.GetTexture("155052.png"), () => new SettingsView(ContentsManager), Strings.Window_AllSettingsTab));
         }
 
 
