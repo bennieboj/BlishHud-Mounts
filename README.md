@@ -1,6 +1,11 @@
 Add several display options related to mounts:
 - Mount icons, including in the corner bar and square icons that can be manually placed. You mount on the clicked upon mount.
 
+## Releases
+
+GitHub releases are out of date.
+Recent releases moved to in-Blish-HUD repository: https://blishhud.com/docs/user/installing-modules.
+
 ## Settings
 
 Keybinds:
