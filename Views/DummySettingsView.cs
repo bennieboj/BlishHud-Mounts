@@ -13,14 +13,14 @@ namespace Manlaan.Mounts.Views
 
         protected override void Build(Container buildPanel)
         {
-            var _btnTab = new StandardButton
+            var _settingsButton = new StandardButton
             {
                 Parent = buildPanel,
                 Location = new Point(100, 100),
                 Text = Strings.Settings_Button_Label
             };
 
-            _btnTab.Click += (args, sender) => {
+            _settingsButton.Click += (args, sender) => {
                 OnSettingsButtonClicked(args, sender);
             };
         }

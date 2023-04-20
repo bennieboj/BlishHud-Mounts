@@ -3,6 +3,7 @@ using Blish_HUD.Controls;
 using Blish_HUD.Controls.Intern;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX.Direct2D1.Effects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,12 +23,18 @@ namespace Manlaan.Mounts.Controls
         public bool Default { get; internal set; }
     }
 
-    internal class DrawRadial : Control
+    internal class DrawRadial : Container
     {
         private static readonly Logger Logger = Logger.GetLogger<DrawRadial>();
         private readonly Helper _helper;
         private readonly TextureCache _textureCache;
+
+        public EventHandler OnSettingsButtonClicked { get; internal set; }
+        private StandardButton _settingsButton;
+        private Label _noMountsLabel;
+
         private List<RadialMount> RadialMounts = new List<RadialMount>();
+
         private RadialMount SelectedMount => RadialMounts.SingleOrDefault(m => m.Selected);
 
         public override int ZIndex { get => base.ZIndex; set => base.ZIndex = value; }
@@ -47,6 +54,25 @@ namespace Manlaan.Mounts.Controls
             _textureCache = textureCache;
             Shown += async (sender, e) => await HandleShown(sender, e);
             Hidden += async (sender, e) => await HandleHidden(sender, e);
+
+            _noMountsLabel = new Label {
+                Parent = this,
+                Location = new Point(0, 0),
+                Size = new Point(800,500),
+                Font = GameService.Content.DefaultFont32,
+                TextColor = Color.Red,
+                Text = "NO MOUNTS CONFIGURED, GO TO SETTINGS: "
+            };
+            _settingsButton = new StandardButton
+            {
+                Parent = this,
+                Location = new Point(250, 300),
+                Text = Strings.Settings_Button_Label,
+                Visible = false
+            };
+            _settingsButton.Click += (args, sender) => {
+                OnSettingsButtonClicked(args, sender);
+            };
         }
 
         protected override CaptureType CapturesInput()
@@ -54,9 +80,22 @@ namespace Manlaan.Mounts.Controls
             return CaptureType.Mouse;
         }
 
-        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
+
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             RadialMounts.Clear();
             var mounts = Module._availableOrderedMounts;
+
+            if (!mounts.Any())
+            {
+                _noMountsLabel.Show();
+                _settingsButton.Show();
+                return;
+            }
+            else
+            {
+                _noMountsLabel.Hide();
+                _settingsButton.Hide();
+            }
 
             Mount mountToPutInCenter = _helper.GetCenterMount();
             if (mountToPutInCenter != null && mountToPutInCenter.IsAvailable)
@@ -122,12 +161,13 @@ namespace Manlaan.Mounts.Controls
             //DrawDbg(spriteBatch, 30, $"AngleEnd: {RadialMounts[8].AngleEnd}");
             //DrawDbg(spriteBatch, 60, $"startangle {startAngle}");
             //DrawDbg(spriteBatch, 90, $"angle {angle}");
+
+            base.PaintBeforeChildren(spriteBatch, bounds);
         }
 
         private void DrawDbg(SpriteBatch spriteBatch, int position, string s)
         {
             spriteBatch.DrawStringOnCtrl(this, s, GameService.Content.DefaultFont32, new Rectangle(new Point(0, position), new Point(400, 400)), Color.Red);
-
         }
 
         public async Task TriggerSelectedMountAsync()

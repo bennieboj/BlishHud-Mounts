@@ -513,6 +513,11 @@ namespace Manlaan.Mounts
             _radial?.Dispose();
             _radial = new DrawRadial(_helper, _textureCache);
             _radial.Parent = GameService.Graphics.SpriteScreen;
+            _radial.OnSettingsButtonClicked += (args, sender) =>
+            {
+                _settingsWindow.SelectedTab = _settingsWindow.Tabs.First();
+                _settingsWindow.Show();
+            };
         }
 
         private async Task DoDefaultMountActionAsync()
