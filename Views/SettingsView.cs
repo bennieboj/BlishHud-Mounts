@@ -46,13 +46,13 @@ namespace Manlaan.Mounts.Views
             Label labelExplanation = new Label()
             {
                 Location = new Point(10, 10),
-                Width = 1000,
+                Width = 800,
                 AutoSizeHeight = true,
                 WrapText = true,
                 Parent = buildPanel,
                 TextColor = Color.Red,
                 Font = GameService.Content.DefaultFont18,
-                Text = "For this module to work you need to fill in your in-game keykindings in the settings below. No keybind means the mount is DISABLED.",
+                Text = "For this module to work you need to fill in your in-game keykindings in the settings below.\nNo keybind means the mount is DISABLED.".Replace(" ", "  "),
                 HorizontalAlignment = HorizontalAlignment.Left
             };
 
