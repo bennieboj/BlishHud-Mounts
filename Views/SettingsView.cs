@@ -17,12 +17,24 @@ namespace Manlaan.Mounts.Views
 
         private Texture2D anetTexture { get; }
 
+        private Panel ManualPanel { get; set; }
+
         public SettingsView(ContentsManager contentsManager)
         {
             ContentsManager = contentsManager;
             anetTexture = contentsManager.GetTexture("1441452.png");
         }
 
+        private Panel CreateDefaultPanel(Container buildPanel, Point location)
+        {
+            return new Panel {
+                CanScroll = false,
+                Parent = buildPanel,
+                HeightSizingMode = SizingMode.AutoSize,
+                Width = 420,
+                Location = location
+            };
+        }
 
         protected override void Build(Container buildPanel) {
             int labelWidth                = 150;
@@ -31,47 +43,195 @@ namespace Manlaan.Mounts.Views
             int bindingWidth              = 170;
             int mountsAndRadialInputWidth = 125;
 
-            Panel mountsLeftPanel = new Panel() {
-                CanScroll = false,
-                Parent = buildPanel,
-                HeightSizingMode = SizingMode.AutoSize,
-                Width = 420,
+            Label labelExplanation = new Label()
+            {
                 Location = new Point(10, 10),
-            };
-            Panel otherPanel = new Panel() {
-                CanScroll = false,
+                Width = 800,
+                AutoSizeHeight = true,
+                WrapText = true,
                 Parent = buildPanel,
-                HeightSizingMode = SizingMode.AutoSize,
-                Width = 330,
-                Location = new Point(mountsLeftPanel.Right + 20, 10),
-            };
-            Panel manualPanel = new Panel() {
-                CanScroll = false,
-                Parent = buildPanel,
-                HeightSizingMode = SizingMode.AutoSize,
-                Width = 330,
-                Location = new Point(mountsLeftPanel.Right + 20, 93),
-            };
-            Panel defaultMountPanel = new Panel()
-            {
-                CanScroll = false,
-                Parent = buildPanel,
-                HeightSizingMode = SizingMode.AutoSize,
-                Width = 420,
-                Location = new Point(10, 350)
-            };
-            Panel radialPanel = new Panel()
-            {
-                CanScroll = false,
-                Parent = buildPanel,
-                HeightSizingMode = SizingMode.AutoSize,
-                Width = 420,
-                Location = new Point(mountsLeftPanel.Right + 20, 350)
+                TextColor = Color.Red,
+                Font = GameService.Content.DefaultFont18,
+                Text = "For this module to work you need to fill in your in-game keykindings in the settings below.\nNo keybind means the mount is DISABLED.".Replace(" ", "  "),
+                HorizontalAlignment = HorizontalAlignment.Left
             };
 
-            DisplayManualPanelIfNeeded(manualPanel);
+            var panelPadding = 20;
 
-            #region Mounts Panel
+            Panel mountsPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding));
+            BuildMountsPanel(mountsPanel, labelWidth, bindingWidth, orderWidth);
+
+            Panel otherPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + panelPadding, labelExplanation.Bottom + panelPadding));
+            BuildOtherPanel(otherPanel, bindingWidth, labelWidth);
+
+            ManualPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + panelPadding, 150 + panelPadding));
+            BuildManualPanel(ManualPanel, buildPanel);
+
+            Panel defaultMountPanel = CreateDefaultPanel(buildPanel, new Point(10, 350));
+            BuildDefaultMountPanel(defaultMountPanel, labelWidth2, mountsAndRadialInputWidth);
+
+            Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + 20, 350));
+            BuildRadialPanel(radialPanel, labelWidth2, mountsAndRadialInputWidth);
+
+            DisplayManualPanelIfNeeded();
+        }
+
+        private void BuildManualPanel(Panel manualPanel, Container buildPanel)
+        {
+            Label settingManual_Label = new Label()
+            {
+                Location = new Point(0, 2),
+                Width = manualPanel.Width,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = manualPanel,
+                Text = "Manual Settings",
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+
+            Label settingManualOrientation_Label = new Label()
+            {
+                Location = new Point(0, settingManual_Label.Bottom + 6),
+                Width = 75,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = manualPanel,
+                Text = "Orientation: ",
+            };
+            Dropdown settingManualOrientation_Select = new Dropdown()
+            {
+                Location = new Point(settingManualOrientation_Label.Right + 5, settingManualOrientation_Label.Top - 4),
+                Width = 100,
+                Parent = manualPanel,
+            };
+            foreach (string s in Module._mountOrientation)
+            {
+                settingManualOrientation_Select.Items.Add(s);
+            }
+            settingManualOrientation_Select.SelectedItem = Module._settingOrientation.Value;
+            settingManualOrientation_Select.ValueChanged += delegate {
+                Module._settingOrientation.Value = settingManualOrientation_Select.SelectedItem;
+            };
+
+            Label settingManualWidth_Label = new Label()
+            {
+                Location = new Point(0, settingManualOrientation_Label.Bottom + 6),
+                Width = 75,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = manualPanel,
+                Text = "Icon Width: ",
+            };
+            TrackBar settingImgWidth_Slider = new TrackBar()
+            {
+                Location = new Point(settingManualWidth_Label.Right + 5, settingManualWidth_Label.Top),
+                Width = 220,
+                MaxValue = 200,
+                MinValue = 0,
+                Value = Module._settingImgWidth.Value,
+                Parent = manualPanel,
+            };
+            settingImgWidth_Slider.ValueChanged += delegate { Module._settingImgWidth.Value = (int)settingImgWidth_Slider.Value; };
+
+            Label settingManualOpacity_Label = new Label()
+            {
+                Location = new Point(0, settingManualWidth_Label.Bottom + 6),
+                Width = 75,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = manualPanel,
+                Text = "Opacity: ",
+            };
+            TrackBar settingOpacity_Slider = new TrackBar()
+            {
+                Location = new Point(settingManualOpacity_Label.Right + 5, settingManualOpacity_Label.Top),
+                Width = 220,
+                MaxValue = 100,
+                MinValue = 0,
+                Value = Module._settingOpacity.Value * 100,
+                Parent = manualPanel,
+            };
+            settingOpacity_Slider.ValueChanged += delegate { Module._settingOpacity.Value = settingOpacity_Slider.Value / 100; };
+
+            IView settingClockDrag_View = SettingView.FromType(Module._settingDrag, buildPanel.Width);
+            ViewContainer settingClockDrag_Container = new ViewContainer()
+            {
+                WidthSizingMode = SizingMode.Fill,
+                Location = new Point(0, settingManualOpacity_Label.Bottom + 3),
+                Parent = manualPanel
+            };
+            settingClockDrag_Container.Show(settingClockDrag_View);
+        }
+
+        private void BuildOtherPanel(Panel otherPanel, int bindingWidth, int labelWidth)
+        {
+            Label settingDisplay_Label = new Label()
+            {
+                Location = new Point(0, 4),
+                Width = labelWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = otherPanel,
+                Text = "Display: ",
+            };
+            Dropdown settingDisplay_Select = new Dropdown()
+            {
+                Location = new Point(settingDisplay_Label.Right + 5, settingDisplay_Label.Top - 4),
+                Width = 160,
+                Parent = otherPanel,
+            };
+            foreach (string s in Module._mountDisplay)
+            {
+                settingDisplay_Select.Items.Add(s);
+            }
+            settingDisplay_Select.SelectedItem = Module._settingDisplay.Value;
+            settingDisplay_Select.ValueChanged += delegate {
+                Module._settingDisplay.Value = settingDisplay_Select.SelectedItem;
+            };
+            Label settingDisplayCornerIcons_Label = new Label()
+            {
+                Location = new Point(0, settingDisplay_Label.Bottom + 6),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = otherPanel,
+                Text = "Display Corner Icons: ",
+            };
+            Checkbox settingDisplayCornerIcons_Checkbox = new Checkbox()
+            {
+                Size = new Point(bindingWidth, 20),
+                Parent = otherPanel,
+                Checked = Module._settingDisplayCornerIcons.Value,
+                Location = new Point(settingDisplayCornerIcons_Label.Right + 5, settingDisplayCornerIcons_Label.Top - 1),
+            };
+            settingDisplayCornerIcons_Checkbox.CheckedChanged += delegate {
+                Module._settingDisplayCornerIcons.Value = settingDisplayCornerIcons_Checkbox.Checked;
+            };
+            Label settingDisplayManualIcons_Label = new Label()
+            {
+                Location = new Point(0, settingDisplayCornerIcons_Label.Bottom + 6),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = otherPanel,
+                Text = "Display Manual Icons: ",
+            };
+            Checkbox settingDisplayManualIcons_Checkbox = new Checkbox()
+            {
+                Size = new Point(bindingWidth, 20),
+                Parent = otherPanel,
+                Checked = Module._settingDisplayManualIcons.Value,
+                Location = new Point(settingDisplayManualIcons_Label.Right + 5, settingDisplayManualIcons_Label.Top - 1),
+            };
+            settingDisplayManualIcons_Checkbox.CheckedChanged += delegate
+            {
+                Module._settingDisplayManualIcons.Value = settingDisplayManualIcons_Checkbox.Checked;
+                DisplayManualPanelIfNeeded();
+            };
+        }
+
+        private void BuildMountsPanel(Panel mountsLeftPanel, int labelWidth, int bindingWidth, int orderWidth)
+        {
             var anetImage = new Image
             {
                 Parent = mountsLeftPanel,
@@ -89,7 +249,8 @@ namespace Manlaan.Mounts.Views
                 Text = "must match in-game key binding",
                 HorizontalAlignment = HorizontalAlignment.Left
             };
-            Label settingOrderLeft_Label = new Label() {
+            Label settingOrderLeft_Label = new Label()
+            {
                 Location = new Point(labelWidth + 5, keybindWarning_Label.Bottom + 6),
                 Width = orderWidth,
                 AutoSizeHeight = false,
@@ -98,7 +259,8 @@ namespace Manlaan.Mounts.Views
                 Text = "Order",
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
-            Label settingBindingLeft_Label = new Label() {
+            Label settingBindingLeft_Label = new Label()
+            {
                 Location = new Point(settingOrderLeft_Label.Right + 5, settingOrderLeft_Label.Top),
                 Width = bindingWidth,
                 AutoSizeHeight = false,
@@ -156,155 +318,11 @@ namespace Manlaan.Mounts.Views
                     Location = new Point(settingMount_Select.Right + 5, settingMount_Label.Top - 1),
                 };
                 settingRaptor_Keybind.BindingChanged += delegate {
-                    mount.KeybindingSetting.Value = settingRaptor_Keybind.KeyBinding;                    
+                    mount.KeybindingSetting.Value = settingRaptor_Keybind.KeyBinding;
                 };
 
                 curY = settingMount_Label.Bottom;
             }
-            #endregion
-
-            #region OtherPanel
-            Label settingDisplay_Label = new Label() {
-                Location = new Point(0, 4),
-                Width = labelWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = otherPanel,
-                Text = "Display: ",
-            };
-            Dropdown settingDisplay_Select = new Dropdown() {
-                Location = new Point(settingDisplay_Label.Right + 5, settingDisplay_Label.Top - 4),
-                Width = 160,
-                Parent = otherPanel,
-            };
-            foreach (string s in Module._mountDisplay) {
-                settingDisplay_Select.Items.Add(s);
-            }
-            settingDisplay_Select.SelectedItem = Module._settingDisplay.Value;
-            settingDisplay_Select.ValueChanged += delegate {
-                Module._settingDisplay.Value = settingDisplay_Select.SelectedItem;
-            };
-            Label settingDisplayCornerIcons_Label = new Label()
-            {
-                Location = new Point(0, settingDisplay_Label.Bottom + 6),
-                Width = bindingWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = otherPanel,
-                Text = "Display Corner Icons: ",
-            };
-            Checkbox settingDisplayCornerIcons_Checkbox = new Checkbox()
-            {
-                Size = new Point(bindingWidth, 20),
-                Parent = otherPanel,
-                Checked = Module._settingDisplayCornerIcons.Value,
-                Location = new Point(settingDisplayCornerIcons_Label.Right + 5, settingDisplayCornerIcons_Label.Top - 1),
-            };
-            settingDisplayCornerIcons_Checkbox.CheckedChanged += delegate {
-                Module._settingDisplayCornerIcons.Value = settingDisplayCornerIcons_Checkbox.Checked;
-            };
-            Label settingDisplayManualIcons_Label = new Label()
-            {
-                Location = new Point(0, settingDisplayCornerIcons_Label.Bottom + 6),
-                Width = bindingWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = otherPanel,
-                Text = "Display Manual Icons: ",
-            };
-            Checkbox settingDisplayManualIcons_Checkbox = new Checkbox()
-            {
-                Size = new Point(bindingWidth, 20),
-                Parent = otherPanel,
-                Checked = Module._settingDisplayManualIcons.Value,
-                Location = new Point(settingDisplayManualIcons_Label.Right + 5, settingDisplayManualIcons_Label.Top - 1),
-            };
-            settingDisplayManualIcons_Checkbox.CheckedChanged += delegate
-            {
-                Module._settingDisplayManualIcons.Value = settingDisplayManualIcons_Checkbox.Checked;
-                DisplayManualPanelIfNeeded(manualPanel);
-            };
-            #endregion
-
-            #region manual Panel
-            Label settingManual_Label = new Label() {
-                Location = new Point(0, 2),
-                Width = manualPanel.Width,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = manualPanel,
-                Text = "Manual Settings",
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
-
-            Label settingManualOrientation_Label = new Label() {
-                Location = new Point(0, settingManual_Label.Bottom + 6),
-                Width = 75,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = manualPanel,
-                Text = "Orientation: ",
-            };
-            Dropdown settingManualOrientation_Select = new Dropdown() {
-                Location = new Point(settingManualOrientation_Label.Right + 5, settingManualOrientation_Label.Top - 4),
-                Width = 100,
-                Parent = manualPanel,
-            };
-            foreach (string s in Module._mountOrientation) {
-                settingManualOrientation_Select.Items.Add(s);
-            }
-            settingManualOrientation_Select.SelectedItem = Module._settingOrientation.Value;
-            settingManualOrientation_Select.ValueChanged += delegate {
-                Module._settingOrientation.Value = settingManualOrientation_Select.SelectedItem;
-            };
-
-            Label settingManualWidth_Label = new Label() {
-                Location = new Point(0, settingManualOrientation_Label.Bottom + 6),
-                Width = 75,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = manualPanel,
-                Text = "Icon Width: ",
-            };
-            TrackBar settingImgWidth_Slider = new TrackBar() {
-                Location = new Point(settingManualWidth_Label.Right + 5, settingManualWidth_Label.Top),
-                Width = 220,
-                MaxValue = 200,
-                MinValue = 0,
-                Value = Module._settingImgWidth.Value,
-                Parent = manualPanel,
-            };
-            settingImgWidth_Slider.ValueChanged += delegate { Module._settingImgWidth.Value = (int)settingImgWidth_Slider.Value; };
-
-            Label settingManualOpacity_Label = new Label() {
-                Location = new Point(0, settingManualWidth_Label.Bottom + 6),
-                Width = 75,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = manualPanel,
-                Text = "Opacity: ",
-            };
-            TrackBar settingOpacity_Slider = new TrackBar() {
-                Location = new Point(settingManualOpacity_Label.Right + 5, settingManualOpacity_Label.Top),
-                Width = 220,
-                MaxValue = 100,
-                MinValue = 0,
-                Value = Module._settingOpacity.Value * 100,
-                Parent = manualPanel,
-            };
-            settingOpacity_Slider.ValueChanged += delegate { Module._settingOpacity.Value = settingOpacity_Slider.Value / 100; };
-
-            IView settingClockDrag_View = SettingView.FromType(Module._settingDrag, buildPanel.Width);
-            ViewContainer settingClockDrag_Container = new ViewContainer() {
-                WidthSizingMode = SizingMode.Fill,
-                Location = new Point(0, settingManualOpacity_Label.Bottom + 3),
-                Parent = manualPanel
-            };
-            settingClockDrag_Container.Show(settingClockDrag_View);
-            #endregion
-
-            BuildDefaultMountPanel(defaultMountPanel, labelWidth2, mountsAndRadialInputWidth);
-            BuildRadialPanel(radialPanel, labelWidth2, mountsAndRadialInputWidth);
         }
 
         private void BuildDefaultMountPanel(Panel defaultMountPanel, int labelWidth2, int mountsAndRadialInputWidth)
@@ -670,12 +688,12 @@ namespace Manlaan.Mounts.Views
             };
         }
 
-        private static void DisplayManualPanelIfNeeded(Panel manualPanel)
+        private void DisplayManualPanelIfNeeded()
         {
             if (Module._settingDisplayManualIcons.Value)
-                manualPanel.Show();
+                ManualPanel.Show();
             else
-                manualPanel.Hide();
+                ManualPanel.Hide();
         }
     }
 }

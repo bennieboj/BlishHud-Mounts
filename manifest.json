@@ -1,11 +1,11 @@
 {
   "name": "Mounts",
-  "version": "1.2.27",
+  "version": "1.3.0",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
 
-  "description": "Mount icons + radial",
+  "description": "Mount icons + radial. Settings need to be configured before using the module!",
   "dependencies": {
     "bh.blishhud": ">=0.11.6"
   },
@@ -23,7 +23,8 @@
 }
 /*
     "changelog": {
-        "1.2.76": "2023-03-01:revert 'allow radial when dragging camera'",
+        "1.3.0": "2023-04-25:move settings window + add more explanation to users",
+        "1.2.27": "2023-03-01:revert 'allow radial when dragging camera'",
         "1.2.26": "2023-02-27:allow radial when dragging camera + add some more filtering for flying + allow swapping on loading screen when MountAutomaticallyAfterLoadingScreen is not enabled + allow selecting mount on loading screen correctly",
         "1.2.25": "2023-02-13:add null check",
         "1.2.24": "2023-01-09:fix not respecting automount setting + avoid automount when swapping characters",
