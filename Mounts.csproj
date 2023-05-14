@@ -133,6 +133,7 @@
     <Compile Include="Controls\DrawRadial.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Module.cs" />
+    <Compile Include="MountImageFile.cs" />
     <Compile Include="Mounts\Mount.cs" />
     <Compile Include="Strings.Designer.cs">
       <AutoGen>True</AutoGen>

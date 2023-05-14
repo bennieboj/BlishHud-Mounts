@@ -19,6 +19,8 @@ using System.Collections.Generic;
 using Gw2Sharp.Models;
 using Manlaan.Mounts.Views;
 using Blish_HUD.Content;
+using System.IO;
+using SharpDX.DirectWrite;
 
 namespace Manlaan.Mounts
 {
@@ -37,10 +39,12 @@ namespace Manlaan.Mounts
         internal static Collection<Mount> _mounts;
         internal static List<Mount> _availableOrderedMounts => _mounts.Where(m => m.IsAvailable).OrderBy(m => m.OrderSetting.Value).ToList();
 
+        public static string mountsDirectory;
         private TabbedWindow2 _settingsWindow;
 
+        public static List<MountImageFile> _mountImageFiles = new List<MountImageFile>();
+
         public static int[] _mountOrder = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        public static string[] _mountDisplay = new string[] { "Transparent", "Solid", "SolidText" };
         public static string[] _mountBehaviour = new string[] { "DefaultMount", "Radial" };
         public static string[] _mountOrientation = new string[] { "Horizontal", "Vertical" };
         public static string[] _mountRadialCenterMountBehavior = new string[] { "None", "Default", "LastUsed" };
@@ -96,12 +100,48 @@ namespace Manlaan.Mounts
 
         protected override void Initialize()
         {
+            List<string> mountsFilesInRef = new List<string> {
+                "griffon-text.png",
+                "griffon-trans.png",
+                "griffon.png",
+                "jackal-text.png",
+                "jackal-trans.png",
+                "jackal.png",
+                "raptor-text.png",
+                "raptor-trans.png",
+                "raptor.png",
+                "roller-text.png",
+                "roller-trans.png",
+                "roller.png",
+                "skimmer-text.png",
+                "skimmer-trans.png",
+                "skimmer.png",
+                "skyscale-text.png",
+                "skyscale-trans.png",
+                "skyscale.png",
+                "springer-text.png",
+                "springer-trans.png",
+                "springer.png",
+                "turtle-text.png",
+                "turtle-trans.png",
+                "turtle.png",
+                "warclaw-text.png",
+                "warclaw-trans.png",
+                "warclaw.png"
+            };
+            mountsDirectory = DirectoriesManager.GetFullDirectoryPath("mounts");
+            mountsFilesInRef.ForEach(f => ExtractFile(f, mountsDirectory));
+            _mountImageFiles = Directory.GetFiles(mountsDirectory, ".")
+                .Where(file => file.ToLower().Contains(".png"))
+                .Select(file => new MountImageFile() { Name = file.Substring(mountsDirectory.Length + 1) }).ToList();
+            _textureCache = new TextureCache(ContentsManager);
+
             GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += async (sender, e) => await HandleCombatChangeAsync(sender, e);
 
-            var mountsIcon = ContentsManager.GetTexture("514394-grey.png");
+            var mountsIcon = _textureCache.GetImgFile(TextureCache.MountLogoTextureName);
 
             _settingsWindow = new TabbedWindow2(
-                                    ContentsManager.GetTexture("156006-big.png"),
+                                    _textureCache.GetImgFile(TextureCache.TabBackgroundTextureName),
                                     new Rectangle(35, 36, 1300, 900),
                                     new Rectangle(95, 42, 1183 + 38, 792)
                                    )
@@ -113,9 +153,22 @@ namespace Manlaan.Mounts
                 Id = $"{this.Namespace}_SettingsWindow",
                 SavesPosition = true,
             };
-
-            _settingsWindow.Tabs.Add(new Tab(ContentsManager.GetTexture("155052.png"), () => new SettingsView(ContentsManager), Strings.Window_AllSettingsTab));
+            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SettingsIconTextureName), () => new SettingsView(_textureCache), Strings.Window_AllSettingsTab));
         }
+
+        private void ExtractFile(string filePath, string directoryToExtractTo)
+        {
+            var fullPath = Path.Combine(directoryToExtractTo, filePath);
+            using (var fs = ContentsManager.GetFileStream(filePath))
+            {
+                fs.Position = 0;
+                byte[] buffer = new byte[fs.Length];
+                var content = fs.Read(buffer, 0, (int)fs.Length);
+                Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+                File.WriteAllBytes(fullPath, buffer);
+            }
+        }
+
 
 
         /*
@@ -142,6 +195,35 @@ namespace Manlaan.Mounts
                 {
                     _settingDisplay.Value = "Transparent";
                 }
+            }
+        }
+
+        /*
+         * Migrate from seperate settings from MountDisplay
+         * MountDisplay => "Transparent", "Solid", "SolidText"
+         *
+         */
+        private void MigrateMountFileNameSettings()
+        {
+            if (_mounts.All(m => m.ImageFileNameSetting.Value.Equals("")))
+            {
+                var partOfFileName = "";
+                if (_settingDisplay.Value.Equals("Transparent"))
+                {
+                    partOfFileName = "-trans";
+                }
+                else if (_settingDisplay.Value.Equals("SolidText"))
+                {
+                    partOfFileName = "-text";
+                }
+                else if (_settingDisplay.Value.Equals("Solid"))
+                {
+                    partOfFileName = "";
+                }
+                foreach (var mount in _mounts)
+                {
+                    mount.ImageFileNameSetting.Value = $"{mount.ImageFileName}{partOfFileName}.png";
+                }                
             }
         }
 
@@ -196,11 +278,13 @@ namespace Manlaan.Mounts
             _settingOpacity.SetRange(0f, 1f);
 
             MigrateDisplaySettings();
+            MigrateMountFileNameSettings();
 
             foreach (Mount m in _mounts)
             {
                 m.OrderSetting.SettingChanged += UpdateSettings;
                 m.KeybindingSetting.SettingChanged += UpdateSettings;
+                m.ImageFileNameSetting.SettingChanged += UpdateSettings;
             }
             _settingDefaultMountChoice.SettingChanged += UpdateSettings;
             _settingDefaultWaterMountChoice.SettingChanged += UpdateSettings;
@@ -232,7 +316,7 @@ namespace Manlaan.Mounts
         {
             var dummySettingWindow = new DummySettingsView();
             dummySettingWindow.OnSettingsButtonClicked += (args, sender) =>
-            {
+            {                
                 _settingsWindow.SelectedTab = _settingsWindow.Tabs.First();
                 _settingsWindow.Show();
             };
@@ -241,7 +325,6 @@ namespace Manlaan.Mounts
 
         protected override void OnModuleLoaded(EventArgs e)
         {
-            _textureCache = new TextureCache(ContentsManager);
             DrawUI();
 
             // Base handler must be called
@@ -354,6 +437,7 @@ namespace Manlaan.Mounts
             {
                 m.OrderSetting.SettingChanged -= UpdateSettings;
                 m.KeybindingSetting.SettingChanged -= UpdateSettings;
+                m.ImageFileNameSetting.SettingChanged += UpdateSettings;
                 m.DisposeCornerIcon();
             }
 
@@ -415,7 +499,7 @@ namespace Manlaan.Mounts
             };
 
             foreach (Mount mount in _availableOrderedMounts) {
-                Texture2D img = _textureCache.GetMountImgFile(mount.ImageFileName);
+                Texture2D img = _textureCache.GetMountImgFile(mount);
                 Image _btnMount = new Image
                 {
                     Parent = _mountPanel,
@@ -464,7 +548,7 @@ namespace Manlaan.Mounts
         private void DrawCornerIcons() {
             foreach (Mount mount in _availableOrderedMounts)
             {
-                mount.CreateCornerIcon(_textureCache.GetMountImgFile(mount.ImageFileName));
+                mount.CreateCornerIcon(_textureCache.GetMountImgFile(mount));
             }
 
         }

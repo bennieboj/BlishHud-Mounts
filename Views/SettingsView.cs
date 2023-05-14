@@ -13,25 +13,27 @@ namespace Manlaan.Mounts.Views
 {
     class SettingsView : View
     {
-        private ContentsManager ContentsManager { get; }
+        private const string NoValueSelected = "Please select a value";
+
+        private TextureCache TextureCache { get; }
 
         private Texture2D anetTexture { get; }
 
         private Panel ManualPanel { get; set; }
 
-        public SettingsView(ContentsManager contentsManager)
+        public SettingsView(TextureCache textureCache)
         {
-            ContentsManager = contentsManager;
-            anetTexture = contentsManager.GetTexture("1441452.png");
+            TextureCache = textureCache;
+            anetTexture = textureCache.GetImgFile(TextureCache.AnetIconTextureName);
         }
 
-        private Panel CreateDefaultPanel(Container buildPanel, Point location)
+        private Panel CreateDefaultPanel(Container buildPanel, Point location, int width = 420)
         {
             return new Panel {
                 CanScroll = false,
                 Parent = buildPanel,
                 HeightSizingMode = SizingMode.AutoSize,
-                Width = 420,
+                Width = width,
                 Location = location
             };
         }
@@ -58,7 +60,7 @@ namespace Manlaan.Mounts.Views
 
             var panelPadding = 20;
 
-            Panel mountsPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding));
+            Panel mountsPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 600);
             BuildMountsPanel(mountsPanel, labelWidth, bindingWidth, orderWidth);
 
             Panel otherPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + panelPadding, labelExplanation.Bottom + panelPadding));
@@ -165,32 +167,9 @@ namespace Manlaan.Mounts.Views
 
         private void BuildOtherPanel(Panel otherPanel, int bindingWidth, int labelWidth)
         {
-            Label settingDisplay_Label = new Label()
-            {
-                Location = new Point(0, 4),
-                Width = labelWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = otherPanel,
-                Text = "Display: ",
-            };
-            Dropdown settingDisplay_Select = new Dropdown()
-            {
-                Location = new Point(settingDisplay_Label.Right + 5, settingDisplay_Label.Top - 4),
-                Width = 160,
-                Parent = otherPanel,
-            };
-            foreach (string s in Module._mountDisplay)
-            {
-                settingDisplay_Select.Items.Add(s);
-            }
-            settingDisplay_Select.SelectedItem = Module._settingDisplay.Value;
-            settingDisplay_Select.ValueChanged += delegate {
-                Module._settingDisplay.Value = settingDisplay_Select.SelectedItem;
-            };
             Label settingDisplayCornerIcons_Label = new Label()
             {
-                Location = new Point(0, settingDisplay_Label.Bottom + 6),
+                Location = new Point(0, 4),
                 Width = bindingWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -230,11 +209,11 @@ namespace Manlaan.Mounts.Views
             };
         }
 
-        private void BuildMountsPanel(Panel mountsLeftPanel, int labelWidth, int bindingWidth, int orderWidth)
+        private void BuildMountsPanel(Panel mountsPanel, int labelWidth, int bindingWidth, int orderWidth)
         {
             var anetImage = new Image
             {
-                Parent = mountsLeftPanel,
+                Parent = mountsPanel,
                 Size = new Point(16, 16),
                 Location = new Point(5, 2),
                 Texture = anetTexture,
@@ -245,39 +224,50 @@ namespace Manlaan.Mounts.Views
                 Width = 300,
                 AutoSizeHeight = false,
                 WrapText = false,
-                Parent = mountsLeftPanel,
+                Parent = mountsPanel,
                 Text = "must match in-game key binding",
                 HorizontalAlignment = HorizontalAlignment.Left
             };
-            Label settingOrderLeft_Label = new Label()
+            Label settingOrder_Label = new Label()
             {
                 Location = new Point(labelWidth + 5, keybindWarning_Label.Bottom + 6),
                 Width = orderWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
-                Parent = mountsLeftPanel,
+                Parent = mountsPanel,
                 Text = "Order",
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
-            Label settingBindingLeft_Label = new Label()
+            Label settingBinding_Label = new Label()
             {
-                Location = new Point(settingOrderLeft_Label.Right + 5, settingOrderLeft_Label.Top),
+                Location = new Point(settingOrder_Label.Right + 5, settingOrder_Label.Top),
                 Width = bindingWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
-                Parent = mountsLeftPanel,
+                Parent = mountsPanel,
                 Text = "In-game key binding",
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
-            new Image
+            var settingBinding_Image = new Image
             {
-                Parent = mountsLeftPanel,
+                Parent = mountsPanel,
                 Size = new Point(16, 16),
-                Location = new Point(settingBindingLeft_Label.Right - 20, settingBindingLeft_Label.Bottom - 16),
+                Location = new Point(settingBinding_Label.Right - 20, settingBinding_Label.Bottom - 16),
                 Texture = anetTexture,
             };
 
-            int curY = settingOrderLeft_Label.Bottom;
+            Label settingMountImageFile_Label = new Label()
+            {
+                Location = new Point(settingBinding_Image.Right + 5, settingOrder_Label.Top),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = mountsPanel,
+                Text = "Image",
+                HorizontalAlignment = HorizontalAlignment.Center,
+            };
+
+            int curY = settingOrder_Label.Bottom;
 
             foreach (var mount in Module._mounts)
             {
@@ -287,14 +277,14 @@ namespace Manlaan.Mounts.Views
                     Width = labelWidth,
                     AutoSizeHeight = false,
                     WrapText = false,
-                    Parent = mountsLeftPanel,
+                    Parent = mountsPanel,
                     Text = $"{mount.DisplayName}: ",
                 };
                 Dropdown settingMount_Select = new Dropdown()
                 {
                     Location = new Point(settingMount_Label.Right + 5, settingMount_Label.Top - 4),
                     Width = orderWidth,
-                    Parent = mountsLeftPanel,
+                    Parent = mountsPanel,
                 };
                 foreach (int i in Module._mountOrder)
                 {
@@ -310,15 +300,33 @@ namespace Manlaan.Mounts.Views
                     else
                         mount.OrderSetting.Value = int.Parse(settingMount_Select.SelectedItem);
                 };
-                KeybindingAssigner settingRaptor_Keybind = new KeybindingAssigner(mount.KeybindingSetting.Value)
+                KeybindingAssigner settingMount_Keybind = new KeybindingAssigner(mount.KeybindingSetting.Value)
                 {
                     NameWidth = 0,
                     Size = new Point(bindingWidth, 20),
-                    Parent = mountsLeftPanel,
+                    Parent = mountsPanel,
                     Location = new Point(settingMount_Select.Right + 5, settingMount_Label.Top - 1),
                 };
-                settingRaptor_Keybind.BindingChanged += delegate {
-                    mount.KeybindingSetting.Value = settingRaptor_Keybind.KeyBinding;
+                settingMount_Keybind.BindingChanged += delegate {
+                    mount.KeybindingSetting.Value = settingMount_Keybind.KeyBinding;
+                };
+
+                Dropdown settingMountImageFile_Select = new Dropdown()
+                {
+                    Location = new Point(settingMount_Keybind.Right + 5, settingMount_Label.Top - 4),
+                    Width = 200,
+                    Parent = mountsPanel,
+                };
+                settingMountImageFile_Select.Items.Add(NoValueSelected);
+                Module._mountImageFiles
+                    .Where(mIF => mIF.Name.Contains(mount.ImageFileName)).OrderByDescending(mIF => mIF.Name).ToList()
+                    .ForEach(mIF => settingMountImageFile_Select.Items.Add(mIF.Name));
+                settingMountImageFile_Select.SelectedItem = mount.ImageFileNameSetting.Value == "" ? NoValueSelected : mount.ImageFileNameSetting.Value;
+                settingMountImageFile_Select.ValueChanged += delegate {
+                    if (settingMountImageFile_Select.SelectedItem.Equals(NoValueSelected))
+                        mount.ImageFileNameSetting.Value = "";
+                    else
+                        mount.ImageFileNameSetting.Value = settingMountImageFile_Select.SelectedItem;
                 };
 
                 curY = settingMount_Label.Bottom;
