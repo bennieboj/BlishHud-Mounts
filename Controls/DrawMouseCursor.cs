@@ -13,7 +13,7 @@ namespace Manlaan.Mounts.Controls
         {
             this.Visible = false;
             this.Padding = Thickness.Zero;
-            _mouseTexture = textureCache.GetImgFile(textureCache.MouseTexture);
+            _mouseTexture = textureCache.GetImgFile(TextureCache.MouseTextureName);
             Size = new Point(_mouseTexture.Width, _mouseTexture.Height);
         }
 

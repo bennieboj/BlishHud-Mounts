@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using Blish_HUD;
 using Blish_HUD.Modules.Managers;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Manlaan.Mounts
@@ -8,7 +12,13 @@ namespace Manlaan.Mounts
     {
         private readonly ContentsManager contentsManager;
         private readonly Dictionary<string, Texture2D> _textureCache = new Dictionary<string, Texture2D>();
-        public readonly string MouseTexture = "255329.png";
+
+
+        public static readonly string MouseTextureName = "255329.png";
+        public static readonly string MountLogoTextureName = "514394-grey.png";
+        public static readonly string TabBackgroundTextureName = "156006-big.png";
+        public static readonly string SettingsIconTextureName = "155052.png";
+        public static readonly string AnetIconTextureName = "1441452.png";
 
         public TextureCache(ContentsManager contentsManager)
         {
@@ -18,56 +28,67 @@ namespace Manlaan.Mounts
 
         private void PreCacheTextures()
         {
-            foreach (var mount in Module._mounts)
+            Func<string, Texture2D> getTextureFromRef = (textureName) => contentsManager.GetTexture(textureName);
+
+            foreach (var mountImageFile in Module._mountImageFiles)
             {
-                foreach (var mountDisplay in Module._mountDisplay)
-                {
-                    var textureName = GetTextureName(mount.ImageFileName, mountDisplay);
-                    if (!_textureCache.ContainsKey(textureName))
-                    {
-                        PreCacheTexture(textureName);
-                    }
-                }
+                PreCacheTexture(mountImageFile.Name, PremultiplyTexture);
             }
-            PreCacheTexture(MouseTexture);
+            PreCacheTexture(MouseTextureName, getTextureFromRef);
+            PreCacheTexture(MountLogoTextureName, getTextureFromRef);
+            PreCacheTexture(TabBackgroundTextureName, getTextureFromRef);
+            PreCacheTexture(SettingsIconTextureName, getTextureFromRef);
+            PreCacheTexture(AnetIconTextureName, getTextureFromRef);
         }
 
-        private void PreCacheTexture(string textureName)
+        private Texture2D PremultiplyTexture(string textureName)
         {
-            _textureCache[textureName] = contentsManager.GetTexture(textureName);
+            Texture2D texture;
+
+            try
+            {
+                var filePath = Path.Combine(Module.mountsDirectory, textureName);
+                FileStream titleStream = File.OpenRead(filePath);
+                texture = Texture2D.FromStream(GameService.Graphics.GraphicsDevice, titleStream);
+                titleStream.Close();
+                Color[] buffer = new Color[texture.Width * texture.Height];
+                texture.GetData(buffer);
+                for (int i = 0; i < buffer.Length; i++)
+                    buffer[i] = Color.FromNonPremultiplied(buffer[i].R, buffer[i].G, buffer[i].B, buffer[i].A);
+                texture.SetData(buffer);
+            }
+            catch
+            {
+                texture = ContentService.Textures.Error;
+            }
+            return texture;
+        }
+
+        private void PreCacheTexture(string textureName, Func<string, Texture2D> getTextureAction)
+        {
+            if (!_textureCache.ContainsKey(textureName))
+            { 
+                _textureCache[textureName] = getTextureAction(textureName);
+            }
         }
 
         public Texture2D GetImgFile(string filename)
         {
-            return _textureCache[filename];
+            return GetTexture(filename);
         }
 
-        public Texture2D GetMountImgFile(string filename)
+        public Texture2D GetMountImgFile(Mount mount)
         {
-            string textureName = GetTextureName(filename, Module._settingDisplay.Value);
-
-            return _textureCache[textureName];
+            return GetTexture(mount.ImageFileNameSetting.Value);
         }
 
-        private static string GetTextureName(string filename, string displaySetting)
+        private Texture2D GetTexture (string filename)
         {
-            string textureName = filename;
-
-            switch (displaySetting)
+            if (_textureCache.ContainsKey(filename))
             {
-                default:
-                case "Solid":
-                    textureName += ".png";
-                    break;
-                case "Transparent":
-                    textureName += "-trans.png";
-                    break;
-                case "SolidText":
-                    textureName += "-text.png";
-                    break;
+                return _textureCache[filename];
             }
-
-            return textureName;
+            return ContentService.Textures.Error;
         }
     }
 }

@@ -104,7 +104,7 @@ namespace Manlaan.Mounts.Controls
                 {
                     mounts.Remove(mountToPutInCenter);
                 }
-                var texture = _textureCache.GetMountImgFile(mountToPutInCenter.ImageFileName);
+                var texture = _textureCache.GetMountImgFile(mountToPutInCenter);
                 int loc = radius;
                 RadialMounts.Add(new RadialMount { Texture = texture, Mount = mountToPutInCenter, ImageX = loc, ImageY = loc, Default = true });
             }
@@ -116,7 +116,7 @@ namespace Manlaan.Mounts.Controls
             {
                 var angleMid = currentAngle + partAngleStep / 2;
                 var angleEnd = currentAngle + partAngleStep;
-                var texture = _textureCache.GetMountImgFile(mount.ImageFileName);
+                var texture = _textureCache.GetMountImgFile(mount);
 
                 int x = (int)Math.Round(radius + radius * Math.Cos(angleMid));
                 int y = (int)Math.Round(radius + radius * Math.Sin(angleMid));

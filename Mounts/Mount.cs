@@ -30,6 +30,7 @@ namespace Manlaan.Mounts
             IsWvWMount = isWvWMount;
             OrderSetting = settingCollection.DefineSetting($"Mount{name}Order2", defaultOrderSetting, () => $"{displayName} Order", () => "");
             KeybindingSetting = settingCollection.DefineSetting($"Mount{name}Binding", new KeyBinding(Keys.None), () => $"{displayName} Binding", () => "");
+            ImageFileNameSetting = settingCollection.DefineSetting($"Mount{name}ImageFileName", "", () => $"{displayName} Image File Name", () => "");
         }
 
         public string Name { get; private set; }
@@ -45,6 +46,7 @@ namespace Manlaan.Mounts
 
         public SettingEntry<int> OrderSetting { get; private set; }
         public SettingEntry<KeyBinding> KeybindingSetting { get; private set; }
+        public SettingEntry<string> ImageFileNameSetting { get; private set; }
         public CornerIcon CornerIcon { get; private set; }
         public bool IsAvailable => OrderSetting.Value != 0 && IsKeybindSet;
         public bool IsKeybindSet => KeybindingSetting.Value.ModifierKeys != ModifierKeys.None || KeybindingSetting.Value.PrimaryKey != Keys.None;
