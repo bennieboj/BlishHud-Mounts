@@ -1,6 +1,6 @@
 {
   "name": "Mounts",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -24,6 +24,7 @@
 }
 /*
     "changelog": {
+        "1.3.1": "2023-05-14:add option to specify your own icons",
         "1.3.0": "2023-04-25:move settings window + add more explanation to users",
         "1.2.27": "2023-03-01:revert 'allow radial when dragging camera'",
         "1.2.26": "2023-02-27:allow radial when dragging camera + add some more filtering for flying + allow swapping on loading screen when MountAutomaticallyAfterLoadingScreen is not enabled + allow selecting mount on loading screen correctly",
