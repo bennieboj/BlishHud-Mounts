@@ -2,6 +2,7 @@
 using Blish_HUD.Controls.Extern;
 using Blish_HUD.Input;
 using Blish_HUD.Settings;
+using Manlaan.Mounts.Things.Mounts;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Linq;

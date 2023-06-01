@@ -8,23 +8,21 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Threading.Tasks;
 
-namespace Manlaan.Mounts
+namespace Manlaan.Mounts.Things.Mounts
 {
-    public abstract class Mount
+    public abstract class Mount : IThing
     {
         private readonly Helper _helper;
         private static readonly Logger Logger = Logger.GetLogger<Mount>();
 
         public Mount(SettingCollection settingCollection, Helper helper,
             string name, string displayName, string imageFileName,
-            MountType mountType,
             bool isUnderwaterMount, bool isFlyingMount, bool isWvWMount, int defaultOrderSetting)
         {
             _helper = helper;
             Name = name;
             DisplayName = displayName;
             ImageFileName = imageFileName;
-            MountType = mountType;
             IsWaterMount = isUnderwaterMount;
             IsFlyingMount = isFlyingMount;
             IsWvWMount = isWvWMount;
@@ -36,7 +34,8 @@ namespace Manlaan.Mounts
         public string Name { get; private set; }
         public string DisplayName { get; private set; }
         public string ImageFileName { get; private set; }
-        public MountType MountType { get; set; }
+
+        protected abstract MountType MountType { get; }
         public DateTime? QueuedTimestamp { get; internal set; }
         public DateTime? LastUsedTimestamp { get; internal set; }
         public bool IsWaterMount { get; private set; }
@@ -96,68 +95,9 @@ namespace Manlaan.Mounts
         {
             CornerIcon?.Dispose();
         }
-    }
 
-    public class Raptor : Mount
-    {
-        public Raptor(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Raptor", "Raptor", "raptor", MountType.Raptor, false, false, false, 1)
-        {
-        }
-    }
-
-    public class Springer : Mount
-    {
-        public Springer(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Springer", "Springer", "springer", MountType.Springer, false, false, false, 2)
-        {
-        }
-    }
-
-    public class Skimmer : Mount
-    {
-        public Skimmer(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Skimmer", "Skimmer", "skimmer", MountType.Skimmer, true, false, false, 3)
-        {
-        }
-    }
-
-    public class Jackal : Mount
-    {
-        public Jackal(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Jackal", "Jackal", "jackal", MountType.Jackal, false, false, false, 4)
-        {
-        }
-    }
-
-    public class Griffon : Mount
-    {
-        public Griffon(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Griffon", "Griffon", "griffon", MountType.Griffon, false, true, false, 5)
-        {
-        }
-    }
-
-    public class RollerBeetle : Mount
-    {
-        public RollerBeetle(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Roller", "Roller Beetle", "roller", MountType.RollerBeetle, false, false, false, 6)
-        {
-        }
-    }
-
-    public class Warclaw : Mount
-    {
-        public Warclaw(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Warclaw", "Warclaw", "warclaw", MountType.Warclaw, false, false, true, 7)
-        {
-        }
-    }
-
-    public class Skyscale : Mount
-    {
-        public Skyscale(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Skyscale", "Skyscale", "skyscale", MountType.Skyscale, false, true, false, 8)
-        {
-        }
-    }
-
-    public class SiegeTurtle : Mount
-    {
-        public SiegeTurtle(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Turtle", "Siege Turtle", "turtle", MountType.SiegeTurtle, true, false, false, 9)
-        {
+        public bool IsInUse() {
+            return GameService.Gw2Mumble.PlayerCharacter.CurrentMount == MountType;
         }
     }
 }

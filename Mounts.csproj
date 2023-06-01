@@ -134,13 +134,23 @@
     <Compile Include="Helper.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="MountImageFile.cs" />
-    <Compile Include="Mounts\Mount.cs" />
+    <Compile Include="Things\Mounts\Griffon.cs" />
+    <Compile Include="Things\IThing.cs" />
+    <Compile Include="Things\Mounts\Jackal.cs" />
+    <Compile Include="Things\Mounts\Mount.cs" />
     <Compile Include="Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
     <Compile Include="TextureCache.cs" />
+    <Compile Include="Things\Mounts\Raptor.cs" />
+    <Compile Include="Things\Mounts\RollerBeetle.cs" />
+    <Compile Include="Things\Mounts\SiegeTurtle.cs" />
+    <Compile Include="Things\Mounts\Skimmer.cs" />
+    <Compile Include="Things\Mounts\Skyscale.cs" />
+    <Compile Include="Things\Mounts\Springer.cs" />
+    <Compile Include="Things\Mounts\Warclaw.cs" />
     <Compile Include="Views\DummySettingsView.cs" />
     <Compile Include="Views\SettingsView.cs" />
   </ItemGroup>

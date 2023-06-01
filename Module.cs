@@ -21,6 +21,7 @@ using Manlaan.Mounts.Views;
 using Blish_HUD.Content;
 using System.IO;
 using SharpDX.DirectWrite;
+using Manlaan.Mounts.Things.Mounts;
 
 namespace Manlaan.Mounts
 {
@@ -354,13 +355,13 @@ namespace Manlaan.Mounts
             var isMountSwitchable = IsMountSwitchable();
             var moduleHidden = _lastIsMountSwitchable && !isMountSwitchable;
             var moduleShown = !_lastIsMountSwitchable && isMountSwitchable;
-            var currentMount = GameService.Gw2Mumble.PlayerCharacter.CurrentMount;
             var currentCharacterName = GameService.Gw2Mumble.PlayerCharacter.Name;
-            if (moduleHidden && currentMount != MountType.None && _settingMountAutomaticallyAfterLoadingScreen.Value)
+            var inUseMountsCount = _mounts.Count(m => m.IsInUse());
+            if (moduleHidden && inUseMountsCount == 1 && _settingMountAutomaticallyAfterLoadingScreen.Value)
             {
-                _helper.StoreMountForLaterUse(_mounts.Single(m => m.MountType == currentMount), currentCharacterName);
+                _helper.StoreMountForLaterUse(_mounts.Single(m => m.IsInUse()), currentCharacterName);
             }
-            if (moduleShown && currentMount == MountType.None && _helper.IsCharacterTheSameAfterMapLoad(currentCharacterName))
+            if (moduleShown && inUseMountsCount == 0 && _helper.IsCharacterTheSameAfterMapLoad(currentCharacterName))
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 _helper.DoMountActionForLaterUse();
