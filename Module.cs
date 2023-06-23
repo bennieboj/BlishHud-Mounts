@@ -76,7 +76,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<float> _settingOpacity;
 
         private Panel _mountPanel;
-        private DebugControl _dbg;
+        public static DebugControl _debug;
         private DrawRadial _radial;
         private LoadingSpinner _queueingSpinner;
         private DrawMouseCursor _drawMouseCursor;
@@ -430,6 +430,7 @@ namespace Manlaan.Mounts
         /// <inheritdoc />
         protected override void Unload()
         {
+            _debug?.Dispose();
             _mountPanel?.Dispose();
             _radial?.Dispose();
 
@@ -561,22 +562,26 @@ namespace Manlaan.Mounts
                 mount.DisposeCornerIcon();
             }
 
-            //_dbg = new DebugControl()
-            //{
-            //    Parent = GameService.Graphics.SpriteScreen,
-            //    Location = new Point(0, 0),
-            //    Size = new Point(500, 500)
-            //};
-
-            //if (_dbg != null && DebugService.EnableAdditionalDebugDisplay.Value || ApplicationSettings.Instance.DebugEnabled)
-            //{
-            //    IEnumerable<string> debugList = new List<string>();
-            //    if (IsPlayerGlidingOrFalling)
-            //    {
-            //        debugList = debugList.Append($"fallingOrGliding {IsPlayerGlidingOrFalling}");
-            //    }
-            //    _dbg.StringsToDisplay = debugList;
-            //}
+            _debug?.Dispose();
+            _debug = new DebugControl()
+            {
+                Parent = GameService.Graphics.SpriteScreen,
+                Location = new Point(0, 0),
+                Size = new Point(500, 500)
+            };
+            _debug.Add("position", () => $"{GameService.Input.Mouse.Position.X}, {GameService.Input.Mouse.Position.Y}");
+            _debug.Add("positionRaw", () => $"{GameService.Input.Mouse.PositionRaw.X}, {GameService.Input.Mouse.PositionRaw.Y}");
+            _debug.Add("spritescreen", () => $"{GameService.Graphics.SpriteScreen.Height}, {GameService.Graphics.SpriteScreen.Width}");
+            _debug.Add("window", () => $"{GameService.Graphics.WindowHeight}, {GameService.Graphics.WindowWidth}");
+            _debug.Add("calculation", () => {
+                var x = 1.0f * GameService.Input.Mouse.PositionRaw.X / GameService.Graphics.WindowHeight * GameService.Graphics.SpriteScreen.Height;
+                var y = 1.0f * GameService.Input.Mouse.PositionRaw.Y / GameService.Graphics.WindowWidth * GameService.Graphics.SpriteScreen.Width;
+                x = (float)Math.Floor(x);
+                y = (float)Math.Floor(y);
+                x = Math.Max(x, 0);
+                y = Math.Max(y, 0);
+                return $"{x}, {y}";
+            });
 
             if (_settingDisplayCornerIcons.Value)
                 DrawCornerIcons();

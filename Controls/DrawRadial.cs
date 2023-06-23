@@ -157,17 +157,12 @@ namespace Manlaan.Mounts.Controls
                 spriteBatch.DrawOnCtrl(this, radialMount.Texture, new Rectangle(radialMount.ImageX, radialMount.ImageY, mountIconSize, mountIconSize), null, Color.White * (radialMount.Selected ? 1f : Module._settingMountRadialIconOpacity.Value));
             }
 
-            //DrawDbg(spriteBatch, 00, $"AngleBegin: {RadialMounts[8].AngleBegin}");
-            //DrawDbg(spriteBatch, 30, $"AngleEnd: {RadialMounts[8].AngleEnd}");
-            //DrawDbg(spriteBatch, 60, $"startangle {startAngle}");
-            //DrawDbg(spriteBatch, 90, $"angle {angle}");
+            //Module._dbg.Add("AngleBegin", () => $"{RadialMounts[8].AngleBegin}");
+            //Module._dbg.Add("AngleEnd", () => $"{RadialMounts[8].AngleEnd}");
+            //Module._dbg.Add("startangle", () => $"{startAngle}");
+            //Module._dbg.Add("angle", () => $"{angle}");
 
             base.PaintBeforeChildren(spriteBatch, bounds);
-        }
-
-        private void DrawDbg(SpriteBatch spriteBatch, int position, string s)
-        {
-            spriteBatch.DrawStringOnCtrl(this, s, GameService.Content.DefaultFont32, new Rectangle(new Point(0, position), new Point(400, 400)), Color.Red);
         }
 
         public async Task TriggerSelectedMountAsync()
