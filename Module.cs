@@ -614,7 +614,7 @@ namespace Manlaan.Mounts
             Logger.Debug("DoDefaultMountActionAsync entered");
             if (GameService.Gw2Mumble.PlayerCharacter.CurrentMount != MountType.None && IsMountSwitchable())
             {
-                await (_helper.GetLastUsedMount()?.DoUnmountAction() ?? Task.CompletedTask);
+                await (_helper.GetCurrentlyActiveMount()?.DoUnmountAction() ?? Task.CompletedTask);
                 Logger.Debug("DoDefaultMountActionAsync dismounted");
                 return;
             }
