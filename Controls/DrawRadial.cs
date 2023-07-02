@@ -46,6 +46,7 @@ namespace Manlaan.Mounts.Controls
         int _maxRadialDiameter = 0;
 
         private Point SpawnPoint = default;
+        private float debugLineThickness = 2;
 
         public DrawRadial(Helper helper, TextureCache textureCache)
         {
@@ -113,7 +114,11 @@ namespace Manlaan.Mounts.Controls
             double startAngle = Math.PI * Math.Floor(Module._settingMountRadialStartAngle.Value * 360) / 180.0;
             if (DebugHelper.IsDebugEnabled())
             {
-                spriteBatch.DrawCircle(new Vector2(SpawnPoint.X, SpawnPoint.Y), GetRadius(), 50, Color.Red, 20);
+                var spawnPointVec = SpawnPoint.ToVector2();
+                var rectpos = spawnPointVec - new Vector2(mountIconSize / 2, mountIconSize / 2);
+                spriteBatch.DrawRectangle(rectpos, new Size2(mountIconSize, mountIconSize), Color.Red, debugLineThickness);
+                spriteBatch.DrawCircle(spawnPointVec, 1, 50, Color.Red, debugLineThickness);
+                spriteBatch.DrawCircle(spawnPointVec, GetRadius(), 50, Color.Red, debugLineThickness);
             }
             double currentAngle = startAngle;
             var partAngleStep = Math.PI * 2 / mounts.Count();
@@ -125,6 +130,18 @@ namespace Manlaan.Mounts.Controls
 
                 int x = (int)Math.Round(radius + radius * Math.Cos(angleMid));
                 int y = (int)Math.Round(radius + radius * Math.Sin(angleMid));
+
+                if (DebugHelper.IsDebugEnabled())
+                {
+                    float xDebugInner = (float)Math.Round(GetRadius() * Math.Cos(currentAngle)) + SpawnPoint.X;
+                    float yDebugInner = (float)Math.Round(GetRadius() * Math.Sin(currentAngle)) + SpawnPoint.Y;
+                    var debugRadiusOuter = 250;
+                    float xDebugOuter = (float)Math.Round(2*debugRadiusOuter * Math.Cos(currentAngle)) + SpawnPoint.X;
+                    float yDebugOuter = (float)Math.Round(2*debugRadiusOuter * Math.Sin(currentAngle)) + SpawnPoint.Y;
+                    spriteBatch.DrawLine(new Vector2(xDebugInner, yDebugInner), new Vector2(xDebugOuter, yDebugOuter), Color.Red, debugLineThickness);
+                }
+
+
                 RadialMounts.Add(new RadialMount
                 {
                     Texture = texture,
