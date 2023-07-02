@@ -3,6 +3,7 @@ using Blish_HUD.Controls;
 using Blish_HUD.Controls.Intern;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 using SharpDX.Direct2D1.Effects;
 using System;
 using System.Collections.Generic;
@@ -49,7 +50,7 @@ namespace Manlaan.Mounts.Controls
         public DrawRadial(Helper helper, TextureCache textureCache)
         {
             Visible = false;
-            Padding = Thickness.Zero;
+            Padding = Blish_HUD.Controls.Thickness.Zero;
             _helper = helper;
             _textureCache = textureCache;
             Shown += async (sender, e) => await HandleShown(sender, e);
@@ -110,6 +111,10 @@ namespace Manlaan.Mounts.Controls
             }
 
             double startAngle = Math.PI * Math.Floor(Module._settingMountRadialStartAngle.Value * 360) / 180.0;
+            if (DebugHelper.IsDebugEnabled())
+            {
+                spriteBatch.DrawCircle(new Vector2(SpawnPoint.X, SpawnPoint.Y), GetRadius(), 50, Color.Red, 20);
+            }
             double currentAngle = startAngle;
             var partAngleStep = Math.PI * 2 / mounts.Count();
             foreach (var mount in mounts)
@@ -145,7 +150,7 @@ namespace Manlaan.Mounts.Controls
             
             foreach (var radialMount in RadialMounts)
             {
-                if (length < mountIconSize * Math.Sqrt(2) / 2)
+                if (length < GetRadius())
                 {
                     radialMount.Selected = radialMount.Default;
                 } 
@@ -163,6 +168,11 @@ namespace Manlaan.Mounts.Controls
             //Module._dbg.Add("angle", () => $"{angle}");
 
             base.PaintBeforeChildren(spriteBatch, bounds);
+
+            float GetRadius()
+            {
+                return (float)(mountIconSize * Math.Sqrt(2) / 2);
+            }
         }
 
         public async Task TriggerSelectedMountAsync()
