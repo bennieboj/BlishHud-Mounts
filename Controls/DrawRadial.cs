@@ -4,9 +4,12 @@ using Blish_HUD.Controls.Intern;
 using Manlaan.Mounts.Things.Mounts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
 using SharpDX.Direct2D1.Effects;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -46,11 +49,12 @@ namespace Manlaan.Mounts.Controls
         int _maxRadialDiameter = 0;
 
         private Point SpawnPoint = default;
+        private float debugLineThickness = 2;
 
         public DrawRadial(Helper helper, TextureCache textureCache)
         {
             Visible = false;
-            Padding = Thickness.Zero;
+            Padding = Blish_HUD.Controls.Thickness.Zero;
             _helper = helper;
             _textureCache = textureCache;
             Shown += async (sender, e) => await HandleShown(sender, e);
@@ -111,6 +115,14 @@ namespace Manlaan.Mounts.Controls
             }
 
             double startAngle = Math.PI * Math.Floor(Module._settingMountRadialStartAngle.Value * 360) / 180.0;
+            if (DebugHelper.IsDebugEnabled())
+            {
+                var spawnPointVec = SpawnPoint.ToVector2();
+                var rectpos = spawnPointVec - new Vector2(mountIconSize / 2, mountIconSize / 2);
+                spriteBatch.DrawRectangle(rectpos, new Size2(mountIconSize, mountIconSize), Color.Red, debugLineThickness);
+                spriteBatch.DrawCircle(spawnPointVec, 1, 50, Color.Red, debugLineThickness);
+                spriteBatch.DrawCircle(spawnPointVec, GetRadius(), 50, Color.Red, debugLineThickness);
+            }
             double currentAngle = startAngle;
             var partAngleStep = Math.PI * 2 / mounts.Count();
             foreach (var mount in mounts)
@@ -121,6 +133,18 @@ namespace Manlaan.Mounts.Controls
 
                 int x = (int)Math.Round(radius + radius * Math.Cos(angleMid));
                 int y = (int)Math.Round(radius + radius * Math.Sin(angleMid));
+
+                if (DebugHelper.IsDebugEnabled())
+                {
+                    float xDebugInner = (float)Math.Round(GetRadius() * Math.Cos(currentAngle)) + SpawnPoint.X;
+                    float yDebugInner = (float)Math.Round(GetRadius() * Math.Sin(currentAngle)) + SpawnPoint.Y;
+                    var debugRadiusOuter = 250;
+                    float xDebugOuter = (float)Math.Round(2*debugRadiusOuter * Math.Cos(currentAngle)) + SpawnPoint.X;
+                    float yDebugOuter = (float)Math.Round(2*debugRadiusOuter * Math.Sin(currentAngle)) + SpawnPoint.Y;
+                    spriteBatch.DrawLine(new Vector2(xDebugInner, yDebugInner), new Vector2(xDebugOuter, yDebugOuter), Color.Red, debugLineThickness);
+                }
+
+
                 RadialMounts.Add(new RadialMount
                 {
                     Texture = texture,
@@ -133,6 +157,36 @@ namespace Manlaan.Mounts.Controls
                 currentAngle = angleEnd;
             }
 
+
+            //Module._debug.Add("SpawnPoint", () => $"{SpawnPoint.X}, {SpawnPoint.Y}");
+            //Module._debug.Add("position", () => $"{GameService.Input.Mouse.Position.X}, {GameService.Input.Mouse.Position.Y}");
+            //Module._debug.Add("positionRaw", () => $"{GameService.Input.Mouse.PositionRaw.X}, {GameService.Input.Mouse.PositionRaw.Y}");
+            //Module._debug.Add("spritescreen", () => $"{GameService.Graphics.SpriteScreen.Height}, {GameService.Graphics.SpriteScreen.Width}");
+            //Module._debug.Add("window", () => $"{GameService.Graphics.WindowHeight}, {GameService.Graphics.WindowWidth}");
+            //Module._debug.Add("calculation", () =>
+            //{
+            //    var x = 1.0f * GameService.Input.Mouse.PositionRaw.X / GameService.Graphics.WindowHeight * GameService.Graphics.SpriteScreen.Height;
+            //    var y = 1.0f * GameService.Input.Mouse.PositionRaw.Y / GameService.Graphics.WindowWidth * GameService.Graphics.SpriteScreen.Width;
+            //    x = (float)Math.Floor(x);
+            //    y = (float)Math.Floor(y);
+            //    x = Math.Max(x, 0);
+            //    y = Math.Max(y, 0);
+            //    return $"{x}, {y}";
+            //});
+            //Module._debug.Add("calculation2", () =>
+            //{
+            //    var mouseX2 = (int)(1.0f * GameService.Input.Mouse.PositionRaw.X / GameService.Graphics.WindowHeight * GameService.Graphics.SpriteScreen.Height);
+            //    var mouseY2 = (int)(1.0f * GameService.Input.Mouse.PositionRaw.Y / GameService.Graphics.WindowWidth * GameService.Graphics.SpriteScreen.Width);
+            //    mouseX2 = Math.Max(mouseX2, 0);
+            //    mouseY2 = Math.Max(mouseY2, 0);
+            //    return $"{mouseX2}, {mouseY2}";
+            //});
+
+            //var mouseX = (int)(1.0f * GameService.Input.Mouse.PositionRaw.X / GameService.Graphics.WindowHeight * GameService.Graphics.SpriteScreen.Height);
+            //var mouseY = (int)(1.0f * GameService.Input.Mouse.PositionRaw.Y / GameService.Graphics.WindowWidth * GameService.Graphics.SpriteScreen.Width);
+            //mouseX = Math.Max(mouseX, 0);
+            //mouseY = Math.Max(mouseY, 0);
+            //var mousePos = new Point(mouseX, mouseY);
             var mousePos = Input.Mouse.Position;
             var diff = mousePos - SpawnPoint;
             var angle = Math.Atan2(diff.Y, diff.X);
@@ -146,7 +200,7 @@ namespace Manlaan.Mounts.Controls
             
             foreach (var radialMount in RadialMounts)
             {
-                if (length < mountIconSize * Math.Sqrt(2) / 2)
+                if (length < GetRadius())
                 {
                     radialMount.Selected = radialMount.Default;
                 } 
@@ -158,17 +212,17 @@ namespace Manlaan.Mounts.Controls
                 spriteBatch.DrawOnCtrl(this, radialMount.Texture, new Rectangle(radialMount.ImageX, radialMount.ImageY, mountIconSize, mountIconSize), null, Color.White * (radialMount.Selected ? 1f : Module._settingMountRadialIconOpacity.Value));
             }
 
-            //DrawDbg(spriteBatch, 00, $"AngleBegin: {RadialMounts[8].AngleBegin}");
-            //DrawDbg(spriteBatch, 30, $"AngleEnd: {RadialMounts[8].AngleEnd}");
-            //DrawDbg(spriteBatch, 60, $"startangle {startAngle}");
-            //DrawDbg(spriteBatch, 90, $"angle {angle}");
+            //Module._dbg.Add("AngleBegin", () => $"{RadialMounts[8].AngleBegin}");
+            //Module._dbg.Add("AngleEnd", () => $"{RadialMounts[8].AngleEnd}");
+            //Module._dbg.Add("startangle", () => $"{startAngle}");
+            //Module._dbg.Add("angle", () => $"{angle}");
 
             base.PaintBeforeChildren(spriteBatch, bounds);
         }
 
-        private void DrawDbg(SpriteBatch spriteBatch, int position, string s)
+        private float GetRadius()
         {
-            spriteBatch.DrawStringOnCtrl(this, s, GameService.Content.DefaultFont32, new Rectangle(new Point(0, position), new Point(400, 400)), Color.Red);
+            return (float)(mountIconSize * Math.Sqrt(2) / 2);
         }
 
         public async Task TriggerSelectedMountAsync()
@@ -198,7 +252,7 @@ namespace Manlaan.Mounts.Controls
             }
             else
             {
-                Mouse.SetPosition(GameService.Graphics.WindowWidth / 2, GameService.Graphics.WindowHeight / 2, true);
+                Blish_HUD.Controls.Intern.Mouse.SetPosition(GameService.Graphics.WindowWidth / 2, GameService.Graphics.WindowHeight / 2, true);
                 SpawnPoint = new Point(GameService.Graphics.SpriteScreen.Width / 2, GameService.Graphics.SpriteScreen.Height / 2);
             }
 

@@ -87,6 +87,10 @@ namespace Manlaan.Mounts
         {
             return Module._mounts.Where(m => m.LastUsedTimestamp != null).OrderByDescending(m => m.LastUsedTimestamp).FirstOrDefault();
         }
+        internal Mount GetCurrentlyActiveMount()
+        {
+            return Module._mounts.Where(m => m.MountType == GameService.Gw2Mumble.PlayerCharacter.CurrentMount).FirstOrDefault();
+        }
 
         public async Task TriggerKeybind(SettingEntry<KeyBinding> keybindingSetting)
         {
