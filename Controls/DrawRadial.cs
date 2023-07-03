@@ -3,10 +3,12 @@ using Blish_HUD.Controls;
 using Blish_HUD.Controls.Intern;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using SharpDX.Direct2D1.Effects;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -154,6 +156,36 @@ namespace Manlaan.Mounts.Controls
                 currentAngle = angleEnd;
             }
 
+
+            //Module._debug.Add("SpawnPoint", () => $"{SpawnPoint.X}, {SpawnPoint.Y}");
+            //Module._debug.Add("position", () => $"{GameService.Input.Mouse.Position.X}, {GameService.Input.Mouse.Position.Y}");
+            //Module._debug.Add("positionRaw", () => $"{GameService.Input.Mouse.PositionRaw.X}, {GameService.Input.Mouse.PositionRaw.Y}");
+            //Module._debug.Add("spritescreen", () => $"{GameService.Graphics.SpriteScreen.Height}, {GameService.Graphics.SpriteScreen.Width}");
+            //Module._debug.Add("window", () => $"{GameService.Graphics.WindowHeight}, {GameService.Graphics.WindowWidth}");
+            //Module._debug.Add("calculation", () =>
+            //{
+            //    var x = 1.0f * GameService.Input.Mouse.PositionRaw.X / GameService.Graphics.WindowHeight * GameService.Graphics.SpriteScreen.Height;
+            //    var y = 1.0f * GameService.Input.Mouse.PositionRaw.Y / GameService.Graphics.WindowWidth * GameService.Graphics.SpriteScreen.Width;
+            //    x = (float)Math.Floor(x);
+            //    y = (float)Math.Floor(y);
+            //    x = Math.Max(x, 0);
+            //    y = Math.Max(y, 0);
+            //    return $"{x}, {y}";
+            //});
+            //Module._debug.Add("calculation2", () =>
+            //{
+            //    var mouseX2 = (int)(1.0f * GameService.Input.Mouse.PositionRaw.X / GameService.Graphics.WindowHeight * GameService.Graphics.SpriteScreen.Height);
+            //    var mouseY2 = (int)(1.0f * GameService.Input.Mouse.PositionRaw.Y / GameService.Graphics.WindowWidth * GameService.Graphics.SpriteScreen.Width);
+            //    mouseX2 = Math.Max(mouseX2, 0);
+            //    mouseY2 = Math.Max(mouseY2, 0);
+            //    return $"{mouseX2}, {mouseY2}";
+            //});
+
+            //var mouseX = (int)(1.0f * GameService.Input.Mouse.PositionRaw.X / GameService.Graphics.WindowHeight * GameService.Graphics.SpriteScreen.Height);
+            //var mouseY = (int)(1.0f * GameService.Input.Mouse.PositionRaw.Y / GameService.Graphics.WindowWidth * GameService.Graphics.SpriteScreen.Width);
+            //mouseX = Math.Max(mouseX, 0);
+            //mouseY = Math.Max(mouseY, 0);
+            //var mousePos = new Point(mouseX, mouseY);
             var mousePos = Input.Mouse.Position;
             var diff = mousePos - SpawnPoint;
             var angle = Math.Atan2(diff.Y, diff.X);
@@ -185,11 +217,11 @@ namespace Manlaan.Mounts.Controls
             //Module._dbg.Add("angle", () => $"{angle}");
 
             base.PaintBeforeChildren(spriteBatch, bounds);
+        }
 
-            float GetRadius()
-            {
-                return (float)(mountIconSize * Math.Sqrt(2) / 2);
-            }
+        private float GetRadius()
+        {
+            return (float)(mountIconSize * Math.Sqrt(2) / 2);
         }
 
         public async Task TriggerSelectedMountAsync()
@@ -219,7 +251,7 @@ namespace Manlaan.Mounts.Controls
             }
             else
             {
-                Mouse.SetPosition(GameService.Graphics.WindowWidth / 2, GameService.Graphics.WindowHeight / 2, true);
+                Blish_HUD.Controls.Intern.Mouse.SetPosition(GameService.Graphics.WindowWidth / 2, GameService.Graphics.WindowHeight / 2, true);
                 SpawnPoint = new Point(GameService.Graphics.SpriteScreen.Width / 2, GameService.Graphics.SpriteScreen.Height / 2);
             }
 

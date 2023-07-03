@@ -569,19 +569,6 @@ namespace Manlaan.Mounts
                 Location = new Point(0, 0),
                 Size = new Point(500, 500)
             };
-            _debug.Add("position", () => $"{GameService.Input.Mouse.Position.X}, {GameService.Input.Mouse.Position.Y}");
-            _debug.Add("positionRaw", () => $"{GameService.Input.Mouse.PositionRaw.X}, {GameService.Input.Mouse.PositionRaw.Y}");
-            _debug.Add("spritescreen", () => $"{GameService.Graphics.SpriteScreen.Height}, {GameService.Graphics.SpriteScreen.Width}");
-            _debug.Add("window", () => $"{GameService.Graphics.WindowHeight}, {GameService.Graphics.WindowWidth}");
-            _debug.Add("calculation", () => {
-                var x = 1.0f * GameService.Input.Mouse.PositionRaw.X / GameService.Graphics.WindowHeight * GameService.Graphics.SpriteScreen.Height;
-                var y = 1.0f * GameService.Input.Mouse.PositionRaw.Y / GameService.Graphics.WindowWidth * GameService.Graphics.SpriteScreen.Width;
-                x = (float)Math.Floor(x);
-                y = (float)Math.Floor(y);
-                x = Math.Max(x, 0);
-                y = Math.Max(y, 0);
-                return $"{x}, {y}";
-            });
 
             if (_settingDisplayCornerIcons.Value)
                 DrawCornerIcons();
@@ -628,12 +615,12 @@ namespace Manlaan.Mounts
             }
 
             var defaultMount = _helper.GetDefaultMount();
-            if (defaultMount != null && GameService.Input.Mouse.CameraDragging)
-            {
-                await (defaultMount?.DoMountAction() ?? Task.CompletedTask);
-                Logger.Debug("DoDefaultMountActionAsync CameraDragging defaultmount");
-                return;
-            }
+            //if (defaultMount != null && GameService.Input.Mouse.CameraDragging)
+            //{
+            //    await (defaultMount?.DoMountAction() ?? Task.CompletedTask);
+            //    Logger.Debug("DoDefaultMountActionAsync CameraDragging defaultmount");
+            //    return;
+            //}
 
             switch (_settingDefaultMountBehaviour.Value)
             {
