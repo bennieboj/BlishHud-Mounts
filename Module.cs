@@ -76,7 +76,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<float> _settingOpacity;
 
         private Panel _mountPanel;
-        private DebugControl _dbg;
+        public static DebugControl _debug;
         private DrawRadial _radial;
         private LoadingSpinner _queueingSpinner;
         private DrawMouseCursor _drawMouseCursor;
@@ -430,6 +430,7 @@ namespace Manlaan.Mounts
         /// <inheritdoc />
         protected override void Unload()
         {
+            _debug?.Dispose();
             _mountPanel?.Dispose();
             _radial?.Dispose();
 
@@ -561,22 +562,13 @@ namespace Manlaan.Mounts
                 mount.DisposeCornerIcon();
             }
 
-            //_dbg = new DebugControl()
-            //{
-            //    Parent = GameService.Graphics.SpriteScreen,
-            //    Location = new Point(0, 0),
-            //    Size = new Point(500, 500)
-            //};
-
-            //if (_dbg != null && DebugService.EnableAdditionalDebugDisplay.Value || ApplicationSettings.Instance.DebugEnabled)
-            //{
-            //    IEnumerable<string> debugList = new List<string>();
-            //    if (IsPlayerGlidingOrFalling)
-            //    {
-            //        debugList = debugList.Append($"fallingOrGliding {IsPlayerGlidingOrFalling}");
-            //    }
-            //    _dbg.StringsToDisplay = debugList;
-            //}
+            _debug?.Dispose();
+            _debug = new DebugControl()
+            {
+                Parent = GameService.Graphics.SpriteScreen,
+                Location = new Point(0, 0),
+                Size = new Point(500, 500)
+            };
 
             if (_settingDisplayCornerIcons.Value)
                 DrawCornerIcons();
@@ -609,7 +601,7 @@ namespace Manlaan.Mounts
             Logger.Debug("DoDefaultMountActionAsync entered");
             if (GameService.Gw2Mumble.PlayerCharacter.CurrentMount != MountType.None && IsMountSwitchable())
             {
-                await (_availableOrderedMounts.FirstOrDefault()?.DoUnmountAction() ?? Task.CompletedTask);
+                await (_helper.GetCurrentlyActiveMount()?.DoUnmountAction() ?? Task.CompletedTask);
                 Logger.Debug("DoDefaultMountActionAsync dismounted");
                 return;
             }

@@ -129,6 +129,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\DebugControl.cs" />
+    <Compile Include="Controls\DebugHelper.cs" />
     <Compile Include="Controls\DrawMouseCursor.cs" />
     <Compile Include="Controls\DrawRadial.cs" />
     <Compile Include="Helper.cs" />
