@@ -615,12 +615,12 @@ namespace Manlaan.Mounts
             }
 
             var defaultMount = _helper.GetDefaultMount();
-            //if (defaultMount != null && GameService.Input.Mouse.CameraDragging)
-            //{
-            //    await (defaultMount?.DoMountAction() ?? Task.CompletedTask);
-            //    Logger.Debug("DoDefaultMountActionAsync CameraDragging defaultmount");
-            //    return;
-            //}
+            if (defaultMount != null && GameService.Input.Mouse.CameraDragging)
+            {
+                await (defaultMount?.DoMountAction() ?? Task.CompletedTask);
+                Logger.Debug("DoDefaultMountActionAsync CameraDragging defaultmount");
+                return;
+            }
 
             switch (_settingDefaultMountBehaviour.Value)
             {
