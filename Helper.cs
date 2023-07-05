@@ -2,6 +2,7 @@
 using Blish_HUD.Controls.Extern;
 using Blish_HUD.Input;
 using Blish_HUD.Settings;
+using Manlaan.Mounts.Things;
 using Manlaan.Mounts.Things.Mounts;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -14,85 +15,28 @@ namespace Manlaan.Mounts
     public class Helper
     {
         private static readonly Logger Logger = Logger.GetLogger<Helper>();
-        private Mount MountOnHide = null;
+        private Thing ThingOnHide = null;
         private string CharacterNameOnHide;
 
-        Gw2Sharp.Models.MapType[] warclawOnlyMaps = {
-                Gw2Sharp.Models.MapType.RedBorderlands,
-                Gw2Sharp.Models.MapType.BlueBorderlands,
-                Gw2Sharp.Models.MapType.GreenBorderlands,
-                Gw2Sharp.Models.MapType.EternalBattlegrounds,
-                Gw2Sharp.Models.MapType.Center,
-                Gw2Sharp.Models.MapType.WvwLounge
-            };
-
-        private bool IsPlayerInWvWMap()
-        {
-            return Array.Exists(warclawOnlyMaps, mapType => mapType == GameService.Gw2Mumble.CurrentMap.Type);
-        }
-        private bool IsPlayerGlidingOrFalling()
-        {
-            return Module.IsPlayerGlidingOrFalling;
-        }
-
-        private bool IsPlayerUnderOrCloseToWater()
-        {
-            return GameService.Gw2Mumble.PlayerCharacter.Position.Z <= 0;
-        }
-
-        private Mount GetFlyingMount()
-        {
-            return Module._mounts.SingleOrDefault(m => m.IsFlyingMount && m.Name == Module._settingDefaultFlyingMountChoice.Value);
-        }
-
-        private static Mount GetWaterMount()
-        {
-            return Module._mounts.SingleOrDefault(m => m.IsWaterMount && m.Name == Module._settingDefaultWaterMountChoice.Value);
-        }
-
-        internal Mount GetInstantMount()
-        {
-            if (IsPlayerInWvWMap())
-            {
-                return Module._mounts.Single(m => m.IsWvWMount);
-            }
-
-            if (IsPlayerGlidingOrFalling())
-            {
-                return GetFlyingMount();
-            }
-
-            if (IsPlayerUnderOrCloseToWater())
-            {
-                return GetWaterMount();
-            }
-
-            return null;
-        }
-
-        internal Mount GetCenterMount()
+        internal Thing GetCenterThing()
         {
             if (Module._settingMountRadialCenterMountBehavior.Value == "Default")
-                return GetDefaultMount();
+                return GetDefaultThing();
             if (Module._settingMountRadialCenterMountBehavior.Value == "LastUsed")
-                return GetLastUsedMount();
+                return GetLastUsedThing();
              return null;
         }
 
-        internal Mount GetDefaultMount()
+        internal Thing GetDefaultThing()
         {
-            return Module._mounts.SingleOrDefault(m => m.Name == Module._settingDefaultMountChoice.Value);
+            return Module._things.SingleOrDefault(m => m.Name == Module._settingDefaultMountChoice.Value);
         }
-        internal Mount GetLastUsedMount()
+        internal Thing GetLastUsedThing()
         {
-            return Module._mounts.Where(m => m.LastUsedTimestamp != null).OrderByDescending(m => m.LastUsedTimestamp).FirstOrDefault();
-        }
-        internal Mount GetCurrentlyActiveMount()
-        {
-            return Module._mounts.Where(m => m.MountType == GameService.Gw2Mumble.PlayerCharacter.CurrentMount).FirstOrDefault();
+            return Module._things.Where(m => m.LastUsedTimestamp != null).OrderByDescending(m => m.LastUsedTimestamp).FirstOrDefault();
         }
 
-        public async Task TriggerKeybind(SettingEntry<KeyBinding> keybindingSetting)
+        public static async Task TriggerKeybind(SettingEntry<KeyBinding> keybindingSetting)
         {
             Logger.Debug("TriggerKeybind entered");
             if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
@@ -123,7 +67,7 @@ namespace Manlaan.Mounts
         }
 
 
-        private VirtualKeyShort ToVirtualKey(Keys key)
+        private static VirtualKeyShort ToVirtualKey(Keys key)
         {
             try
             {
@@ -135,9 +79,9 @@ namespace Manlaan.Mounts
             }
         }
 
-        internal void StoreMountForLaterUse(Mount mount, string characterName)
+        internal void StoreThingForLaterUse(Thing mount, string characterName)
         {
-            MountOnHide = mount;
+            ThingOnHide = mount;
             CharacterNameOnHide = characterName;
         }
 
@@ -146,14 +90,14 @@ namespace Manlaan.Mounts
             return CharacterNameOnHide == characterName;
         }
 
-        internal Task DoMountActionForLaterUse()
+        internal Task DoThingActionForLaterUse()
         {
-            return MountOnHide?.DoMountAction();
+            return ThingOnHide?.DoAction();
         }
 
-        internal void ClearMountForLaterUse()
+        internal void ClearThingForLaterUse()
         {
-            MountOnHide = null;
+            ThingOnHide = null;
             CharacterNameOnHide = null;
         }
     }

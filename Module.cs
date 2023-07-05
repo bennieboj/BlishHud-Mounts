@@ -22,6 +22,7 @@ using Blish_HUD.Content;
 using System.IO;
 using SharpDX.DirectWrite;
 using Manlaan.Mounts.Things.Mounts;
+using Manlaan.Mounts.Things;
 
 namespace Manlaan.Mounts
 {
@@ -37,8 +38,8 @@ namespace Manlaan.Mounts
         internal Gw2ApiManager Gw2ApiManager => this.ModuleParameters.Gw2ApiManager;
         #endregion
 
-        internal static Collection<Mount> _mounts;
-        internal static List<Mount> _availableOrderedMounts => _mounts.Where(m => m.IsAvailable).OrderBy(m => m.OrderSetting.Value).ToList();
+        internal static Collection<Thing> _things;
+        internal static List<Thing> _availableOrderedThings => _things.Where(m => m.IsAvailable).OrderBy(m => m.OrderSetting.Value).ToList();
 
         public static string mountsDirectory;
         private TabbedWindow2 _settingsWindow;
@@ -128,7 +129,8 @@ namespace Manlaan.Mounts
                 "turtle.png",
                 "warclaw-text.png",
                 "warclaw-trans.png",
-                "warclaw.png"
+                "warclaw.png",
+                "fishing-2604704.png"
             };
             mountsDirectory = DirectoriesManager.GetFullDirectoryPath("mounts");
             mountsFilesInRef.ForEach(f => ExtractFile(f, mountsDirectory));
@@ -206,7 +208,7 @@ namespace Manlaan.Mounts
          */
         private void MigrateMountFileNameSettings()
         {
-            if (_mounts.All(m => m.ImageFileNameSetting.Value.Equals("")))
+            if (_things.All(m => m.ImageFileNameSetting.Value.Equals("")))
             {
                 var partOfFileName = "";
                 if (_settingDisplay.Value.Equals("Transparent"))
@@ -221,7 +223,7 @@ namespace Manlaan.Mounts
                 {
                     partOfFileName = "";
                 }
-                foreach (var mount in _mounts)
+                foreach (var mount in _things)
                 {
                     mount.ImageFileNameSetting.Value = $"{mount.ImageFileName}{partOfFileName}.png";
                 }                
@@ -230,7 +232,7 @@ namespace Manlaan.Mounts
 
         protected override void DefineSettings(SettingCollection settings)
         {
-            _mounts = new Collection<Mount>
+            _things = new Collection<Thing>
             {
                 new Raptor(settings, _helper),
                 new Springer(settings, _helper),
@@ -240,7 +242,8 @@ namespace Manlaan.Mounts
                 new RollerBeetle(settings, _helper),
                 new Warclaw(settings, _helper),
                 new Skyscale(settings, _helper),
-                new SiegeTurtle(settings, _helper)
+                new SiegeTurtle(settings, _helper),
+                new Fishing(settings, _helper)
             };
 
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
@@ -281,11 +284,11 @@ namespace Manlaan.Mounts
             MigrateDisplaySettings();
             MigrateMountFileNameSettings();
 
-            foreach (Mount m in _mounts)
+            foreach (var t in _things)
             {
-                m.OrderSetting.SettingChanged += UpdateSettings;
-                m.KeybindingSetting.SettingChanged += UpdateSettings;
-                m.ImageFileNameSetting.SettingChanged += UpdateSettings;
+                t.OrderSetting.SettingChanged += UpdateSettings;
+                t.KeybindingSetting.SettingChanged += UpdateSettings;
+                t.ImageFileNameSetting.SettingChanged += UpdateSettings;
             }
             _settingDefaultMountChoice.SettingChanged += UpdateSettings;
             _settingDefaultWaterMountChoice.SettingChanged += UpdateSettings;
@@ -356,17 +359,17 @@ namespace Manlaan.Mounts
             var moduleHidden = _lastIsMountSwitchable && !isMountSwitchable;
             var moduleShown = !_lastIsMountSwitchable && isMountSwitchable;
             var currentCharacterName = GameService.Gw2Mumble.PlayerCharacter.Name;
-            var inUseMountsCount = _mounts.Count(m => m.IsInUse());
-            if (moduleHidden && inUseMountsCount == 1 && _settingMountAutomaticallyAfterLoadingScreen.Value)
+            var inUseMountsCount = _things.Count(m => m.IsInUse());
+            if (moduleHidden && inUseMountsCount == 1 && _settingMountAutomaticallyAfterLoadingScreen.Value && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
             {
-                _helper.StoreMountForLaterUse(_mounts.Single(m => m.IsInUse()), currentCharacterName);
+                _helper.StoreThingForLaterUse(_things.Single(m => m.IsInUse()), currentCharacterName);
             }
-            if (moduleShown && inUseMountsCount == 0 && _helper.IsCharacterTheSameAfterMapLoad(currentCharacterName))
+            if (moduleShown && inUseMountsCount == 0 && _helper.IsCharacterTheSameAfterMapLoad(currentCharacterName) && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                _helper.DoMountActionForLaterUse();
+                _helper.DoThingActionForLaterUse();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                _helper.ClearMountForLaterUse();
+                _helper.ClearThingForLaterUse();
             }
 
             _lastIsMountSwitchable = isMountSwitchable;
@@ -375,7 +378,7 @@ namespace Manlaan.Mounts
             if (shouldShowModule)
             {
                 _mountPanel?.Show();
-                foreach (var mount in _availableOrderedMounts)
+                foreach (var mount in _availableOrderedThings)
                 {
                     mount.CornerIcon?.Show();
                 }
@@ -383,7 +386,7 @@ namespace Manlaan.Mounts
             else
             {
                 _mountPanel?.Hide();
-                foreach (var mount in _availableOrderedMounts)
+                foreach (var mount in _availableOrderedThings)
                 {
                     mount.CornerIcon?.Hide();
                 }
@@ -397,7 +400,7 @@ namespace Manlaan.Mounts
                 _dragStart = InputService.Input.Mouse.Position;
             }
 
-            if (_settingDisplayMountQueueing.Value && _mounts.Any(m => m.QueuedTimestamp != null))
+            if (_settingDisplayMountQueueing.Value && _things.Any(m => m.QueuedTimestamp != null))
             {
                 _queueingSpinner?.Show();
             }
@@ -435,12 +438,12 @@ namespace Manlaan.Mounts
             _mountPanel?.Dispose();
             _radial?.Dispose();
 
-            foreach (Mount m in _mounts)
+            foreach (var t in _things)
             {
-                m.OrderSetting.SettingChanged -= UpdateSettings;
-                m.KeybindingSetting.SettingChanged -= UpdateSettings;
-                m.ImageFileNameSetting.SettingChanged += UpdateSettings;
-                m.DisposeCornerIcon();
+                t.OrderSetting.SettingChanged -= UpdateSettings;
+                t.KeybindingSetting.SettingChanged -= UpdateSettings;
+                t.ImageFileNameSetting.SettingChanged += UpdateSettings;
+                t.DisposeCornerIcon();
             }
 
             _settingDefaultMountChoice.SettingChanged -= UpdateSettings;
@@ -500,8 +503,8 @@ namespace Manlaan.Mounts
                 Size = new Point(_settingImgWidth.Value * 8, _settingImgWidth.Value * 8),
             };
 
-            foreach (Mount mount in _availableOrderedMounts) {
-                Texture2D img = _textureCache.GetMountImgFile(mount);
+            foreach (var thing in _availableOrderedThings) {
+                Texture2D img = _textureCache.GetMountImgFile(thing);
                 Image _btnMount = new Image
                 {
                     Parent = _mountPanel,
@@ -509,9 +512,9 @@ namespace Manlaan.Mounts
                     Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                     Location = new Point(curX, curY),
                     Opacity = _settingOpacity.Value,
-                    BasicTooltipText = mount.DisplayName
+                    BasicTooltipText = thing.DisplayName
                 };
-                _btnMount.LeftMouseButtonPressed += async delegate { await mount.DoMountAction(); };
+                _btnMount.LeftMouseButtonPressed += async delegate { await thing.DoAction(); };
 
                 if (_settingOrientation.Value.Equals("Horizontal"))
                     curX += _settingImgWidth.Value;
@@ -548,7 +551,7 @@ namespace Manlaan.Mounts
 
         }
         private void DrawCornerIcons() {
-            foreach (Mount mount in _availableOrderedMounts)
+            foreach (var mount in _availableOrderedThings)
             {
                 mount.CreateCornerIcon(_textureCache.GetMountImgFile(mount));
             }
@@ -558,9 +561,9 @@ namespace Manlaan.Mounts
         private void DrawUI()
         {
             _mountPanel?.Dispose();
-            foreach (Mount mount in _mounts)
+            foreach (var thing in _things)
             {
-                mount.DisposeCornerIcon();
+                thing.DisposeCornerIcon();
             }
 
             _debug?.Dispose();
@@ -600,25 +603,27 @@ namespace Manlaan.Mounts
         private async Task DoDefaultMountActionAsync()
         {
             Logger.Debug("DoDefaultMountActionAsync entered");
-            if (GameService.Gw2Mumble.PlayerCharacter.CurrentMount != MountType.None && IsMountSwitchable())
+
+            var currentlyActiveThing = _things.SingleOrDefault(t => t.IsInUse());
+            if (currentlyActiveThing != null && IsMountSwitchable())
             {
-                await (_helper.GetCurrentlyActiveMount()?.DoUnmountAction() ?? Task.CompletedTask);
+                await (currentlyActiveThing?.DoReverseAction() ?? Task.CompletedTask);
                 Logger.Debug("DoDefaultMountActionAsync dismounted");
                 return;
             }
 
-            var instantMount = _helper.GetInstantMount();
-            if (instantMount != null)
+            var instantThing = _things.SingleOrDefault(t => t.IsInstactActionApplicable());
+            if (instantThing != null)
             {
-                await instantMount.DoMountAction();
+                await instantThing.DoAction();
                 Logger.Debug("DoDefaultMountActionAsync instantmount");
                 return;
             }
 
-            var defaultMount = _helper.GetDefaultMount();
-            if (defaultMount != null && GameService.Input.Mouse.CameraDragging)
+            var defaultThing = _helper.GetDefaultThing();
+            if (defaultThing != null && GameService.Input.Mouse.CameraDragging)
             {
-                await (defaultMount?.DoMountAction() ?? Task.CompletedTask);
+                await (defaultThing?.DoAction() ?? Task.CompletedTask);
                 Logger.Debug("DoDefaultMountActionAsync CameraDragging defaultmount");
                 return;
             }
@@ -626,7 +631,7 @@ namespace Manlaan.Mounts
             switch (_settingDefaultMountBehaviour.Value)
             {
                 case "DefaultMount":
-                    await (defaultMount?.DoMountAction() ?? Task.CompletedTask);
+                    await (defaultThing?.DoAction() ?? Task.CompletedTask);
                     Logger.Debug("DoDefaultMountActionAsync DefaultMountBehaviour defaultmount");
                     break;
                 case "Radial":
@@ -644,8 +649,8 @@ namespace Manlaan.Mounts
         {
             if (!e.Value)
             {
-                await (_mounts.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault()?.DoMountAction() ?? Task.CompletedTask);
-                foreach (var mount in _mounts)
+                await (_things.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault()?.DoAction() ?? Task.CompletedTask);
+                foreach (var mount in _things)
                 {
                     mount.QueuedTimestamp = null;
                 }

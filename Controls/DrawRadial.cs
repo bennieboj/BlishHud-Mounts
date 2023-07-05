@@ -1,25 +1,22 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
-using Blish_HUD.Controls.Intern;
+using Manlaan.Mounts.Things;
 using Manlaan.Mounts.Things.Mounts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
-using SharpDX.Direct2D1.Effects;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Manlaan.Mounts.Controls
 {
-    internal class RadialMount
+    internal class RadialThing
     {
         public double AngleBegin { get; set; }
         public double AngleEnd { get; set; }
-        public Mount Mount { get; set; }
+        public Thing Thing { get; set; }
         public Texture2D Texture { get; set; }
         public int ImageX { get; set; }
         public int ImageY { get; set; }
@@ -37,9 +34,9 @@ namespace Manlaan.Mounts.Controls
         private StandardButton _settingsButton;
         private Label _noMountsLabel;
 
-        private List<RadialMount> RadialMounts = new List<RadialMount>();
+        private List<RadialThing> RadialMounts = new List<RadialThing>();
 
-        private RadialMount SelectedMount => RadialMounts.SingleOrDefault(m => m.Selected);
+        private RadialThing SelectedMount => RadialMounts.SingleOrDefault(m => m.Selected);
 
         public override int ZIndex { get => base.ZIndex; set => base.ZIndex = value; }
         public bool IsActionCamToggledOnMount { get; private set; }
@@ -88,7 +85,7 @@ namespace Manlaan.Mounts.Controls
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             RadialMounts.Clear();
-            var mounts = Module._availableOrderedMounts;
+            var mounts = Module._availableOrderedThings;
 
             if (!mounts.Any())
             {
@@ -102,16 +99,16 @@ namespace Manlaan.Mounts.Controls
                 _settingsButton.Hide();
             }
 
-            Mount mountToPutInCenter = _helper.GetCenterMount();
-            if (mountToPutInCenter != null && mountToPutInCenter.IsAvailable)
+            var thingToPutInCenter = _helper.GetCenterThing();
+            if (thingToPutInCenter != null && thingToPutInCenter.IsAvailable)
             {
                 if (Module._settingMountRadialRemoveCenterMount.Value)
                 {
-                    mounts.Remove(mountToPutInCenter);
+                    mounts.Remove(thingToPutInCenter);
                 }
-                var texture = _textureCache.GetMountImgFile(mountToPutInCenter);
+                var texture = _textureCache.GetMountImgFile(thingToPutInCenter);
                 int loc = radius;
-                RadialMounts.Add(new RadialMount { Texture = texture, Mount = mountToPutInCenter, ImageX = loc, ImageY = loc, Default = true });
+                RadialMounts.Add(new RadialThing { Texture = texture, Thing = thingToPutInCenter, ImageX = loc, ImageY = loc, Default = true });
             }
 
             double startAngle = Math.PI * Math.Floor(Module._settingMountRadialStartAngle.Value * 360) / 180.0;
@@ -145,10 +142,10 @@ namespace Manlaan.Mounts.Controls
                 }
 
 
-                RadialMounts.Add(new RadialMount
+                RadialMounts.Add(new RadialThing
                 {
                     Texture = texture,
-                    Mount = mount,
+                    Thing = mount,
                     ImageX = x,
                     ImageY = y,
                     AngleBegin = currentAngle,
@@ -227,7 +224,7 @@ namespace Manlaan.Mounts.Controls
 
         public async Task TriggerSelectedMountAsync()
         {
-            await (SelectedMount?.Mount.DoMountAction() ?? Task.CompletedTask);
+            await (SelectedMount?.Thing.DoAction() ?? Task.CompletedTask);
         }
 
 
@@ -237,7 +234,7 @@ namespace Manlaan.Mounts.Controls
             if (!GameService.Input.Mouse.CursorIsVisible && !Module._settingMountRadialToggleActionCameraKeyBinding.IsNull)
             {
                 IsActionCamToggledOnMount = true;
-                await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding);
+                await Helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding);
                 Logger.Debug("HandleShown turned off action cam");
             }
 
@@ -264,7 +261,7 @@ namespace Manlaan.Mounts.Controls
             Logger.Debug("HandleHidden entered");
             if (IsActionCamToggledOnMount)
             {
-                await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding);
+                await Helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding);
                 IsActionCamToggledOnMount = false;
                 Logger.Debug("HandleHidden turned back on action cam");
             }

@@ -4,10 +4,9 @@ using Blish_HUD.Settings.UI.Views;
 using Blish_HUD.Graphics.UI;
 using System.Linq;
 using Blish_HUD;
-using Blish_HUD.Modules.Managers;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using System;
+using Manlaan.Mounts.Things.Mounts;
 
 namespace Manlaan.Mounts.Views
 {
@@ -69,10 +68,10 @@ namespace Manlaan.Mounts.Views
             ManualPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + panelPadding, 150 + panelPadding));
             BuildManualPanel(ManualPanel, buildPanel);
 
-            Panel defaultMountPanel = CreateDefaultPanel(buildPanel, new Point(10, 350));
+            Panel defaultMountPanel = CreateDefaultPanel(buildPanel, new Point(10, 500));
             BuildDefaultMountPanel(defaultMountPanel, labelWidth2, mountsAndRadialInputWidth);
 
-            Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + 20, 350));
+            Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + 20, 500));
             BuildRadialPanel(radialPanel, labelWidth2, mountsAndRadialInputWidth);
 
             DisplayManualPanelIfNeeded();
@@ -269,7 +268,7 @@ namespace Manlaan.Mounts.Views
 
             int curY = settingOrder_Label.Bottom;
 
-            foreach (var mount in Module._mounts)
+            foreach (var mount in Module._things)
             {
                 Label settingMount_Label = new Label()
                 {
@@ -360,7 +359,7 @@ namespace Manlaan.Mounts.Views
                 Parent = defaultMountPanel,
             };
             settingDefaultMount_Select.Items.Add("Disabled");
-            var mountNames = Module._mounts.Select(m => m.Name);
+            var mountNames = Module._things.Select(m => m.Name);
             foreach (string i in mountNames)
             {
                 settingDefaultMount_Select.Items.Add(i.ToString());
@@ -385,7 +384,7 @@ namespace Manlaan.Mounts.Views
                 Parent = defaultMountPanel,
             };
             settingDefaultWaterMount_Select.Items.Add("Disabled");
-            var mountNamesWater = Module._mounts.Where(m => m.IsWaterMount).Select(m => m.Name);
+            var mountNamesWater = Module._things.OfType<WaterMount>().Select(m => m.Name);
             foreach (string i in mountNamesWater)
             {
                 settingDefaultWaterMount_Select.Items.Add(i.ToString());
@@ -410,7 +409,7 @@ namespace Manlaan.Mounts.Views
                 Parent = defaultMountPanel,
             };
             settingDefaultFlyingMount_Select.Items.Add("Disabled");
-            var mountNamesFlying = Module._mounts.Where(m => m.IsFlyingMount).Select(m => m.Name);
+            var mountNamesFlying = Module._things.OfType<FlyingMount>().Select(m => m.Name);
             foreach (string i in mountNamesFlying)
             {
                 settingDefaultFlyingMount_Select.Items.Add(i.ToString());

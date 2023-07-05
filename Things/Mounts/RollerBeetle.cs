@@ -5,7 +5,8 @@ namespace Manlaan.Mounts.Things.Mounts
 {
     public class RollerBeetle : Mount
     {
-        public RollerBeetle(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Roller", "Roller Beetle", "roller", false, false, false, 6)
+        public RollerBeetle(SettingCollection settingCollection, Helper helper) :
+            base(settingCollection, helper, "Roller", "Roller Beetle", "roller", 6)
         {
         }
 

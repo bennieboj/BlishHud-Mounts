@@ -3,9 +3,10 @@ using Gw2Sharp.Models;
 
 namespace Manlaan.Mounts.Things.Mounts
 {
-    public class Skimmer : Mount
+    public class Skimmer : WaterMount
     {
-        public Skimmer(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Skimmer", "Skimmer", "skimmer", true, false, false, 3)
+        public Skimmer(SettingCollection settingCollection, Helper helper) : 
+            base(settingCollection, helper, "Skimmer", "Skimmer", "skimmer", 3)
         {
         }
 

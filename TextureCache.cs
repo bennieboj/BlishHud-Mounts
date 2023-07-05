@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Blish_HUD;
 using Blish_HUD.Modules.Managers;
+using Manlaan.Mounts.Things;
 using Manlaan.Mounts.Things.Mounts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -78,7 +79,7 @@ namespace Manlaan.Mounts
             return GetTexture(filename);
         }
 
-        public Texture2D GetMountImgFile(Mount mount)
+        public Texture2D GetMountImgFile(Thing mount)
         {
             return GetTexture(mount.ImageFileNameSetting.Value);
         }

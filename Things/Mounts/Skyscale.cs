@@ -3,9 +3,10 @@ using Gw2Sharp.Models;
 
 namespace Manlaan.Mounts.Things.Mounts
 {
-    public class Skyscale : Mount
+    public class Skyscale : FlyingMount
     {
-        public Skyscale(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Skyscale", "Skyscale", "skyscale", false, true, false, 8)
+        public Skyscale(SettingCollection settingCollection, Helper helper) :
+            base(settingCollection, helper, "Skyscale", "Skyscale", "skyscale", 8)
         {
         }
 

@@ -3,9 +3,10 @@ using Gw2Sharp.Models;
 
 namespace Manlaan.Mounts.Things.Mounts
 {
-    public class Warclaw : Mount
+    public class Warclaw : WvWMount
     {
-        public Warclaw(SettingCollection settingCollection, Helper helper) : base(settingCollection, helper, "Warclaw", "Warclaw", "warclaw", false, false, true, 7)
+        public Warclaw(SettingCollection settingCollection, Helper helper) :
+            base(settingCollection, helper, "Warclaw", "Warclaw", "warclaw", 7)
         {
         }
 
