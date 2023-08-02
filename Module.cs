@@ -130,7 +130,14 @@ namespace Manlaan.Mounts
                 "warclaw-text.png",
                 "warclaw-trans.png",
                 "warclaw.png",
-                "fishing-2604704.png"
+                "fishing.png",
+                "skiff.png",
+                "jadebotwaypoint.png",
+                "chair.png",
+                "music.png",
+                "held.png",
+                "toy.png",
+                "tonic.png"
             };
             mountsDirectory = DirectoriesManager.GetFullDirectoryPath("mounts");
             mountsFilesInRef.ForEach(f => ExtractFile(f, mountsDirectory));
@@ -146,7 +153,7 @@ namespace Manlaan.Mounts
             _settingsWindow = new TabbedWindow2(
                                     _textureCache.GetImgFile(TextureCache.TabBackgroundTextureName),
                                     new Rectangle(35, 36, 1300, 900),
-                                    new Rectangle(95, 42, 1183 + 38, 792)
+                                    new Rectangle(95, 42, 1183 + 38, 900)
                                    )
             {
                 Title = "Mounts",
@@ -243,7 +250,14 @@ namespace Manlaan.Mounts
                 new Warclaw(settings, _helper),
                 new Skyscale(settings, _helper),
                 new SiegeTurtle(settings, _helper),
-                new Fishing(settings, _helper)
+                new Fishing(settings, _helper),
+                new Skiff(settings, _helper),
+                new JadeBotWaypoint(settings, _helper),
+                new Chair(settings, _helper),
+                new Music(settings, _helper),
+                new Held(settings, _helper),
+                new Toy(settings, _helper),
+                new Tonic(settings, _helper)
             };
 
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
@@ -500,7 +514,7 @@ namespace Manlaan.Mounts
             _mountPanel = new Panel() {
                 Parent = GameService.Graphics.SpriteScreen,
                 Location = _settingLoc.Value,
-                Size = new Point(_settingImgWidth.Value * 8, _settingImgWidth.Value * 8),
+                Size = new Point(_settingImgWidth.Value * _things.Count, _settingImgWidth.Value * _things.Count),
             };
 
             foreach (var thing in _availableOrderedThings) {
@@ -571,7 +585,7 @@ namespace Manlaan.Mounts
             {
                 Parent = GameService.Graphics.SpriteScreen,
                 Location = new Point(0, 0),
-                Size = new Point(500, 500)
+                Size = new Point(1000, 1000)
             };
 
             if (_settingDisplayCornerIcons.Value)
@@ -600,15 +614,21 @@ namespace Manlaan.Mounts
             };
         }
 
+        int countdismount, countinstant;
         private async Task DoDefaultMountActionAsync()
         {
             Logger.Debug("DoDefaultMountActionAsync entered");
 
             var currentlyActiveThing = _things.SingleOrDefault(t => t.IsInUse());
+            _debug.Add("defaultmountaction currentlyActiveThing", () => $"{currentlyActiveThing?.DisplayName}");
             if (currentlyActiveThing != null && IsMountSwitchable())
             {
                 await (currentlyActiveThing?.DoReverseAction() ?? Task.CompletedTask);
                 Logger.Debug("DoDefaultMountActionAsync dismounted");
+                
+                ++countdismount;
+                _debug.Add("defaultmountaction dismount", () => $"{countdismount}");
+                
                 return;
             }
 
@@ -617,6 +637,10 @@ namespace Manlaan.Mounts
             {
                 await instantThing.DoAction();
                 Logger.Debug("DoDefaultMountActionAsync instantmount");
+
+                ++countinstant;
+                _debug.Add("defaultmountaction instantmount", () => $"{countinstant}");
+                
                 return;
             }
 

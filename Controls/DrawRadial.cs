@@ -1,7 +1,6 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
 using Manlaan.Mounts.Things;
-using Manlaan.Mounts.Things.Mounts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;

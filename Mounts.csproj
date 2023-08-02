@@ -135,6 +135,8 @@
     <Compile Include="Helper.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="MountImageFile.cs" />
+    <Compile Include="Things\JadeBotWaypoint.cs" />
+    <Compile Include="Things\Mounts\Skiff.cs" />
     <Compile Include="Things\Fishing.cs" />
     <Compile Include="Things\Mounts\Mount.cs" />
     <Compile Include="Things\Mounts\WvWMount.cs" />
@@ -155,6 +157,12 @@
     <Compile Include="Things\Mounts\Skyscale.cs" />
     <Compile Include="Things\Mounts\Springer.cs" />
     <Compile Include="Things\Mounts\Warclaw.cs" />
+    <Compile Include="Things\Novelty\Tonic.cs" />
+    <Compile Include="Things\Novelty\Toy.cs" />
+    <Compile Include="Things\Novelty\Held.cs" />
+    <Compile Include="Things\Novelty\Chair.cs" />
+    <Compile Include="Things\Novelty\Music.cs" />
+    <Compile Include="Things\Novelty\Novelty.cs" />
     <Compile Include="Things\Thing.cs" />
     <Compile Include="Views\DummySettingsView.cs" />
     <Compile Include="Views\SettingsView.cs" />
@@ -359,6 +367,7 @@
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

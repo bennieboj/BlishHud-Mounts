@@ -68,7 +68,7 @@ namespace Manlaan.Mounts.Views
             ManualPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + panelPadding, 150 + panelPadding));
             BuildManualPanel(ManualPanel, buildPanel);
 
-            Panel defaultMountPanel = CreateDefaultPanel(buildPanel, new Point(10, 500));
+            Panel defaultMountPanel = CreateDefaultPanel(buildPanel, new Point(10, 570));
             BuildDefaultMountPanel(defaultMountPanel, labelWidth2, mountsAndRadialInputWidth);
 
             Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + 20, 500));
@@ -384,7 +384,7 @@ namespace Manlaan.Mounts.Views
                 Parent = defaultMountPanel,
             };
             settingDefaultWaterMount_Select.Items.Add("Disabled");
-            var mountNamesWater = Module._things.OfType<WaterMount>().Select(m => m.Name);
+            var mountNamesWater = Module._things.OfType<UnderwaterMount>().Select(m => m.Name);
             foreach (string i in mountNamesWater)
             {
                 settingDefaultWaterMount_Select.Items.Add(i.ToString());

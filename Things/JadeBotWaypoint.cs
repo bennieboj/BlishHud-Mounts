@@ -2,10 +2,10 @@
 
 namespace Manlaan.Mounts.Things.Mounts
 {
-    public class Fishing : Thing
+    public class JadeBotWaypoint : Thing
     {
-        public Fishing(SettingCollection settingCollection, Helper helper) 
-            : base(settingCollection, helper, "Fishing", "Fishing", "fishing", 10)
+        public JadeBotWaypoint(SettingCollection settingCollection, Helper helper) 
+            : base(settingCollection, helper, "Jade Bot Waypoint", "Jade Bot Waypoint", "jadebotwaypoint", 12)
         {
         }
 
