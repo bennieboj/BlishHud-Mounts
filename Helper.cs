@@ -3,11 +3,9 @@ using Blish_HUD.Controls.Extern;
 using Blish_HUD.Input;
 using Blish_HUD.Settings;
 using Manlaan.Mounts.Things;
-using Manlaan.Mounts.Things.Mounts;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Manlaan.Mounts
@@ -15,8 +13,52 @@ namespace Manlaan.Mounts
     public class Helper
     {
         private static readonly Logger Logger = Logger.GetLogger<Helper>();
+
         private Thing ThingOnHide = null;
         private string CharacterNameOnHide;
+
+        private float _lastZPosition = 0.0f;
+        private double _lastUpdateSeconds = 0.0f;
+        public bool IsPlayerGlidingOrFalling = false;
+
+        public Helper()
+        {
+            Module._debug.Add("IsPlayerUnderWater", () => $"{IsPlayerUnderWater()}");
+            Module._debug.Add("IsPlayerOnWaterSurface", () => $"{IsPlayerOnWaterSurface()}");
+            Module._debug.Add("IsPlayerGlidingOrFalling", () => $"{IsPlayerGlidingOrFalling}");
+        }
+
+        public bool IsPlayerUnderWater()
+        {
+            return GameService.Gw2Mumble.PlayerCharacter.Position.Z <= -1.2;
+        }
+
+        public bool IsPlayerOnWaterSurface()
+        {
+            var zpos = GameService.Gw2Mumble.PlayerCharacter.Position.Z;
+            return zpos > -1.2 && zpos < 0;
+        }
+
+        public void UpdatePlayerGlidingOrFalling(GameTime gameTime)
+        {
+            var currentZPosition = GameService.Gw2Mumble.PlayerCharacter.Position.Z;
+            var currentUpdateSeconds = gameTime.TotalGameTime.TotalSeconds;
+            var secondsDiff = currentUpdateSeconds - _lastUpdateSeconds;
+            var zPositionDiff = currentZPosition - _lastZPosition;
+
+            if (zPositionDiff < -0.0001 && secondsDiff != 0)
+            {
+                var velocity = zPositionDiff / secondsDiff;
+                IsPlayerGlidingOrFalling = velocity < -2.5;
+            }
+            else
+            {
+                IsPlayerGlidingOrFalling = false;
+            }
+
+            _lastZPosition = currentZPosition;
+            _lastUpdateSeconds = currentUpdateSeconds;
+        }
 
         internal Thing GetCenterThing()
         {

@@ -13,7 +13,7 @@ namespace Manlaan.Mounts.Things.Mounts
 
         public override bool IsInstactActionApplicable()
         {
-            return GameService.Gw2Mumble.PlayerCharacter.Position.Z <= 0 && Name == Module._settingDefaultWaterMountChoice.Value;
+            return _helper.IsPlayerUnderWater() && Name == Module._settingDefaultWaterMountChoice.Value;
         }
     }
 }

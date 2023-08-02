@@ -85,10 +85,6 @@ namespace Manlaan.Mounts
         private Helper _helper;
         private TextureCache _textureCache;
 
-        private float _lastZPosition = 0.0f;
-        private double _lastUpdateSeconds = 0.0f;
-        public static bool IsPlayerGlidingOrFalling;
-
         private bool _lastIsMountSwitchable = false;
         
         private bool _dragging;
@@ -97,6 +93,12 @@ namespace Manlaan.Mounts
         [ImportingConstructor]
         public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) : base(moduleParameters)
         {
+            _debug = new DebugControl()
+            {
+                Parent = GameService.Graphics.SpriteScreen,
+                Location = new Point(0, 0),
+                Size = new Point(1000, 1000)
+            };
             _helper = new Helper();
         }
 
@@ -351,23 +353,7 @@ namespace Manlaan.Mounts
 
         protected override void Update(GameTime gameTime)
         {
-            var currentZPosition = GameService.Gw2Mumble.PlayerCharacter.Position.Z;
-            var currentUpdateSeconds = gameTime.TotalGameTime.TotalSeconds;
-            var secondsDiff = currentUpdateSeconds - _lastUpdateSeconds;
-            var zPositionDiff = currentZPosition - _lastZPosition;
-            
-            if (zPositionDiff < -0.0001 && secondsDiff != 0)
-            {
-                var velocity = zPositionDiff / secondsDiff;
-                IsPlayerGlidingOrFalling = velocity < -2.5;
-            }
-            else
-            {
-                IsPlayerGlidingOrFalling = false;
-            }
-
-            _lastZPosition = currentZPosition;
-            _lastUpdateSeconds = currentUpdateSeconds;
+            _helper.UpdatePlayerGlidingOrFalling(gameTime);
 
             var isMountSwitchable = IsMountSwitchable();
             var moduleHidden = _lastIsMountSwitchable && !isMountSwitchable;
@@ -580,14 +566,6 @@ namespace Manlaan.Mounts
                 thing.DisposeCornerIcon();
             }
 
-            _debug?.Dispose();
-            _debug = new DebugControl()
-            {
-                Parent = GameService.Graphics.SpriteScreen,
-                Location = new Point(0, 0),
-                Size = new Point(1000, 1000)
-            };
-
             if (_settingDisplayCornerIcons.Value)
                 DrawCornerIcons();
             if (_settingDisplayManualIcons.Value)
@@ -614,21 +592,15 @@ namespace Manlaan.Mounts
             };
         }
 
-        int countdismount, countinstant;
         private async Task DoDefaultMountActionAsync()
         {
             Logger.Debug("DoDefaultMountActionAsync entered");
 
             var currentlyActiveThing = _things.SingleOrDefault(t => t.IsInUse());
-            _debug.Add("defaultmountaction currentlyActiveThing", () => $"{currentlyActiveThing?.DisplayName}");
             if (currentlyActiveThing != null && IsMountSwitchable())
             {
                 await (currentlyActiveThing?.DoReverseAction() ?? Task.CompletedTask);
-                Logger.Debug("DoDefaultMountActionAsync dismounted");
-                
-                ++countdismount;
-                _debug.Add("defaultmountaction dismount", () => $"{countdismount}");
-                
+                Logger.Debug("DoDefaultMountActionAsync dismounted");               
                 return;
             }
 
@@ -637,10 +609,6 @@ namespace Manlaan.Mounts
             {
                 await instantThing.DoAction();
                 Logger.Debug("DoDefaultMountActionAsync instantmount");
-
-                ++countinstant;
-                _debug.Add("defaultmountaction instantmount", () => $"{countinstant}");
-                
                 return;
             }
 

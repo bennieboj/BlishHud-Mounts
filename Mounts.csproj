@@ -140,7 +140,7 @@
     <Compile Include="Things\Fishing.cs" />
     <Compile Include="Things\Mounts\Mount.cs" />
     <Compile Include="Things\Mounts\WvWMount.cs" />
-    <Compile Include="Things\Mounts\WaterMount.cs" />
+    <Compile Include="Things\Mounts\UnderwaterMount.cs" />
     <Compile Include="Things\Mounts\FlyingMount.cs" />
     <Compile Include="Things\Mounts\Griffon.cs" />
     <Compile Include="Things\Mounts\Jackal.cs" />

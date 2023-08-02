@@ -13,7 +13,7 @@ namespace Manlaan.Mounts.Things.Mounts
 
         public override bool IsInstactActionApplicable()
         {
-            return Module.IsPlayerGlidingOrFalling && Name == Module._settingDefaultFlyingMountChoice.Value;
+            return _helper.IsPlayerGlidingOrFalling && Name == Module._settingDefaultFlyingMountChoice.Value;
         }
     }
 }
