@@ -140,7 +140,7 @@
     <Compile Include="Things\MasterySkill\ScanForRift.cs" />
     <Compile Include="Things\MasterySkill\SkyscaleLeap.cs" />
     <Compile Include="Things\MasterySkill\JadeBotWaypoint.cs" />
-    <Compile Include="Things\MasterySkill\Novelty.cs" />
+    <Compile Include="Things\MasterySkill\MasterySkill.cs" />
     <Compile Include="Things\Mounts\Skiff.cs" />
     <Compile Include="Things\MasterySkill\Fishing.cs" />
     <Compile Include="Things\Mounts\Mount.cs" />
