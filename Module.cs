@@ -16,11 +16,8 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using Manlaan.Mounts.Controls;
 using System.Collections.Generic;
-using Gw2Sharp.Models;
 using Manlaan.Mounts.Views;
-using Blish_HUD.Content;
 using System.IO;
-using SharpDX.DirectWrite;
 using Manlaan.Mounts.Things.Mounts;
 using Manlaan.Mounts.Things;
 
@@ -41,12 +38,13 @@ namespace Manlaan.Mounts
         internal static Collection<Thing> _things;
         internal static List<Thing> _availableOrderedThings => _things.Where(m => m.IsAvailable).OrderBy(m => m.OrderSetting.Value).ToList();
 
+        List<ThingActivationContext> Contexts;
+
         public static string mountsDirectory;
         private TabbedWindow2 _settingsWindow;
 
         public static List<MountImageFile> _mountImageFiles = new List<MountImageFile>();
 
-        public static int[] _mountOrder = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         public static string[] _mountBehaviour = new string[] { "DefaultMount", "Radial" };
         public static string[] _mountOrientation = new string[] { "Horizontal", "Vertical" };
         public static string[] _mountRadialCenterMountBehavior = new string[] { "None", "Default", "LastUsed" };
@@ -100,6 +98,13 @@ namespace Manlaan.Mounts
                 Size = new Point(1000, 1000)
             };
             _helper = new Helper();
+            
+            Contexts = new List<ThingActivationContext>
+            {
+                new ThingActivationContext("wvw", 0, _helper.IsPlayerInWvwMap, new List<Type>{typeof(Warclaw)}),
+                new ThingActivationContext("flying", 1, _helper.IsPlayerGlidingOrFalling, new List<Type>{typeof(Griffon), typeof(Skyscale)}),
+            };
+
         }
 
         protected override void Initialize()
@@ -139,7 +144,9 @@ namespace Manlaan.Mounts
                 "music.png",
                 "held.png",
                 "toy.png",
-                "tonic.png"
+                "tonic.png",
+                "scanforrift.png",
+                "skyscaleleap.png"
             };
             mountsDirectory = DirectoriesManager.GetFullDirectoryPath("mounts");
             mountsFilesInRef.ForEach(f => ExtractFile(f, mountsDirectory));
@@ -259,7 +266,9 @@ namespace Manlaan.Mounts
                 new Music(settings, _helper),
                 new Held(settings, _helper),
                 new Toy(settings, _helper),
-                new Tonic(settings, _helper)
+                new Tonic(settings, _helper),
+                new ScanForRift(settings, _helper),
+                new SkyscaleLeap(settings, _helper)
             };
 
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
@@ -596,7 +605,7 @@ namespace Manlaan.Mounts
         {
             Logger.Debug("DoDefaultMountActionAsync entered");
 
-            var currentlyActiveThing = _things.SingleOrDefault(t => t.IsInUse());
+            var currentlyActiveThing = _availableOrderedThings.SingleOrDefault(t => t.IsInUse());
             if (currentlyActiveThing != null && IsMountSwitchable())
             {
                 await (currentlyActiveThing?.DoReverseAction() ?? Task.CompletedTask);
@@ -604,7 +613,9 @@ namespace Manlaan.Mounts
                 return;
             }
 
-            var instantThing = _things.SingleOrDefault(t => t.IsInstactActionApplicable());
+
+
+            var instantThing = _availableOrderedThings.OrderBy(t => t.IsInstactActionApplicableOrder()).FirstOrDefault(t => t.IsInstactActionApplicable());
             if (instantThing != null)
             {
                 await instantThing.DoAction();

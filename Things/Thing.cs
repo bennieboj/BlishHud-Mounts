@@ -19,7 +19,7 @@ namespace Manlaan.Mounts.Things
             ImageFileName = imageFileName;
             OrderSetting = settingCollection.DefineSetting($"Mount{name}Order2", defaultOrderSetting, () => $"{displayName} Order", () => "");
             KeybindingSetting = settingCollection.DefineSetting($"Mount{name}Binding", new KeyBinding(Keys.None), () => $"{displayName} Binding", () => "");
-            ImageFileNameSetting = settingCollection.DefineSetting($"Mount{name}ImageFileName", "", () => $"{displayName} Image File Name", () => "");
+            ImageFileNameSetting = settingCollection.DefineSetting($"Mount{name}ImageFileName", $"{imageFileName}.png", () => $"{displayName} Image File Name", () => "");
         }
 
         protected static readonly Logger Logger = Logger.GetLogger<Thing>();
@@ -81,6 +81,9 @@ namespace Manlaan.Mounts.Things
         }
 
         public abstract bool IsInUse();
+
+        public abstract bool IsUsableOnMount();
         public abstract bool IsInstactActionApplicable();
+        public abstract int IsInstactActionApplicableOrder();
     }
 }

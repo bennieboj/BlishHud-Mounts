@@ -24,5 +24,15 @@ namespace Manlaan.Mounts.Things.Mounts
         {
             return false;
         }
+
+        public override bool IsUsableOnMount()
+        {
+            return false;
+        }
+
+        public override int IsInstactActionApplicableOrder()
+        {
+            return 2;
+        }
     }
 }

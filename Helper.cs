@@ -2,9 +2,11 @@
 using Blish_HUD.Controls.Extern;
 using Blish_HUD.Input;
 using Blish_HUD.Settings;
+using Gw2Sharp.Models;
 using Manlaan.Mounts.Things;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,13 +21,31 @@ namespace Manlaan.Mounts
 
         private float _lastZPosition = 0.0f;
         private double _lastUpdateSeconds = 0.0f;
-        public bool IsPlayerGlidingOrFalling = false;
+        private bool _isPlayerGlidingOrFalling = false;
 
         public Helper()
         {
             Module._debug.Add("IsPlayerUnderWater", () => $"{IsPlayerUnderWater()}");
             Module._debug.Add("IsPlayerOnWaterSurface", () => $"{IsPlayerOnWaterSurface()}");
-            Module._debug.Add("IsPlayerGlidingOrFalling", () => $"{IsPlayerGlidingOrFalling}");
+            Module._debug.Add("IsPlayerGlidingOrFalling", () => $"{IsPlayerGlidingOrFalling()}");
+        }
+
+        public bool IsPlayerGlidingOrFalling()
+        {
+            return _isPlayerGlidingOrFalling;
+        }
+
+        public bool IsPlayerInWvwMap()
+        {
+            MapType[] warclawOnlyMaps = {
+                MapType.RedBorderlands,
+                MapType.BlueBorderlands,
+                MapType.GreenBorderlands,
+                MapType.EternalBattlegrounds,
+                MapType.Center,
+                MapType.WvwLounge
+            };
+            return Array.Exists(warclawOnlyMaps, mapType => mapType == GameService.Gw2Mumble.CurrentMap.Type);
         }
 
         public bool IsPlayerUnderWater()
@@ -49,11 +69,11 @@ namespace Manlaan.Mounts
             if (zPositionDiff < -0.0001 && secondsDiff != 0)
             {
                 var velocity = zPositionDiff / secondsDiff;
-                IsPlayerGlidingOrFalling = velocity < -2.5;
+                _isPlayerGlidingOrFalling = velocity < -2.5;
             }
             else
             {
-                IsPlayerGlidingOrFalling = false;
+                _isPlayerGlidingOrFalling = false;
             }
 
             _lastZPosition = currentZPosition;

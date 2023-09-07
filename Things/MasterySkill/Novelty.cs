@@ -2,9 +2,9 @@
 
 namespace Manlaan.Mounts.Things.Mounts
 {
-    public abstract class Novelty : Thing
+    public abstract class MasterySkill : Thing
     {
-        public Novelty(SettingCollection settingCollection, Helper helper,
+        public MasterySkill(SettingCollection settingCollection, Helper helper,
             string name, string displayName, string imageFileName, int defaultOrderSetting) 
             : base(settingCollection, helper, name, displayName, imageFileName, defaultOrderSetting)
         {

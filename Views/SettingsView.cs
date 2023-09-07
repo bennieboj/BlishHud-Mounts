@@ -68,7 +68,7 @@ namespace Manlaan.Mounts.Views
             ManualPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + panelPadding, 150 + panelPadding));
             BuildManualPanel(ManualPanel, buildPanel);
 
-            Panel defaultMountPanel = CreateDefaultPanel(buildPanel, new Point(10, 570));
+            Panel defaultMountPanel = CreateDefaultPanel(buildPanel, new Point(10, 600));
             BuildDefaultMountPanel(defaultMountPanel, labelWidth2, mountsAndRadialInputWidth);
 
             Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + 20, 500));
@@ -285,7 +285,7 @@ namespace Manlaan.Mounts.Views
                     Width = orderWidth,
                     Parent = mountsPanel,
                 };
-                foreach (int i in Module._mountOrder)
+                for (int i = 0; i <= Module._things.ToList().Count; i++)
                 {
                     if (i == 0)
                         settingMount_Select.Items.Add("Disabled");

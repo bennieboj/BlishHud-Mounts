@@ -13,18 +13,16 @@ namespace Manlaan.Mounts.Things.Mounts
         {            
         }
 
-        MapType[] warclawOnlyMaps = {
-                MapType.RedBorderlands,
-                MapType.BlueBorderlands,
-                MapType.GreenBorderlands,
-                MapType.EternalBattlegrounds,
-                MapType.Center,
-                MapType.WvwLounge
-            };
+
 
         public override bool IsInstactActionApplicable()
         {
-            return Array.Exists(warclawOnlyMaps, mapType => mapType == GameService.Gw2Mumble.CurrentMap.Type);
+            return _helper.IsPlayerInWvwMap();
+        }
+
+        public override int IsInstactActionApplicableOrder()
+        {
+            return 1;
         }
     }
 }
