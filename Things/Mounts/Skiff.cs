@@ -11,8 +11,6 @@ namespace Manlaan.Mounts.Things.Mounts
         }
         protected override MountType MountType => MountType.Skiff;
 
-        public override bool IsInstactActionApplicable() => _helper.IsPlayerOnWaterSurface();
-
         public override bool IsUsableOnMount()
         {
             return true;

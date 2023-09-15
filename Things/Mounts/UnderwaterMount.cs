@@ -9,10 +9,5 @@ namespace Manlaan.Mounts.Things.Mounts
             : base(settingCollection, helper, name, displayName, imageFileName, defaultOrderSetting)
         {            
         }
-
-        public override bool IsInstactActionApplicable()
-        {
-            return _helper.IsPlayerUnderWater() && Name == Module._settingDefaultWaterMountChoice.Value;
-        }
     }
 }

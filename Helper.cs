@@ -7,6 +7,7 @@ using Manlaan.Mounts.Things;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,12 +24,6 @@ namespace Manlaan.Mounts
         private double _lastUpdateSeconds = 0.0f;
         private bool _isPlayerGlidingOrFalling = false;
 
-        public Helper()
-        {
-            Module._debug.Add("IsPlayerUnderWater", () => $"{IsPlayerUnderWater()}");
-            Module._debug.Add("IsPlayerOnWaterSurface", () => $"{IsPlayerOnWaterSurface()}");
-            Module._debug.Add("IsPlayerGlidingOrFalling", () => $"{IsPlayerGlidingOrFalling()}");
-        }
 
         public bool IsPlayerGlidingOrFalling()
         {
@@ -57,6 +52,11 @@ namespace Manlaan.Mounts
         {
             var zpos = GameService.Gw2Mumble.PlayerCharacter.Position.Z;
             return zpos > -1.2 && zpos < 0;
+        }
+
+        public bool IsPlayerMounted()
+        {
+            return GameService.Gw2Mumble.PlayerCharacter.CurrentMount != MountType.None;
         }
 
         public void UpdatePlayerGlidingOrFalling(GameTime gameTime)

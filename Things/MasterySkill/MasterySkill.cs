@@ -15,16 +15,6 @@ namespace Manlaan.Mounts.Things.Mounts
             return false;
         }
 
-        public override bool IsInstactActionApplicable()
-        {
-            return false;
-        }
-
-        public override int IsInstactActionApplicableOrder()
-        {
-            return 2;
-        }
-
         public override bool IsUsableOnMount()
         {
             return true;

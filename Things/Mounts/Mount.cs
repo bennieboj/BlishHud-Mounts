@@ -20,19 +20,9 @@ namespace Manlaan.Mounts.Things.Mounts
             return GameService.Gw2Mumble.PlayerCharacter.CurrentMount == MountType;
         }
 
-        public override bool IsInstactActionApplicable()
-        {
-            return false;
-        }
-
         public override bool IsUsableOnMount()
         {
             return false;
-        }
-
-        public override int IsInstactActionApplicableOrder()
-        {
-            return 2;
         }
     }
 }

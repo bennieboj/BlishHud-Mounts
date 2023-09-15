@@ -34,10 +34,11 @@ namespace Manlaan.Mounts
         internal Gw2ApiManager Gw2ApiManager => this.ModuleParameters.Gw2ApiManager;
         #endregion
 
-        internal static Collection<Thing> _things;
+        internal static Collection<Thing> _things = new Collection<Thing>();
         internal static List<Thing> _availableOrderedThings => _things.Where(m => m.IsAvailable).OrderBy(m => m.OrderSetting.Value).ToList();
+        internal static ThingActivationContext GetApplicableContext() => Contexts.OrderBy(c => c.Order).FirstOrDefault(c => c.IsApplicable());
 
-        List<ThingActivationContext> Contexts;
+        public static List<ThingActivationContext> Contexts = new List<ThingActivationContext>();
 
         public static string mountsDirectory;
         private TabbedWindow2 _settingsWindow;
@@ -96,13 +97,6 @@ namespace Manlaan.Mounts
                 Size = new Point(1000, 1000)
             };
             _helper = new Helper();
-            
-            Contexts = new List<ThingActivationContext>
-            {
-                new ThingActivationContext("wvw", 0, _helper.IsPlayerInWvwMap, new List<Type>{typeof(Warclaw)}),
-                new ThingActivationContext("flying", 1, _helper.IsPlayerGlidingOrFalling, new List<Type>{typeof(Griffon), typeof(Skyscale)}),
-            };
-
         }
 
         protected override void Initialize()
@@ -352,6 +346,19 @@ namespace Manlaan.Mounts
 
         protected override void OnModuleLoaded(EventArgs e)
         {
+            Contexts = new List<ThingActivationContext>
+            {
+                new ThingActivationContext("IsPlayerInWvwMap", 0, _helper.IsPlayerInWvwMap, true, new List<Type>{typeof(WvWMount)}),
+                new ThingActivationContext("IsPlayerGlidingOrFalling", 1, _helper.IsPlayerGlidingOrFalling, true, new List<Type>{typeof(FlyingMount)}),
+                new ThingActivationContext("IsPlayerUnderWater", 2, _helper.IsPlayerUnderWater, true, new List<Type>{typeof(UnderwaterMount)}),
+                new ThingActivationContext("IsPlayerOnWaterSurface", 3, _helper.IsPlayerOnWaterSurface, true, new List<Type>{typeof(Skiff)}),
+                new ThingActivationContext("IsPlayerMounted", 3, _helper.IsPlayerMounted, true, new List<Type>{typeof(Skiff)}),
+                new ThingActivationContext("Default", 99, () => true, false, _availableOrderedThings.Select(t => t.GetType()).ToList()),
+            };
+            Contexts.ForEach(c => _debug.Add(c.Name, () => $"{c.IsApplicable()}"));
+            _debug.Add("ApplicableContext", () => $"{GetApplicableContext()?.Name}");
+            _debug.Add("ApplicableMounts", () => $"{string.Join(",", GetApplicableContext()?.GetThings().Select(t => t.Name))}"); 
+
             DrawUI();
 
             // Base handler must be called
@@ -546,11 +553,11 @@ namespace Manlaan.Mounts
             }
 
 
-
-            var instantThing = _availableOrderedThings.OrderBy(t => t.IsInstactActionApplicableOrder()).FirstOrDefault(t => t.IsInstactActionApplicable());
-            if (instantThing != null)
+            var selectedContext = GetApplicableContext();
+            var things = selectedContext.GetThings();
+            if (things.Count == 1 && selectedContext.ApplyInstantlyIfSingle)
             {
-                await instantThing.DoAction();
+                await things.FirstOrDefault()?.DoAction();
                 Logger.Debug("DoDefaultMountActionAsync instantmount");
                 return;
             }
