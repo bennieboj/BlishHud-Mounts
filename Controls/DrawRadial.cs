@@ -31,17 +31,17 @@ namespace Manlaan.Mounts.Controls
 
         public EventHandler OnSettingsButtonClicked { get; internal set; }
         private StandardButton _settingsButton;
-        private Label _noMountsLabel;
+        private Label _noThingsLabel;
 
-        private List<RadialThing> RadialMounts = new List<RadialThing>();
+        private List<RadialThing> RadialThings = new List<RadialThing>();
 
-        private RadialThing SelectedMount => RadialMounts.SingleOrDefault(m => m.Selected);
+        private RadialThing SelectedMount => RadialThings.SingleOrDefault(m => m.Selected);
 
         public override int ZIndex { get => base.ZIndex; set => base.ZIndex = value; }
         public bool IsActionCamToggledOnMount { get; private set; }
 
         int radius = 0;
-        int mountIconSize = 0;
+        int thingIconSize = 0;
         int _maxRadialDiameter = 0;
 
         private Point SpawnPoint = default;
@@ -56,13 +56,13 @@ namespace Manlaan.Mounts.Controls
             Shown += async (sender, e) => await HandleShown(sender, e);
             Hidden += async (sender, e) => await HandleHidden(sender, e);
 
-            _noMountsLabel = new Label {
+            _noThingsLabel = new Label {
                 Parent = this,
                 Location = new Point(0, 0),
                 Size = new Point(800,500),
                 Font = GameService.Content.DefaultFont32,
                 TextColor = Color.Red,
-                Text = "NO MOUNTS CONFIGURED, GO TO SETTINGS: "
+                Text = "NOTHING CONFIGURED, GO TO SETTINGS: "
             };
             _settingsButton = new StandardButton
             {
@@ -83,18 +83,18 @@ namespace Manlaan.Mounts.Controls
 
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
-            RadialMounts.Clear();
-            var mounts = Module._availableOrderedThings;
+            RadialThings.Clear();
+            var things = Module._availableOrderedThings;
 
-            if (!mounts.Any())
+            if (!things.Any())
             {
-                _noMountsLabel.Show();
+                _noThingsLabel.Show();
                 _settingsButton.Show();
                 return;
             }
             else
             {
-                _noMountsLabel.Hide();
+                _noThingsLabel.Hide();
                 _settingsButton.Hide();
             }
 
@@ -103,25 +103,25 @@ namespace Manlaan.Mounts.Controls
             {
                 if (Module._settingMountRadialRemoveCenterMount.Value)
                 {
-                    mounts.Remove(thingToPutInCenter);
+                    things.Remove(thingToPutInCenter);
                 }
                 var texture = _textureCache.GetMountImgFile(thingToPutInCenter);
                 int loc = radius;
-                RadialMounts.Add(new RadialThing { Texture = texture, Thing = thingToPutInCenter, ImageX = loc, ImageY = loc, Default = true });
+                RadialThings.Add(new RadialThing { Texture = texture, Thing = thingToPutInCenter, ImageX = loc, ImageY = loc, Default = true });
             }
 
             double startAngle = Math.PI * Math.Floor(Module._settingMountRadialStartAngle.Value * 360) / 180.0;
             if (DebugHelper.IsDebugEnabled())
             {
                 var spawnPointVec = SpawnPoint.ToVector2();
-                var rectpos = spawnPointVec - new Vector2(mountIconSize / 2, mountIconSize / 2);
-                spriteBatch.DrawRectangle(rectpos, new Size2(mountIconSize, mountIconSize), Color.Red, debugLineThickness);
+                var rectpos = spawnPointVec - new Vector2(thingIconSize / 2, thingIconSize / 2);
+                spriteBatch.DrawRectangle(rectpos, new Size2(thingIconSize, thingIconSize), Color.Red, debugLineThickness);
                 spriteBatch.DrawCircle(spawnPointVec, 1, 50, Color.Red, debugLineThickness);
                 spriteBatch.DrawCircle(spawnPointVec, GetRadius(), 50, Color.Red, debugLineThickness);
             }
             double currentAngle = startAngle;
-            var partAngleStep = Math.PI * 2 / mounts.Count();
-            foreach (var mount in mounts)
+            var partAngleStep = Math.PI * 2 / things.Count();
+            foreach (var mount in things)
             {
                 var angleMid = currentAngle + partAngleStep / 2;
                 var angleEnd = currentAngle + partAngleStep;
@@ -141,7 +141,7 @@ namespace Manlaan.Mounts.Controls
                 }
 
 
-                RadialMounts.Add(new RadialThing
+                RadialThings.Add(new RadialThing
                 {
                     Texture = texture,
                     Thing = mount,
@@ -194,7 +194,7 @@ namespace Manlaan.Mounts.Controls
 
             var length = new Vector2(diff.Y, diff.X).Length();
             
-            foreach (var radialMount in RadialMounts)
+            foreach (var radialMount in RadialThings)
             {
                 if (length < GetRadius())
                 {
@@ -205,7 +205,7 @@ namespace Manlaan.Mounts.Controls
                     radialMount.Selected = radialMount.AngleBegin <= angle && radialMount.AngleEnd > angle;
                 }
 
-                spriteBatch.DrawOnCtrl(this, radialMount.Texture, new Rectangle(radialMount.ImageX, radialMount.ImageY, mountIconSize, mountIconSize), null, Color.White * (radialMount.Selected ? 1f : Module._settingMountRadialIconOpacity.Value));
+                spriteBatch.DrawOnCtrl(this, radialMount.Texture, new Rectangle(radialMount.ImageX, radialMount.ImageY, thingIconSize, thingIconSize), null, Color.White * (radialMount.Selected ? 1f : Module._settingMountRadialIconOpacity.Value));
             }
 
             //Module._dbg.Add("AngleBegin", () => $"{RadialMounts[8].AngleBegin}");
@@ -218,7 +218,7 @@ namespace Manlaan.Mounts.Controls
 
         private float GetRadius()
         {
-            return (float)(mountIconSize * Math.Sqrt(2) / 2);
+            return (float)(thingIconSize * Math.Sqrt(2) / 2);
         }
 
         public async Task TriggerSelectedMountAsync()
@@ -238,8 +238,8 @@ namespace Manlaan.Mounts.Controls
             }
 
             _maxRadialDiameter = Math.Min(GameService.Graphics.SpriteScreen.Width, GameService.Graphics.SpriteScreen.Height);
-            mountIconSize = (int)(_maxRadialDiameter / 4 * Module._settingMountRadialIconSizeModifier.Value);
-            radius = (int)((_maxRadialDiameter / 2 - mountIconSize / 2) * Module._settingMountRadialRadiusModifier.Value);
+            thingIconSize = (int)(_maxRadialDiameter / 4 * Module._settingMountRadialIconSizeModifier.Value);
+            radius = (int)((_maxRadialDiameter / 2 - thingIconSize / 2) * Module._settingMountRadialRadiusModifier.Value);
             Size = new Point(_maxRadialDiameter, _maxRadialDiameter);
 
             if (Module._settingMountRadialSpawnAtMouse.Value)
@@ -252,7 +252,7 @@ namespace Manlaan.Mounts.Controls
                 SpawnPoint = new Point(GameService.Graphics.SpriteScreen.Width / 2, GameService.Graphics.SpriteScreen.Height / 2);
             }
 
-            Location = new Point(SpawnPoint.X - radius - mountIconSize / 2, SpawnPoint.Y - radius - mountIconSize / 2);
+            Location = new Point(SpawnPoint.X - radius - thingIconSize / 2, SpawnPoint.Y - radius - thingIconSize / 2);
         }
 
         private async Task HandleHidden(object sender, EventArgs e)

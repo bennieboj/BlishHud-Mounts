@@ -63,10 +63,10 @@ namespace Manlaan.Mounts.Things
                 return;
             }
 
-            if (!Module.IsMountSwitchable())
+            if (!Module.CanThingBeActivated())
             {
-                _helper.StoreThingForLaterUse(this, GameService.Gw2Mumble.PlayerCharacter.Name);
-                Logger.Debug($"DoAction StoreMountForLaterUse: {DisplayName}");
+                _helper.StoreThingForLaterActivation(this, GameService.Gw2Mumble.PlayerCharacter.Name);
+                Logger.Debug($"DoAction StoreThingForLaterActivation: {DisplayName}");
                 return;
             }
 

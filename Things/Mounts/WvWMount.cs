@@ -1,7 +1,4 @@
-﻿using Blish_HUD;
-using Blish_HUD.Settings;
-using Gw2Sharp.Models;
-using System;
+﻿using Blish_HUD.Settings;
 
 namespace Manlaan.Mounts.Things.Mounts
 {

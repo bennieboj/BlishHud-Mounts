@@ -141,7 +141,7 @@ namespace Manlaan.Mounts
             }
         }
 
-        internal void StoreThingForLaterUse(Thing mount, string characterName)
+        internal void StoreThingForLaterActivation(Thing mount, string characterName)
         {
             ThingOnHide = mount;
             CharacterNameOnHide = characterName;
@@ -152,15 +152,11 @@ namespace Manlaan.Mounts
             return CharacterNameOnHide == characterName;
         }
 
-        internal Task DoThingActionForLaterUse()
+        internal async Task DoThingActionForLaterActivation()
         {
-            return ThingOnHide?.DoAction();
-        }
-
-        internal void ClearThingForLaterUse()
-        {
+            await ThingOnHide?.DoAction();
             ThingOnHide = null;
-            CharacterNameOnHide = null;
+            CharacterNameOnHide = null;            
         }
     }
 }

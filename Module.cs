@@ -8,7 +8,6 @@ using Blish_HUD.Graphics.UI;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
@@ -70,23 +69,22 @@ namespace Manlaan.Mounts
         public static SettingEntry<bool> _settingDisplayCornerIcons;
         public static SettingEntry<bool> _settingDisplayManualIcons;
         public static SettingEntry<string> _settingOrientation;
-        private SettingEntry<Point> _settingLoc;
+        public static SettingEntry<Point> _settingLoc;
         public static SettingEntry<bool> _settingDrag;
         public static SettingEntry<int> _settingImgWidth;
         public static SettingEntry<float> _settingOpacity;
 
-        private Panel _mountPanel;
+
         public static DebugControl _debug;
         private DrawRadial _radial;
+        private DrawManualIcons _drawManualIcons;
         private LoadingSpinner _queueingSpinner;
         private DrawMouseCursor _drawMouseCursor;
         private Helper _helper;
         private TextureCache _textureCache;
 
         private bool _lastIsMountSwitchable = false;
-        
-        private bool _dragging;
-        private Point _dragStart = Point.Zero;
+
 
         [ImportingConstructor]
         public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) : base(moduleParameters)
@@ -364,21 +362,20 @@ namespace Manlaan.Mounts
         {
             _helper.UpdatePlayerGlidingOrFalling(gameTime);
 
-            var isMountSwitchable = IsMountSwitchable();
+            var isMountSwitchable = CanThingBeActivated();
             var moduleHidden = _lastIsMountSwitchable && !isMountSwitchable;
             var moduleShown = !_lastIsMountSwitchable && isMountSwitchable;
             var currentCharacterName = GameService.Gw2Mumble.PlayerCharacter.Name;
             var inUseMountsCount = _things.Count(m => m.IsInUse());
             if (moduleHidden && inUseMountsCount == 1 && _settingMountAutomaticallyAfterLoadingScreen.Value && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
             {
-                _helper.StoreThingForLaterUse(_things.Single(m => m.IsInUse()), currentCharacterName);
+                _helper.StoreThingForLaterActivation(_things.Single(m => m.IsInUse()), currentCharacterName);
             }
             if (moduleShown && inUseMountsCount == 0 && _helper.IsCharacterTheSameAfterMapLoad(currentCharacterName) && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                _helper.DoThingActionForLaterUse();
+                _helper.DoThingActionForLaterActivation();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                _helper.ClearThingForLaterUse();
             }
 
             _lastIsMountSwitchable = isMountSwitchable;
@@ -386,7 +383,7 @@ namespace Manlaan.Mounts
             bool shouldShowModule = ShouldShowModule();
             if (shouldShowModule)
             {
-                _mountPanel?.Show();
+                _drawManualIcons?.Show();
                 foreach (var mount in _availableOrderedThings)
                 {
                     mount.CornerIcon?.Show();
@@ -394,19 +391,11 @@ namespace Manlaan.Mounts
             }
             else
             {
-                _mountPanel?.Hide();
+                _drawManualIcons?.Hide();
                 foreach (var mount in _availableOrderedThings)
                 {
                     mount.CornerIcon?.Hide();
                 }
-            }
-            
-            if (_dragging)
-            {
-                var nOffset = InputService.Input.Mouse.Position - _dragStart;
-                _mountPanel.Location += nOffset;
-
-                _dragStart = InputService.Input.Mouse.Position;
             }
 
             if (_settingDisplayMountQueueing.Value && _things.Any(m => m.QueuedTimestamp != null))
@@ -432,10 +421,10 @@ namespace Manlaan.Mounts
 
         public static bool ShouldShowModule()
         {
-            return _settingDisplayModuleOnLoadingScreen.Value || IsMountSwitchable();
+            return _settingDisplayModuleOnLoadingScreen.Value || CanThingBeActivated();
         }
 
-        public static bool IsMountSwitchable()
+        public static bool CanThingBeActivated()
         {
             return GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen;
         }
@@ -444,7 +433,7 @@ namespace Manlaan.Mounts
         protected override void Unload()
         {
             _debug?.Dispose();
-            _mountPanel?.Dispose();
+            _drawManualIcons?.Dispose();
             _radial?.Dispose();
 
             foreach (var t in _things)
@@ -501,64 +490,6 @@ namespace Manlaan.Mounts
             DrawUI();
         }
 
-        internal void DrawManualIcons() {
-            int curX = 0;
-            int curY = 0;
-            int totalMounts = 0;
-
-            _mountPanel = new Panel() {
-                Parent = GameService.Graphics.SpriteScreen,
-                Location = _settingLoc.Value,
-                Size = new Point(_settingImgWidth.Value * _things.Count, _settingImgWidth.Value * _things.Count),
-            };
-
-            foreach (var thing in _availableOrderedThings) {
-                Texture2D img = _textureCache.GetMountImgFile(thing);
-                Image _btnMount = new Image
-                {
-                    Parent = _mountPanel,
-                    Texture = img,
-                    Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
-                    Location = new Point(curX, curY),
-                    Opacity = _settingOpacity.Value,
-                    BasicTooltipText = thing.DisplayName
-                };
-                _btnMount.LeftMouseButtonPressed += async delegate { await thing.DoAction(); };
-
-                if (_settingOrientation.Value.Equals("Horizontal"))
-                    curX += _settingImgWidth.Value;
-                else
-                    curY += _settingImgWidth.Value;
-
-                totalMounts++;
-            }
-
-            if (_settingDrag.Value) {
-                Panel dragBox = new Panel() {
-                    Parent = _mountPanel,
-                    Location = new Point(0, 0),
-                    Size = new Point(_settingImgWidth.Value / 2, _settingImgWidth.Value / 2),
-                    BackgroundColor = Color.White,
-                    ZIndex = 10,
-                };
-                dragBox.LeftMouseButtonPressed += delegate {
-                    _dragging = true;
-                    _dragStart = InputService.Input.Mouse.Position;
-                };
-                dragBox.LeftMouseButtonReleased += delegate {
-                    _dragging = false;
-                    _settingLoc.Value = _mountPanel.Location;
-                };
-            }
-
-            if (_settingOrientation.Value.Equals("Horizontal")) {
-                _mountPanel.Size = new Point(_settingImgWidth.Value * totalMounts, _settingImgWidth.Value);
-            }
-            else {
-                _mountPanel.Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value * totalMounts);
-            }
-
-        }
         private void DrawCornerIcons() {
             foreach (var mount in _availableOrderedThings)
             {
@@ -568,8 +499,7 @@ namespace Manlaan.Mounts
         }
 
         private void DrawUI()
-        {
-            _mountPanel?.Dispose();
+        {   
             foreach (var thing in _things)
             {
                 thing.DisposeCornerIcon();
@@ -577,8 +507,10 @@ namespace Manlaan.Mounts
 
             if (_settingDisplayCornerIcons.Value)
                 DrawCornerIcons();
+
+            _drawManualIcons?.Dispose();
             if (_settingDisplayManualIcons.Value)
-                DrawManualIcons();
+                _drawManualIcons = new DrawManualIcons(_helper, _textureCache);
 
             _queueingSpinner?.Dispose();
             _queueingSpinner = new LoadingSpinner();
@@ -606,7 +538,7 @@ namespace Manlaan.Mounts
             Logger.Debug("DoDefaultMountActionAsync entered");
 
             var currentlyActiveThing = _availableOrderedThings.SingleOrDefault(t => t.IsInUse());
-            if (currentlyActiveThing != null && IsMountSwitchable())
+            if (currentlyActiveThing != null && CanThingBeActivated())
             {
                 await (currentlyActiveThing?.DoReverseAction() ?? Task.CompletedTask);
                 Logger.Debug("DoDefaultMountActionAsync dismounted");               
@@ -653,9 +585,9 @@ namespace Manlaan.Mounts
             if (!e.Value)
             {
                 await (_things.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault()?.DoAction() ?? Task.CompletedTask);
-                foreach (var mount in _things)
+                foreach (var thing in _things)
                 {
-                    mount.QueuedTimestamp = null;
+                    thing.QueuedTimestamp = null;
                 }
                 _queueingSpinner?.Hide();
             }

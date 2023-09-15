@@ -4,7 +4,6 @@ using System.IO;
 using Blish_HUD;
 using Blish_HUD.Modules.Managers;
 using Manlaan.Mounts.Things;
-using Manlaan.Mounts.Things.Mounts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
