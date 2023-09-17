@@ -61,6 +61,24 @@ namespace Manlaan.Mounts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Documentation.
+        /// </summary>
+        internal static string Documentation_Button_Label {
+            get {
+                return ResourceManager.GetString("Documentation_Button_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        internal static string Edit {
+            get {
+                return ResourceManager.GetString("Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Default Flying Mount Choice.
         /// </summary>
         internal static string Setting_DefaultFlyingMountChoice {
@@ -300,6 +318,15 @@ namespace Manlaan.Mounts {
         internal static string Window_AllSettingsTab {
             get {
                 return ResourceManager.GetString("Window_AllSettingsTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Context Settings.
+        /// </summary>
+        internal static string Window_ContextSettingsTab {
+            get {
+                return ResourceManager.GetString("Window_ContextSettingsTab", resourceCulture);
             }
         }
     }

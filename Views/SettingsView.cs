@@ -7,6 +7,8 @@ using Blish_HUD;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Manlaan.Mounts.Things.Mounts;
+using System.Diagnostics;
+using System.Security.Policy;
 
 namespace Manlaan.Mounts.Views
 {
@@ -14,15 +16,12 @@ namespace Manlaan.Mounts.Views
     {
         private const string NoValueSelected = "Please select a value";
 
-        private TextureCache TextureCache { get; }
-
         private Texture2D anetTexture { get; }
 
         private Panel ManualPanel { get; set; }
 
         public SettingsView(TextureCache textureCache)
         {
-            TextureCache = textureCache;
             anetTexture = textureCache.GetImgFile(TextureCache.AnetIconTextureName);
         }
 
@@ -55,6 +54,16 @@ namespace Manlaan.Mounts.Views
                 Font = GameService.Content.DefaultFont18,
                 Text = "For this module to work you need to fill in your in-game keykindings in the settings below.\nNo keybind means the mount is DISABLED.".Replace(" ", "  "),
                 HorizontalAlignment = HorizontalAlignment.Left
+            };
+
+            var documentationButton = new StandardButton
+            {
+                Parent = buildPanel,
+                Location = new Point(labelExplanation.Right, labelExplanation.Top),
+                Text = Strings.Documentation_Button_Label
+            };
+            documentationButton.Click += (args, sender) => {
+                Process.Start("https://github.com/manlaan/BlishHud-Mounts/#settings");
             };
 
             var panelPadding = 20;
@@ -317,7 +326,7 @@ namespace Manlaan.Mounts.Views
                     Parent = mountsPanel,
                 };
                 settingMountImageFile_Select.Items.Add(NoValueSelected);
-                Module._mountImageFiles
+                Module._thingImageFiles
                     .Where(mIF => mIF.Name.Contains(mount.ImageFileName)).OrderByDescending(mIF => mIF.Name).ToList()
                     .ForEach(mIF => settingMountImageFile_Select.Items.Add(mIF.Name));
                 settingMountImageFile_Select.SelectedItem = mount.ImageFileNameSetting.Value == "" ? NoValueSelected : mount.ImageFileNameSetting.Value;

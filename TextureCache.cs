@@ -19,6 +19,7 @@ namespace Manlaan.Mounts
         public static readonly string MountLogoTextureName = "514394-grey.png";
         public static readonly string TabBackgroundTextureName = "156006-big.png";
         public static readonly string SettingsIconTextureName = "155052.png";
+        public static readonly string ContextSettingsTextureName = "156736.png";
         public static readonly string AnetIconTextureName = "1441452.png";
 
         public TextureCache(ContentsManager contentsManager)
@@ -31,7 +32,7 @@ namespace Manlaan.Mounts
         {
             Func<string, Texture2D> getTextureFromRef = (textureName) => contentsManager.GetTexture(textureName);
 
-            foreach (var mountImageFile in Module._mountImageFiles)
+            foreach (var mountImageFile in Module._thingImageFiles)
             {
                 PreCacheTexture(mountImageFile.Name, PremultiplyTexture);
             }
@@ -39,6 +40,7 @@ namespace Manlaan.Mounts
             PreCacheTexture(MountLogoTextureName, getTextureFromRef);
             PreCacheTexture(TabBackgroundTextureName, getTextureFromRef);
             PreCacheTexture(SettingsIconTextureName, getTextureFromRef);
+            PreCacheTexture(ContextSettingsTextureName, getTextureFromRef);
             PreCacheTexture(AnetIconTextureName, getTextureFromRef);
         }
 

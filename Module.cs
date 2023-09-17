@@ -36,14 +36,16 @@ namespace Manlaan.Mounts
 
         internal static Collection<Thing> _things = new Collection<Thing>();
         internal static List<Thing> _availableOrderedThings => _things.Where(m => m.IsAvailable).OrderBy(m => m.OrderSetting.Value).ToList();
-        internal static ThingActivationContext GetApplicableContext() => Contexts.OrderBy(c => c.Order).FirstOrDefault(c => c.IsApplicable());
 
         public static List<ThingActivationContext> Contexts = new List<ThingActivationContext>();
+        internal static List<ThingActivationContext> OrderedContexts() => Contexts.OrderBy(c => c.Order).ToList();
+        internal static ThingActivationContext GetApplicableContext() => OrderedContexts().FirstOrDefault(c => c.IsApplicable());
+
 
         public static string mountsDirectory;
         private TabbedWindow2 _settingsWindow;
 
-        public static List<MountImageFile> _mountImageFiles = new List<MountImageFile>();
+        public static List<ThingImageFile> _thingImageFiles = new List<ThingImageFile>();
 
         public static string[] _mountBehaviour = new string[] { "DefaultMount", "Radial" };
         public static string[] _mountOrientation = new string[] { "Horizontal", "Vertical" };
@@ -142,9 +144,9 @@ namespace Manlaan.Mounts
             };
             mountsDirectory = DirectoriesManager.GetFullDirectoryPath("mounts");
             mountsFilesInRef.ForEach(f => ExtractFile(f, mountsDirectory));
-            _mountImageFiles = Directory.GetFiles(mountsDirectory, ".")
+            _thingImageFiles = Directory.GetFiles(mountsDirectory, ".")
                 .Where(file => file.ToLower().Contains(".png"))
-                .Select(file => new MountImageFile() { Name = file.Substring(mountsDirectory.Length + 1) }).ToList();
+                .Select(file => new ThingImageFile() { Name = file.Substring(mountsDirectory.Length + 1) }).ToList();
             _textureCache = new TextureCache(ContentsManager);
 
             GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += async (sender, e) => await HandleCombatChangeAsync(sender, e);
@@ -165,6 +167,7 @@ namespace Manlaan.Mounts
                 SavesPosition = true,
             };
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SettingsIconTextureName), () => new SettingsView(_textureCache), Strings.Window_AllSettingsTab));
+            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.ContextSettingsTextureName), () => new ContextSettingsView(_textureCache), Strings.Window_ContextSettingsTab));
         }
 
         private void ExtractFile(string filePath, string directoryToExtractTo)
