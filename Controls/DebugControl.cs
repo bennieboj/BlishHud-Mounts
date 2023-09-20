@@ -13,6 +13,9 @@ namespace Manlaan.Mounts.Controls
 
         public DebugControl()
         {
+            Parent = GameService.Graphics.SpriteScreen;
+            Location = new Point(0, 0);
+            Size = new Point(1920, 1920);
             Visible = true;
             StringsToDisplay = new ConcurrentDictionary<string, Func<string>>();
         }

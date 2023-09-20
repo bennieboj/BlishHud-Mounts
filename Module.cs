@@ -19,6 +19,8 @@ using Manlaan.Mounts.Views;
 using System.IO;
 using Manlaan.Mounts.Things.Mounts;
 using Manlaan.Mounts.Things;
+using Manlaan.Mounts;
+using System.Runtime;
 
 namespace Manlaan.Mounts
 {
@@ -36,10 +38,9 @@ namespace Manlaan.Mounts
 
         internal static Collection<Thing> _things = new Collection<Thing>();
         internal static List<Thing> _availableOrderedThings => _things.Where(m => m.IsAvailable).OrderBy(m => m.OrderSetting.Value).ToList();
-
-        public static List<ThingActivationContext> Contexts = new List<ThingActivationContext>();
+        internal static List<ThingActivationContext> Contexts;
         internal static List<ThingActivationContext> OrderedContexts() => Contexts.OrderBy(c => c.Order).ToList();
-        internal static ThingActivationContext GetApplicableContext() => OrderedContexts().FirstOrDefault(c => c.IsApplicable());
+        internal static ThingActivationContext GetApplicableContext() => OrderedContexts().FirstOrDefault(c => c.IsEnabledSetting.Value && c.IsApplicable());
 
 
         public static string mountsDirectory;
@@ -92,12 +93,7 @@ namespace Manlaan.Mounts
         [ImportingConstructor]
         public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) : base(moduleParameters)
         {
-            _debug = new DebugControl()
-            {
-                Parent = GameService.Graphics.SpriteScreen,
-                Location = new Point(0, 0),
-                Size = new Point(1000, 1000)
-            };
+            _debug = new DebugControl();
             _helper = new Helper();
         }
 
@@ -241,6 +237,43 @@ namespace Manlaan.Mounts
             }
         }
 
+
+        /*
+         * Migrate from defaultwatermount, etc to contexts
+         */
+        private void MigrateThingActivationContexts(SettingCollection settings)
+        {
+            if (Contexts == null || !Contexts.Any())
+            {
+                Contexts = new List<ThingActivationContext>
+                {
+                    new ThingActivationContext(settings, "IsPlayerMounted", 0, _helper.IsPlayerMounted, true, true, _things.Where(t => t is UnMount).ToList()),
+                    new ThingActivationContext(settings, "IsPlayerInWvwMap", 1, _helper.IsPlayerInWvwMap, true, true, _things.Where(t => t is Warclaw).ToList())
+                };
+
+                var flyingContext = new ThingActivationContext(settings, "IsPlayerGlidingOrFalling", 2, _helper.IsPlayerGlidingOrFalling, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList());
+                if (_settingDefaultFlyingMountChoice.Value != "Disabled" && _things.Count(t => t.Name == _settingDefaultFlyingMountChoice.Value) == 1)
+                {
+                    flyingContext.ApplyInstantlyIfSingleSetting.Value = true;
+                    flyingContext.IsEnabledSetting.Value = true;
+                    flyingContext.SetThings(new List<Thing> { _things.Single(t => t.Name == _settingDefaultFlyingMountChoice.Value) });
+                }
+                Contexts.Add(flyingContext);
+
+                var underwaterContext = new ThingActivationContext(settings, "IsPlayerUnderWater", 3, _helper.IsPlayerUnderWater, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList());
+                if (_settingDefaultWaterMountChoice.Value != "Disabled" && _things.Count(t => t.Name == _settingDefaultWaterMountChoice.Value) == 1)
+                {
+                    underwaterContext.ApplyInstantlyIfSingleSetting.Value = true;
+                    underwaterContext.IsEnabledSetting.Value = true;
+                    underwaterContext.SetThings(new List<Thing> { _things.Single(t => t.Name == _settingDefaultWaterMountChoice.Value) });
+                }
+                Contexts.Add(underwaterContext);
+
+                Contexts.Add(new ThingActivationContext(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()));
+                Contexts.Add(new ThingActivationContext(settings, "Default", 99, () => true, true, false, _availableOrderedThings));
+            }
+        }
+
         protected override void DefineSettings(SettingCollection settings)
         {
             _things = new Collection<Thing>
@@ -263,8 +296,10 @@ namespace Manlaan.Mounts
                 new Toy(settings, _helper),
                 new Tonic(settings, _helper),
                 new ScanForRift(settings, _helper),
-                new SkyscaleLeap(settings, _helper)
+                new SkyscaleLeap(settings, _helper),
+                new UnMount(settings, _helper)
             };
+
 
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
             _settingDefaultMountBinding.Value.Enabled = true;
@@ -303,6 +338,7 @@ namespace Manlaan.Mounts
 
             MigrateDisplaySettings();
             MigrateMountFileNameSettings();
+            MigrateThingActivationContexts(settings);
 
             foreach (var t in _things)
             {
@@ -349,18 +385,9 @@ namespace Manlaan.Mounts
 
         protected override void OnModuleLoaded(EventArgs e)
         {
-            Contexts = new List<ThingActivationContext>
-            {
-                new ThingActivationContext("IsPlayerInWvwMap", 0, _helper.IsPlayerInWvwMap, true, _things.OfType<WvWMount>().ToList<Thing>()),
-                new ThingActivationContext("IsPlayerGlidingOrFalling", 1, _helper.IsPlayerGlidingOrFalling, true, _things.OfType<FlyingMount>().ToList<Thing>()),
-                new ThingActivationContext("IsPlayerUnderWater", 2, _helper.IsPlayerUnderWater, true, _things.OfType<UnderwaterMount>().ToList<Thing>()),
-                new ThingActivationContext("IsPlayerOnWaterSurface", 3, _helper.IsPlayerOnWaterSurface, true, _things.OfType<Skiff>().ToList<Thing>()),
-                new ThingActivationContext("IsPlayerMounted", 3, _helper.IsPlayerMounted, true, _things.OfType<Skyscale>().ToList<Thing>()),
-                new ThingActivationContext("Default", 99, () => true, false, _availableOrderedThings),
-            };
             Contexts.ForEach(c => _debug.Add(c.Name, () => $"{c.IsApplicable()}"));
             _debug.Add("ApplicableContext", () => $"{GetApplicableContext()?.Name}");
-            _debug.Add("ApplicableMounts", () => $"{string.Join(",", GetApplicableContext()?.Things.Select(t => t.DisplayName))}"); 
+            _debug.Add("ApplicableMounts", () => $"{string.Join(", ", GetApplicableContext()?.Things.Select(t => t.DisplayName))}"); 
 
             DrawUI();
 
@@ -547,18 +574,9 @@ namespace Manlaan.Mounts
         {
             Logger.Debug("DoDefaultMountActionAsync entered");
 
-            var currentlyActiveThing = _availableOrderedThings.SingleOrDefault(t => t.IsInUse());
-            if (currentlyActiveThing != null && CanThingBeActivated())
-            {
-                await (currentlyActiveThing?.DoReverseAction() ?? Task.CompletedTask);
-                Logger.Debug("DoDefaultMountActionAsync dismounted");               
-                return;
-            }
-
-
             var selectedContext = GetApplicableContext();
             var things = selectedContext.Things;
-            if (things.Count == 1 && selectedContext.ApplyInstantlyIfSingle)
+            if (things.Count() == 1 && selectedContext.ApplyInstantlyIfSingleSetting.Value)
             {
                 await things.FirstOrDefault()?.DoAction();
                 Logger.Debug("DoDefaultMountActionAsync instantmount");

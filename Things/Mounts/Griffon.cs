@@ -3,7 +3,7 @@ using Gw2Sharp.Models;
 
 namespace Manlaan.Mounts.Things.Mounts
 {
-    public class Griffon : FlyingMount
+    public class Griffon : Mount
     {
         public Griffon(SettingCollection settingCollection, Helper helper) :
             base(settingCollection, helper, "Griffon", "Griffon", "griffon", 5)

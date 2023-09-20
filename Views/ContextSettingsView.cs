@@ -200,9 +200,29 @@ namespace Manlaan.Mounts.Views
                 Text = $"{currentContext.Name}"
             };
 
-            Label contextApplyInstantlyIfSingle_Label = new Label()
+            Label contextIsEnabled_Label = new Label()
             {
                 Location = new Point(0, contextName_Label.Bottom + 6),
+                Width = labelWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = contextDetailPanel,
+                Text = "Enabled"
+            };
+            Checkbox contextIsEnabled_Checkbox = new Checkbox()
+            {
+                Size = new Point(20, 20),
+                Parent = contextDetailPanel,
+                Checked = currentContext.IsEnabledSetting.Value,
+                Location = new Point(contextIsEnabled_Label.Right + 5, contextIsEnabled_Label.Top - 1),
+            };
+            contextIsEnabled_Checkbox.CheckedChanged += delegate {
+                currentContext.IsEnabledSetting.Value = contextIsEnabled_Checkbox.Checked;
+            };
+
+            Label contextApplyInstantlyIfSingle_Label = new Label()
+            {
+                Location = new Point(0, contextIsEnabled_Label.Bottom + 6),
                 Width = labelWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -213,12 +233,13 @@ namespace Manlaan.Mounts.Views
             {
                 Size = new Point(20, 20),
                 Parent = contextDetailPanel,
-                Checked = currentContext.ApplyInstantlyIfSingle,
+                Checked = currentContext.ApplyInstantlyIfSingleSetting.Value,
                 Location = new Point(contextApplyInstantlyIfSingle_Label.Right + 5, contextApplyInstantlyIfSingle_Label.Top - 1),
             };
             contextApplyInstantlyIfSingle_Checkbox.CheckedChanged += delegate {
-                currentContext.ApplyInstantlyIfSingle = contextApplyInstantlyIfSingle_Checkbox.Checked;
+                currentContext.ApplyInstantlyIfSingleSetting.Value = contextApplyInstantlyIfSingle_Checkbox.Checked;
             };
+
             Dropdown addThing_Select = new Dropdown()
             {
                 Location = new Point(contextApplyInstantlyIfSingle_Label.Left, contextApplyInstantlyIfSingle_Label.Bottom + 6),
@@ -235,7 +256,7 @@ namespace Manlaan.Mounts.Views
                 Text = Strings.Add
             };
             addThing_Button.Click += (args, sender) => {
-                currentContext.Things.Add(Module._things.Single(t => t.DisplayName == addThing_Select.SelectedItem));
+                currentContext.AddThing(Module._things.Single(t => t.DisplayName == addThing_Select.SelectedItem));
                 BuildContextDetailPanel();
             };
 
@@ -261,7 +282,7 @@ namespace Manlaan.Mounts.Views
                 };
                 deleteThing_Button.Click += (args, sender) =>
                 {
-                    currentContext.Things = currentContext.Things.Where(t => !t.Equals(thing)).ToList();
+                    currentContext.RemoveThing(thing);
                     BuildContextDetailPanel();
                 };
 

@@ -6,9 +6,7 @@ using System.Linq;
 using Blish_HUD;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using Manlaan.Mounts.Things.Mounts;
 using System.Diagnostics;
-using System.Security.Policy;
 
 namespace Manlaan.Mounts.Views
 {
@@ -77,7 +75,7 @@ namespace Manlaan.Mounts.Views
             ManualPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + panelPadding, 150 + panelPadding));
             BuildManualPanel(ManualPanel, buildPanel);
 
-            Panel defaultMountPanel = CreateDefaultPanel(buildPanel, new Point(10, 600));
+            Panel defaultMountPanel = CreateDefaultPanel(buildPanel, new Point(10, 700));
             BuildDefaultMountPanel(defaultMountPanel, labelWidth2, mountsAndRadialInputWidth);
 
             Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + 20, 500));
@@ -376,60 +374,10 @@ namespace Manlaan.Mounts.Views
             settingDefaultMount_Select.SelectedItem = mountNames.Any(m => m == Module._settingDefaultMountChoice.Value) ? Module._settingDefaultMountChoice.Value : "Disabled";
             settingDefaultMount_Select.ValueChanged += delegate {
                 Module._settingDefaultMountChoice.Value = settingDefaultMount_Select.SelectedItem;
-            };
-            Label settingDefaultWaterMount_Label = new Label()
-            {
-                Location = new Point(0, settingDefaultMount_Select.Bottom + 6),
-                Width = labelWidth2,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = defaultMountPanel,
-                Text = "Default water mount: ",
-            };
-            Dropdown settingDefaultWaterMount_Select = new Dropdown()
-            {
-                Location = new Point(settingDefaultWaterMount_Label.Right + 5, settingDefaultWaterMount_Label.Top - 4),
-                Width = mountsAndRadialInputWidth,
-                Parent = defaultMountPanel,
-            };
-            settingDefaultWaterMount_Select.Items.Add("Disabled");
-            var mountNamesWater = Module._things.OfType<UnderwaterMount>().Select(m => m.Name);
-            foreach (string i in mountNamesWater)
-            {
-                settingDefaultWaterMount_Select.Items.Add(i.ToString());
-            }
-            settingDefaultWaterMount_Select.SelectedItem = mountNamesWater.Any(m => m == Module._settingDefaultWaterMountChoice.Value) ? Module._settingDefaultWaterMountChoice.Value : "Disabled";
-            settingDefaultWaterMount_Select.ValueChanged += delegate {
-                Module._settingDefaultWaterMountChoice.Value = settingDefaultWaterMount_Select.SelectedItem;
-            };
-            Label settingDefaultFlyingMount_Label = new Label()
-            {
-                Location = new Point(0, settingDefaultWaterMount_Label.Bottom + 6),
-                Width = labelWidth2,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = defaultMountPanel,
-                Text = "Default flying mount: ",
-            };
-            Dropdown settingDefaultFlyingMount_Select = new Dropdown()
-            {
-                Location = new Point(settingDefaultFlyingMount_Label.Right + 5, settingDefaultFlyingMount_Label.Top - 4),
-                Width = mountsAndRadialInputWidth,
-                Parent = defaultMountPanel,
-            };
-            settingDefaultFlyingMount_Select.Items.Add("Disabled");
-            var mountNamesFlying = Module._things.OfType<FlyingMount>().Select(m => m.Name);
-            foreach (string i in mountNamesFlying)
-            {
-                settingDefaultFlyingMount_Select.Items.Add(i.ToString());
-            }
-            settingDefaultFlyingMount_Select.SelectedItem = mountNamesFlying.Any(m => m == Module._settingDefaultFlyingMountChoice.Value) ? Module._settingDefaultFlyingMountChoice.Value : "Disabled";
-            settingDefaultFlyingMount_Select.ValueChanged += delegate {
-                Module._settingDefaultFlyingMountChoice.Value = settingDefaultFlyingMount_Select.SelectedItem;
-            };
+            };                        
             Label settingDefaultMountKeybind_Label = new Label()
             {
-                Location = new Point(0, settingDefaultFlyingMount_Select.Bottom + 6),
+                Location = new Point(0, settingDefaultMount_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
