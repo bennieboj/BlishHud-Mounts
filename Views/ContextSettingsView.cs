@@ -224,7 +224,7 @@ namespace Manlaan.Mounts.Views
                     AutoSizeWidth = true,
                     AutoSizeHeight = false,
                     Parent = contextDetailPanel,
-                    TextColor = thing.IsAvailable ? Color.Black : Color.Red,
+                    TextColor = thing.IsAvailable ? Color.White : Color.Red,
                     Tooltip = thing.IsAvailable ? null : new Tooltip(new BasicTooltipView("NO KEYBIND SET")),
                     Text = $"{thing.Name}",
                 };
