@@ -53,8 +53,6 @@ namespace Manlaan.Mounts
         public static string[] _mountRadialCenterMountBehavior = new string[] { "None", "Default", "LastUsed" };
 
         public static SettingEntry<string> _settingDefaultMountChoice;
-        public static SettingEntry<string> _settingDefaultWaterMountChoice;
-        public static SettingEntry<string> _settingDefaultFlyingMountChoice;
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
         public static SettingEntry<bool> _settingDisplayMountQueueing;
         public static SettingEntry<string> _settingDefaultMountBehaviour;
@@ -244,34 +242,30 @@ namespace Manlaan.Mounts
          */
         private void MigrateThingActivationContexts(SettingCollection settings)
         {
-            if (Contexts == null || !Contexts.Any())
+            if (settings.ContainsSetting("DefaultFlyingMountChoice"))
             {
-                Contexts = new List<ThingActivationContext>
-                {
-                    new ThingActivationContext(settings, "IsPlayerMounted", 0, _helper.IsPlayerMounted, true, true, _things.Where(t => t is UnMount).ToList()),
-                    new ThingActivationContext(settings, "IsPlayerInWvwMap", 1, _helper.IsPlayerInWvwMap, true, true, _things.Where(t => t is Warclaw).ToList())
-                };
-
-                var flyingContext = new ThingActivationContext(settings, "IsPlayerGlidingOrFalling", 2, _helper.IsPlayerGlidingOrFalling, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList());
-                if (_settingDefaultFlyingMountChoice.Value != "Disabled" && _things.Count(t => t.Name == _settingDefaultFlyingMountChoice.Value) == 1)
+                var flyingContext = Contexts.Single(c => c.Name == "IsPlayerGlidingOrFalling");
+                var settingDefaultFlyingMountChoice = settings["DefaultFlyingMountChoice"] as SettingEntry<string>;
+                if (settingDefaultFlyingMountChoice.Value != "Disabled" && _things.Count(t => t.Name == settingDefaultFlyingMountChoice.Value) == 1)
                 {
                     flyingContext.ApplyInstantlyIfSingleSetting.Value = true;
                     flyingContext.IsEnabledSetting.Value = true;
-                    flyingContext.SetThings(new List<Thing> { _things.Single(t => t.Name == _settingDefaultFlyingMountChoice.Value) });
+                    flyingContext.SetThings(new List<Thing> { _things.Single(t => t.Name == settingDefaultFlyingMountChoice.Value) });
                 }
-                Contexts.Add(flyingContext);
+                settings.UndefineSetting("DefaultFlyingMountChoice");
+            }
 
-                var underwaterContext = new ThingActivationContext(settings, "IsPlayerUnderWater", 3, _helper.IsPlayerUnderWater, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList());
-                if (_settingDefaultWaterMountChoice.Value != "Disabled" && _things.Count(t => t.Name == _settingDefaultWaterMountChoice.Value) == 1)
+            if (settings.ContainsSetting("DefaultWaterMountChoice"))
+            {
+                var underwaterContext = Contexts.Single(c => c.Name == "IsPlayerUnderWater");
+                var settingDefaultWaterMountChoice = settings["DefaultWaterMountChoice"] as SettingEntry<string>;
+                if (settingDefaultWaterMountChoice.Value != "Disabled" && _things.Count(t => t.Name == settingDefaultWaterMountChoice.Value) == 1)
                 {
                     underwaterContext.ApplyInstantlyIfSingleSetting.Value = true;
                     underwaterContext.IsEnabledSetting.Value = true;
-                    underwaterContext.SetThings(new List<Thing> { _things.Single(t => t.Name == _settingDefaultWaterMountChoice.Value) });
+                    underwaterContext.SetThings(new List<Thing> { _things.Single(t => t.Name == settingDefaultWaterMountChoice.Value) });
                 }
-                Contexts.Add(underwaterContext);
-
-                Contexts.Add(new ThingActivationContext(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()));
-                Contexts.Add(new ThingActivationContext(settings, "Default", 99, () => true, true, false, _availableOrderedThings));
+                settings.UndefineSetting("DefaultWaterMountChoice");
             }
         }
 
@@ -306,8 +300,6 @@ namespace Manlaan.Mounts
             _settingDefaultMountBinding.Value.Enabled = true;
             _settingDefaultMountBinding.Value.Activated += async delegate { await DoDefaultMountActionAsync(); };
             _settingDefaultMountChoice = settings.DefineSetting("DefaultMountChoice", "Disabled", () => Strings.Setting_DefaultMountChoice, () => "");
-            _settingDefaultWaterMountChoice = settings.DefineSetting("DefaultWaterMountChoice", "Disabled", () => Strings.Setting_DefaultWaterMountChoice, () => "");
-            _settingDefaultFlyingMountChoice = settings.DefineSetting("DefaultFlyingMountChoice", "Disabled", () => Strings.Setting_DefaultFlyingMountChoice, () => "");
             _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "Radial", () => Strings.Setting_DefaultMountBehaviour, () => "");
             _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false, () => Strings.Setting_DisplayMountQueueing, () => "");
             _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, () => Strings.Setting_MountRadialSpawnAtMouse, () => "");
@@ -339,6 +331,16 @@ namespace Manlaan.Mounts
 
             MigrateDisplaySettings();
             MigrateMountFileNameSettings();
+
+            Contexts = new List<ThingActivationContext>
+            {
+                new ThingActivationContext(settings, "IsPlayerMounted", 0, _helper.IsPlayerMounted, true, true, _things.Where(t => t is UnMount).ToList()),
+                new ThingActivationContext(settings, "IsPlayerInWvwMap", 1, _helper.IsPlayerInWvwMap, true, true, _things.Where(t => t is Warclaw).ToList()),
+                new ThingActivationContext(settings, "IsPlayerGlidingOrFalling", 2, _helper.IsPlayerGlidingOrFalling, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList()),
+                new ThingActivationContext(settings, "IsPlayerUnderWater", 3, _helper.IsPlayerUnderWater, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList()),
+                new ThingActivationContext(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()),
+                new ThingActivationContext(settings, "Default", 99, () => true, true, false, _availableOrderedThings)
+            };
             MigrateThingActivationContexts(settings);
 
             foreach (var t in _things)
@@ -347,8 +349,6 @@ namespace Manlaan.Mounts
                 t.ImageFileNameSetting.SettingChanged += UpdateSettings;
             }
             _settingDefaultMountChoice.SettingChanged += UpdateSettings;
-            _settingDefaultWaterMountChoice.SettingChanged += UpdateSettings;
-            _settingDefaultFlyingMountChoice.SettingChanged += UpdateSettings;
             _settingDisplayModuleOnLoadingScreen.SettingChanged += UpdateSettings;
             _settingMountAutomaticallyAfterLoadingScreen.SettingChanged += UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged += UpdateSettings;
@@ -481,8 +481,6 @@ namespace Manlaan.Mounts
             }
 
             _settingDefaultMountChoice.SettingChanged -= UpdateSettings;
-            _settingDefaultWaterMountChoice.SettingChanged -= UpdateSettings;
-            _settingDefaultFlyingMountChoice.SettingChanged -= UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged -= UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged -= UpdateSettings;
@@ -575,7 +573,7 @@ namespace Manlaan.Mounts
 
             var selectedContext = GetApplicableContext();
             var things = selectedContext.Things;
-            if (things.Count() == 1 && selectedContext.ApplyInstantlyIfSingleSetting.Value)
+            if (things.Count() == 1 && things.FirstOrDefault().IsAvailable && selectedContext.ApplyInstantlyIfSingleSetting.Value)
             {
                 await things.FirstOrDefault()?.DoAction();
                 Logger.Debug("DoDefaultMountActionAsync instantmount");

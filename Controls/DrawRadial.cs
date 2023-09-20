@@ -205,7 +205,12 @@ namespace Manlaan.Mounts.Controls
                     radialMount.Selected = radialMount.AngleBegin <= angle && radialMount.AngleEnd > angle;
                 }
 
-                spriteBatch.DrawOnCtrl(this, radialMount.Texture, new Rectangle(radialMount.ImageX, radialMount.ImageY, thingIconSize, thingIconSize), null, Color.White * (radialMount.Selected ? 1f : Module._settingMountRadialIconOpacity.Value));
+                var color = Color.White * (radialMount.Selected ? 1f : Module._settingMountRadialIconOpacity.Value);
+                if (!radialMount.Thing.IsAvailable)
+                {
+                    color = Color.Red * (radialMount.Selected ? 1f : Module._settingMountRadialIconOpacity.Value);
+                }
+                spriteBatch.DrawOnCtrl(this, radialMount.Texture, new Rectangle(radialMount.ImageX, radialMount.ImageY, thingIconSize, thingIconSize), null, color);
             }
 
             //Module._dbg.Add("AngleBegin", () => $"{RadialMounts[8].AngleBegin}");
