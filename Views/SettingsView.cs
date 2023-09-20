@@ -75,7 +75,7 @@ namespace Manlaan.Mounts.Views
             ManualPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + panelPadding, 150 + panelPadding));
             BuildManualPanel(ManualPanel, buildPanel);
 
-            Panel defaultMountPanel = CreateDefaultPanel(buildPanel, new Point(10, 700));
+            Panel defaultMountPanel = CreateDefaultPanel(buildPanel, new Point(10, 650));
             BuildDefaultMountPanel(defaultMountPanel, labelWidth2, mountsAndRadialInputWidth);
 
             Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + 20, 500));
@@ -234,19 +234,9 @@ namespace Manlaan.Mounts.Views
                 Text = "must match in-game key binding",
                 HorizontalAlignment = HorizontalAlignment.Left
             };
-            Label settingOrder_Label = new Label()
-            {
-                Location = new Point(labelWidth + 5, keybindWarning_Label.Bottom + 6),
-                Width = orderWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = mountsPanel,
-                Text = "Order",
-                HorizontalAlignment = HorizontalAlignment.Center,
-            };
             Label settingBinding_Label = new Label()
             {
-                Location = new Point(settingOrder_Label.Right + 5, settingOrder_Label.Top),
+                Location = new Point(labelWidth + 5, keybindWarning_Label.Bottom + 6),
                 Width = bindingWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -264,7 +254,7 @@ namespace Manlaan.Mounts.Views
 
             Label settingMountImageFile_Label = new Label()
             {
-                Location = new Point(settingBinding_Image.Right + 5, settingOrder_Label.Top),
+                Location = new Point(settingBinding_Image.Right + 5, settingBinding_Label.Top),
                 Width = bindingWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -273,7 +263,7 @@ namespace Manlaan.Mounts.Views
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
 
-            int curY = settingOrder_Label.Bottom;
+            int curY = settingBinding_Label.Bottom;
 
             foreach (var thing in Module._things)
             {
@@ -286,32 +276,12 @@ namespace Manlaan.Mounts.Views
                     Parent = mountsPanel,
                     Text = $"{thing.DisplayName}: ",
                 };
-                Dropdown settingMount_Select = new Dropdown()
-                {
-                    Location = new Point(settingMount_Label.Right + 5, settingMount_Label.Top - 4),
-                    Width = orderWidth,
-                    Parent = mountsPanel,
-                };
-                for (int i = 0; i <= Module._things.ToList().Count; i++)
-                {
-                    if (i == 0)
-                        settingMount_Select.Items.Add("Disabled");
-                    else
-                        settingMount_Select.Items.Add(i.ToString());
-                }
-                settingMount_Select.SelectedItem = thing.OrderSetting.Value == 0 ? "Disabled" : thing.OrderSetting.Value.ToString();
-                settingMount_Select.ValueChanged += delegate {
-                    if (settingMount_Select.SelectedItem.Equals("Disabled"))
-                        thing.OrderSetting.Value = 0;
-                    else
-                        thing.OrderSetting.Value = int.Parse(settingMount_Select.SelectedItem);
-                };
                 KeybindingAssigner settingMount_Keybind = new KeybindingAssigner(thing.KeybindingSetting.Value)
                 {
                     NameWidth = 0,
                     Size = new Point(bindingWidth, 20),
                     Parent = mountsPanel,
-                    Location = new Point(settingMount_Select.Right + 5, settingMount_Label.Top - 1),
+                    Location = new Point(settingMount_Label.Right + 5, settingMount_Label.Top - 1),
                 };
                 settingMount_Keybind.BindingChanged += delegate {
                     thing.KeybindingSetting.Value = settingMount_Keybind.KeyBinding;

@@ -136,7 +136,8 @@ namespace Manlaan.Mounts
                 "toy.png",
                 "tonic.png",
                 "scanforrift.png",
-                "skyscaleleap.png"
+                "skyscaleleap.png",
+                "unmount.png"
             };
             mountsDirectory = DirectoriesManager.GetFullDirectoryPath("mounts");
             mountsFilesInRef.ForEach(f => ExtractFile(f, mountsDirectory));
@@ -342,7 +343,6 @@ namespace Manlaan.Mounts
 
             foreach (var t in _things)
             {
-                t.OrderSetting.SettingChanged += UpdateSettings;
                 t.KeybindingSetting.SettingChanged += UpdateSettings;
                 t.ImageFileNameSetting.SettingChanged += UpdateSettings;
             }
@@ -475,7 +475,6 @@ namespace Manlaan.Mounts
 
             foreach (var t in _things)
             {
-                t.OrderSetting.SettingChanged -= UpdateSettings;
                 t.KeybindingSetting.SettingChanged -= UpdateSettings;
                 t.ImageFileNameSetting.SettingChanged += UpdateSettings;
                 t.DisposeCornerIcon();

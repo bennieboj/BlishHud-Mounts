@@ -36,7 +36,7 @@ namespace Manlaan.Mounts.Things
         public DateTime? QueuedTimestamp { get; internal set; }
         public DateTime? LastUsedTimestamp { get; internal set; }
         public bool IsKeybindSet => KeybindingSetting.Value.ModifierKeys != ModifierKeys.None || KeybindingSetting.Value.PrimaryKey != Keys.None;
-        public bool IsAvailable => OrderSetting.Value != 0 && IsKeybindSet;
+        public bool IsAvailable => IsKeybindSet;
 
         public void CreateCornerIcon(Texture2D img)
         {

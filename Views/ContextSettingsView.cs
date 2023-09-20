@@ -5,6 +5,7 @@ using Blish_HUD;
 using System.Diagnostics;
 using System.Linq;
 using Manlaan.Mounts.Things;
+using Blish_HUD.Common.UI.Views;
 
 namespace Manlaan.Mounts.Views
 {
@@ -131,57 +132,6 @@ namespace Manlaan.Mounts.Views
                     BuildContextDetailPanel();
                 };
 
-                //Dropdown settingMount_Select = new Dropdown()
-                //{
-                //    Location = new Point(name_Label.Right + 5, name_Label.Top - 4),
-                //    Width = labelWidth,
-                //    Parent = mountsPanel,
-                //};
-                //for (int i = 0; i <= Module._things.ToList().Count; i++)
-                //{
-                //    if (i == 0)
-                //        settingMount_Select.Items.Add("Disabled");
-                //    else
-                //        settingMount_Select.Items.Add(i.ToString());
-                //}
-                //settingMount_Select.SelectedItem = context.OrderSetting.Value == 0 ? "Disabled" : context.OrderSetting.Value.ToString();
-                //settingMount_Select.ValueChanged += delegate
-                //{
-                //    if (settingMount_Select.SelectedItem.Equals("Disabled"))
-                //        context.OrderSetting.Value = 0;
-                //    else
-                //        context.OrderSetting.Value = int.Parse(settingMount_Select.SelectedItem);
-                //};
-
-                //KeybindingAssigner settingMount_Keybind = new KeybindingAssigner(context.KeybindingSetting.Value)
-                //{
-                //    NameWidth = 0,
-                //    Size = new Point(bindingWidth, 20),
-                //    Parent = mountsPanel,
-                //    Location = new Point(settingMount_Select.Right + 5, settingMount_Label.Top - 1),
-                //};
-                //settingMount_Keybind.BindingChanged += delegate {
-                //    context.KeybindingSetting.Value = settingMount_Keybind.KeyBinding;
-                //};
-
-                //Dropdown settingMountImageFile_Select = new Dropdown()
-                //{
-                //    Location = new Point(settingMount_Keybind.Right + 5, settingMount_Label.Top - 4),
-                //    Width = 200,
-                //    Parent = mountsPanel,
-                //};
-                //settingMountImageFile_Select.Items.Add(NoValueSelected);
-                //Module._mountImageFiles
-                //    .Where(mIF => mIF.Name.Contains(context.ImageFileName)).OrderByDescending(mIF => mIF.Name).ToList()
-                //    .ForEach(mIF => settingMountImageFile_Select.Items.Add(mIF.Name));
-                //settingMountImageFile_Select.SelectedItem = context.ImageFileNameSetting.Value == "" ? NoValueSelected : context.ImageFileNameSetting.Value;
-                //settingMountImageFile_Select.ValueChanged += delegate {
-                //    if (settingMountImageFile_Select.SelectedItem.Equals(NoValueSelected))
-                //        context.ImageFileNameSetting.Value = "";
-                //    else
-                //        context.ImageFileNameSetting.Value = settingMountImageFile_Select.SelectedItem;
-                //};
-
                 curY = name_Label.Bottom;
             }            
         }
@@ -240,30 +190,32 @@ namespace Manlaan.Mounts.Views
                 currentContext.ApplyInstantlyIfSingleSetting.Value = contextApplyInstantlyIfSingle_Checkbox.Checked;
             };
 
-            Dropdown addThing_Select = new Dropdown()
-            {
-                Location = new Point(contextApplyInstantlyIfSingle_Label.Left, contextApplyInstantlyIfSingle_Label.Bottom + 6),
-                Width = orderWidth,
-                Parent = contextDetailPanel,
-            };
+            int curY = contextApplyInstantlyIfSingle_Label.Bottom;
             var thingsNotYetInContext = Module._things.Where(t => !currentContext.Things.Any(tt => tt.Equals(t))).ToList();
-            thingsNotYetInContext.ForEach(t => addThing_Select.Items.Add(t.DisplayName));
-            addThing_Select.SelectedItem = thingsNotYetInContext.FirstOrDefault()?.DisplayName;
-            var addThing_Button = new StandardButton
+            if (thingsNotYetInContext.Any())
             {
-                Parent = contextDetailPanel,
-                Location = new Point(addThing_Select.Right, addThing_Select.Top),
-                Text = Strings.Add
-            };
-            addThing_Button.Click += (args, sender) => {
-                currentContext.AddThing(Module._things.Single(t => t.DisplayName == addThing_Select.SelectedItem));
-                BuildContextDetailPanel();
-            };
-
-
+                Dropdown addThing_Select = new Dropdown()
+                {
+                    Location = new Point(contextApplyInstantlyIfSingle_Label.Left, contextApplyInstantlyIfSingle_Label.Bottom + 6),
+                    Width = orderWidth,
+                    Parent = contextDetailPanel,
+                };
+                thingsNotYetInContext.ForEach(t => addThing_Select.Items.Add(t.DisplayName));
+                addThing_Select.SelectedItem = thingsNotYetInContext.FirstOrDefault()?.DisplayName;
+                var addThing_Button = new StandardButton
+                {
+                    Parent = contextDetailPanel,
+                    Location = new Point(addThing_Select.Right, addThing_Select.Top),
+                    Text = Strings.Add
+                };
+                addThing_Button.Click += (args, sender) => {
+                    currentContext.AddThing(Module._things.Single(t => t.DisplayName == addThing_Select.SelectedItem));
+                    BuildContextDetailPanel();
+                };
+                curY = addThing_Select.Bottom;
+            }
 
             int curX = 0;
-            int curY = addThing_Select.Bottom;
             foreach (var thing in currentContext.Things)
             {
                 Label thingInContext_Label = new Label()
@@ -272,6 +224,8 @@ namespace Manlaan.Mounts.Views
                     AutoSizeWidth = true,
                     AutoSizeHeight = false,
                     Parent = contextDetailPanel,
+                    TextColor = thing.IsAvailable ? Color.Black : Color.Red,
+                    Tooltip = thing.IsAvailable ? null : new Tooltip(new BasicTooltipView("NO KEYBIND SET")),
                     Text = $"{thing.Name}",
                 };
                 var deleteThing_Button = new StandardButton
