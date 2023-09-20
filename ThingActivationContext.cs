@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Manlaan.Mounts.Things;
+using System;
 using System.Collections.Generic;
 
 namespace Manlaan.Mounts
@@ -8,16 +9,16 @@ namespace Manlaan.Mounts
         public readonly string Name;
         public readonly int Order;
         public readonly Func<bool> IsApplicable;
-        public readonly List<Type> ThingTypes;
-        public readonly bool ApplyInstantlyIfSingle;
+        public IList<Thing> Things;
+        public bool ApplyInstantlyIfSingle;
 
-        public ThingActivationContext(string name, int order, Func<bool> isApplicable, bool applyInstantlyIfSingle, List<Type> thingTypes)
+        public ThingActivationContext(string name, int order, Func<bool> isApplicable, bool applyInstantlyIfSingle, IList<Thing> things)
         {
             Name = name;
             Order = order;
             IsApplicable = isApplicable;
             ApplyInstantlyIfSingle = applyInstantlyIfSingle;
-            ThingTypes = thingTypes;
+            Things = things;
         }
     }
 }

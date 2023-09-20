@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD;
 using System.Diagnostics;
+using System.Linq;
+using Manlaan.Mounts.Things;
 
 namespace Manlaan.Mounts.Views
 {
@@ -16,6 +18,7 @@ namespace Manlaan.Mounts.Views
 
         private Panel contextListPanel;
         Panel contextDetailPanel;
+        private ThingActivationContext currentContext;
 
         public ContextSettingsView(TextureCache textureCache)
         {
@@ -62,9 +65,9 @@ namespace Manlaan.Mounts.Views
             contextListPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 600);
             CreateContextListPanel();
 
-            contextDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 600));
-            BuildContextDetailPanelPanel(null);
-
+            currentContext = Module.OrderedContexts().First();
+            contextDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 300));
+            BuildContextDetailPanel();
 
 
         }
@@ -73,7 +76,7 @@ namespace Manlaan.Mounts.Views
         {
             Label orderHeading_Label = new Label()
             {
-                Location = new Point(3, 10),
+                Location = new Point(0, 10),
                 Width = labelWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -93,7 +96,7 @@ namespace Manlaan.Mounts.Views
             };
 
 
-            int curY = orderHeading_Label.Bottom;
+            int curY = orderHeading_Label.Bottom + 6;
 
             foreach (var context in Module.OrderedContexts())
             {
@@ -124,7 +127,8 @@ namespace Manlaan.Mounts.Views
                     Text = Strings.Edit
                 };
                 editContextButton.Click += (args, sender) => {
-                    BuildContextDetailPanelPanel(context);
+                    currentContext = context;
+                    BuildContextDetailPanel();
                 };
 
                 //Dropdown settingMount_Select = new Dropdown()
@@ -179,22 +183,95 @@ namespace Manlaan.Mounts.Views
                 //};
 
                 curY = name_Label.Bottom;
-            }
+            }            
         }
 
-        private void BuildContextDetailPanelPanel(ThingActivationContext context)
+        private void BuildContextDetailPanel()
         {
             contextDetailPanel.ClearChildren();
-
-            Label settingDefaultSettingsMount_Label = new Label()
+           
+            Label contextName_Label = new Label()
             {
                 Location = new Point(0, 0),
                 Width = labelWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = contextDetailPanel,
-                Text = $"{(context == null ? "nothing selected" : context.Name)}"
-            }; 
+                Text = $"{currentContext.Name}"
+            };
+
+            Label contextApplyInstantlyIfSingle_Label = new Label()
+            {
+                Location = new Point(0, contextName_Label.Bottom + 6),
+                Width = labelWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = contextDetailPanel,
+                Text = "ApplyInstantlyIfSingle"
+            };
+            Checkbox contextApplyInstantlyIfSingle_Checkbox = new Checkbox()
+            {
+                Size = new Point(20, 20),
+                Parent = contextDetailPanel,
+                Checked = currentContext.ApplyInstantlyIfSingle,
+                Location = new Point(contextApplyInstantlyIfSingle_Label.Right + 5, contextApplyInstantlyIfSingle_Label.Top - 1),
+            };
+            contextApplyInstantlyIfSingle_Checkbox.CheckedChanged += delegate {
+                currentContext.ApplyInstantlyIfSingle = contextApplyInstantlyIfSingle_Checkbox.Checked;
+            };
+            Dropdown addThing_Select = new Dropdown()
+            {
+                Location = new Point(contextApplyInstantlyIfSingle_Label.Left, contextApplyInstantlyIfSingle_Label.Bottom + 6),
+                Width = orderWidth,
+                Parent = contextDetailPanel,
+            };
+            var thingsNotYetInContext = Module._things.Where(t => !currentContext.Things.Any(tt => tt.Equals(t))).ToList();
+            thingsNotYetInContext.ForEach(t => addThing_Select.Items.Add(t.DisplayName));
+            addThing_Select.SelectedItem = thingsNotYetInContext.FirstOrDefault()?.DisplayName;
+            var addThing_Button = new StandardButton
+            {
+                Parent = contextDetailPanel,
+                Location = new Point(addThing_Select.Right, addThing_Select.Top),
+                Text = Strings.Add
+            };
+            addThing_Button.Click += (args, sender) => {
+                currentContext.Things.Add(Module._things.Single(t => t.DisplayName == addThing_Select.SelectedItem));
+                BuildContextDetailPanel();
+            };
+
+
+
+            int curX = 0;
+            int curY = addThing_Select.Bottom;
+            foreach (var thing in currentContext.Things)
+            {
+                Label thingInContext_Label = new Label()
+                {
+                    Location = new Point(curX, curY),
+                    AutoSizeWidth = true,
+                    AutoSizeHeight = false,
+                    Parent = contextDetailPanel,
+                    Text = $"{thing.Name}",
+                };
+                var deleteThing_Button = new StandardButton
+                {
+                    Parent = contextDetailPanel,
+                    Location = new Point(thingInContext_Label.Right, thingInContext_Label.Top),
+                    Text = Strings.Delete
+                };
+                deleteThing_Button.Click += (args, sender) =>
+                {
+                    currentContext.Things = currentContext.Things.Where(t => !t.Equals(thing)).ToList();
+                    BuildContextDetailPanel();
+                };
+
+                curX = deleteThing_Button.Right + 6;
+                if (curX > 300)
+                {
+                    curY = deleteThing_Button.Bottom + 6;
+                    curX = 0;
+                }
+            }
         }
 
     }

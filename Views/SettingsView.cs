@@ -277,7 +277,7 @@ namespace Manlaan.Mounts.Views
 
             int curY = settingOrder_Label.Bottom;
 
-            foreach (var mount in Module._things)
+            foreach (var thing in Module._things)
             {
                 Label settingMount_Label = new Label()
                 {
@@ -286,7 +286,7 @@ namespace Manlaan.Mounts.Views
                     AutoSizeHeight = false,
                     WrapText = false,
                     Parent = mountsPanel,
-                    Text = $"{mount.DisplayName}: ",
+                    Text = $"{thing.DisplayName}: ",
                 };
                 Dropdown settingMount_Select = new Dropdown()
                 {
@@ -301,14 +301,14 @@ namespace Manlaan.Mounts.Views
                     else
                         settingMount_Select.Items.Add(i.ToString());
                 }
-                settingMount_Select.SelectedItem = mount.OrderSetting.Value == 0 ? "Disabled" : mount.OrderSetting.Value.ToString();
+                settingMount_Select.SelectedItem = thing.OrderSetting.Value == 0 ? "Disabled" : thing.OrderSetting.Value.ToString();
                 settingMount_Select.ValueChanged += delegate {
                     if (settingMount_Select.SelectedItem.Equals("Disabled"))
-                        mount.OrderSetting.Value = 0;
+                        thing.OrderSetting.Value = 0;
                     else
-                        mount.OrderSetting.Value = int.Parse(settingMount_Select.SelectedItem);
+                        thing.OrderSetting.Value = int.Parse(settingMount_Select.SelectedItem);
                 };
-                KeybindingAssigner settingMount_Keybind = new KeybindingAssigner(mount.KeybindingSetting.Value)
+                KeybindingAssigner settingMount_Keybind = new KeybindingAssigner(thing.KeybindingSetting.Value)
                 {
                     NameWidth = 0,
                     Size = new Point(bindingWidth, 20),
@@ -316,7 +316,7 @@ namespace Manlaan.Mounts.Views
                     Location = new Point(settingMount_Select.Right + 5, settingMount_Label.Top - 1),
                 };
                 settingMount_Keybind.BindingChanged += delegate {
-                    mount.KeybindingSetting.Value = settingMount_Keybind.KeyBinding;
+                    thing.KeybindingSetting.Value = settingMount_Keybind.KeyBinding;
                 };
 
                 Dropdown settingMountImageFile_Select = new Dropdown()
@@ -327,14 +327,14 @@ namespace Manlaan.Mounts.Views
                 };
                 settingMountImageFile_Select.Items.Add(NoValueSelected);
                 Module._thingImageFiles
-                    .Where(mIF => mIF.Name.Contains(mount.ImageFileName)).OrderByDescending(mIF => mIF.Name).ToList()
+                    .Where(mIF => mIF.Name.Contains(thing.ImageFileName)).OrderByDescending(mIF => mIF.Name).ToList()
                     .ForEach(mIF => settingMountImageFile_Select.Items.Add(mIF.Name));
-                settingMountImageFile_Select.SelectedItem = mount.ImageFileNameSetting.Value == "" ? NoValueSelected : mount.ImageFileNameSetting.Value;
+                settingMountImageFile_Select.SelectedItem = thing.ImageFileNameSetting.Value == "" ? NoValueSelected : thing.ImageFileNameSetting.Value;
                 settingMountImageFile_Select.ValueChanged += delegate {
                     if (settingMountImageFile_Select.SelectedItem.Equals(NoValueSelected))
-                        mount.ImageFileNameSetting.Value = "";
+                        thing.ImageFileNameSetting.Value = "";
                     else
-                        mount.ImageFileNameSetting.Value = settingMountImageFile_Select.SelectedItem;
+                        thing.ImageFileNameSetting.Value = settingMountImageFile_Select.SelectedItem;
                 };
 
                 curY = settingMount_Label.Bottom;

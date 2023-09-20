@@ -11,16 +11,7 @@ using System.Threading.Tasks;
 
 namespace Manlaan.Mounts.Things
 {
-    public static class ThingExtentionMethods
-    {
-        public static List<Thing> GetThings(this ThingActivationContext cParam)
-        {
-            var thingsInContext = Module._availableOrderedThings.Where(t => cParam.ThingTypes.Any(tt => t.GetType().IsSubclassOf(tt) || t.GetType().Equals(tt))).ToList();
-            return thingsInContext;
-        }
-    }
-
-    public abstract class Thing
+    public abstract class Thing : IEquatable<Thing>
     {
         public Thing(SettingCollection settingCollection, Helper helper, string name, string displayName, string imageFileName, int defaultOrderSetting)
         {
@@ -94,5 +85,19 @@ namespace Manlaan.Mounts.Things
         public abstract bool IsInUse();
 
         public abstract bool IsUsableOnMount();
+
+        public bool Equals(Thing other)
+        {
+            return !(other is null) &&
+                   EqualityComparer<Helper>.Default.Equals(_helper, other._helper) &&
+                   Name == other.Name;
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = 657878212;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+            return hashCode;
+        }
     }
 }

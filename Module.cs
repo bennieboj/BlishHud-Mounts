@@ -351,16 +351,16 @@ namespace Manlaan.Mounts
         {
             Contexts = new List<ThingActivationContext>
             {
-                new ThingActivationContext("IsPlayerInWvwMap", 0, _helper.IsPlayerInWvwMap, true, new List<Type>{typeof(WvWMount)}),
-                new ThingActivationContext("IsPlayerGlidingOrFalling", 1, _helper.IsPlayerGlidingOrFalling, true, new List<Type>{typeof(FlyingMount)}),
-                new ThingActivationContext("IsPlayerUnderWater", 2, _helper.IsPlayerUnderWater, true, new List<Type>{typeof(UnderwaterMount)}),
-                new ThingActivationContext("IsPlayerOnWaterSurface", 3, _helper.IsPlayerOnWaterSurface, true, new List<Type>{typeof(Skiff)}),
-                new ThingActivationContext("IsPlayerMounted", 3, _helper.IsPlayerMounted, true, new List<Type>{typeof(Skiff)}),
-                new ThingActivationContext("Default", 99, () => true, false, _availableOrderedThings.Select(t => t.GetType()).ToList()),
+                new ThingActivationContext("IsPlayerInWvwMap", 0, _helper.IsPlayerInWvwMap, true, _things.OfType<WvWMount>().ToList<Thing>()),
+                new ThingActivationContext("IsPlayerGlidingOrFalling", 1, _helper.IsPlayerGlidingOrFalling, true, _things.OfType<FlyingMount>().ToList<Thing>()),
+                new ThingActivationContext("IsPlayerUnderWater", 2, _helper.IsPlayerUnderWater, true, _things.OfType<UnderwaterMount>().ToList<Thing>()),
+                new ThingActivationContext("IsPlayerOnWaterSurface", 3, _helper.IsPlayerOnWaterSurface, true, _things.OfType<Skiff>().ToList<Thing>()),
+                new ThingActivationContext("IsPlayerMounted", 3, _helper.IsPlayerMounted, true, _things.OfType<Skyscale>().ToList<Thing>()),
+                new ThingActivationContext("Default", 99, () => true, false, _availableOrderedThings),
             };
             Contexts.ForEach(c => _debug.Add(c.Name, () => $"{c.IsApplicable()}"));
             _debug.Add("ApplicableContext", () => $"{GetApplicableContext()?.Name}");
-            _debug.Add("ApplicableMounts", () => $"{string.Join(",", GetApplicableContext()?.GetThings().Select(t => t.Name))}"); 
+            _debug.Add("ApplicableMounts", () => $"{string.Join(",", GetApplicableContext()?.Things.Select(t => t.DisplayName))}"); 
 
             DrawUI();
 
@@ -557,7 +557,7 @@ namespace Manlaan.Mounts
 
 
             var selectedContext = GetApplicableContext();
-            var things = selectedContext.GetThings();
+            var things = selectedContext.Things;
             if (things.Count == 1 && selectedContext.ApplyInstantlyIfSingle)
             {
                 await things.FirstOrDefault()?.DoAction();
