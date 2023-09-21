@@ -15,7 +15,7 @@ namespace Manlaan.Mounts.Views
         private Panel contextListPanel;
         Panel contextDetailPanel;
 
-        private ThingActivationContext currentContext;
+        private RadialThingSettings currentContext;
         ThingSettingsView thingSettingsView;
 
         public ContextSettingsView()

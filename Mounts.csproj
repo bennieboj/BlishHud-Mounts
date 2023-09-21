@@ -137,7 +137,7 @@
     <Compile Include="Settings\ThingsSettings.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="ThingImageFile.cs" />
-    <Compile Include="Settings\ThingActivationContext.cs" />
+    <Compile Include="Settings\RadialThingSettings.cs" />
     <Compile Include="Things\MasterySkill\IMasterySkill.cs" />
     <Compile Include="Things\MasterySkill\ScanForRift.cs" />
     <Compile Include="Things\MasterySkill\SkyscaleLeap.cs" />

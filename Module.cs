@@ -38,9 +38,9 @@ namespace Manlaan.Mounts
 
         internal static Collection<Thing> _things = new Collection<Thing>();
         internal static List<Thing> _availableOrderedThings => _things.Where(m => m.IsAvailable).OrderBy(m => m.OrderSetting.Value).ToList();
-        internal static List<ThingActivationContext> Contexts;
-        internal static List<ThingActivationContext> OrderedContexts() => Contexts.OrderBy(c => c.Order).ToList();
-        internal static ThingActivationContext GetApplicableContext() => OrderedContexts().FirstOrDefault(c => c.IsEnabledSetting.Value && c.IsApplicable());
+        internal static List<RadialThingSettings> Contexts;
+        internal static List<RadialThingSettings> OrderedContexts() => Contexts.OrderBy(c => c.Order).ToList();
+        internal static RadialThingSettings GetApplicableContext() => OrderedContexts().FirstOrDefault(c => c.IsEnabledSetting.Value && c.IsApplicable());
 
 
         public static string mountsDirectory;
@@ -240,7 +240,7 @@ namespace Manlaan.Mounts
         /*
          * Migrate from defaultwatermount, etc to contexts
          */
-        private void MigrateThingActivationContexts(SettingCollection settings)
+        private void MigrateRadialThingSettings(SettingCollection settings)
         {
             if (settings.ContainsSetting("DefaultFlyingMountChoice"))
             {
@@ -332,16 +332,16 @@ namespace Manlaan.Mounts
             MigrateDisplaySettings();
             MigrateMountFileNameSettings();
 
-            Contexts = new List<ThingActivationContext>
+            Contexts = new List<RadialThingSettings>
             {
-                new ThingActivationContext(settings, "IsPlayerMounted", 0, _helper.IsPlayerMounted, true, true, _things.Where(t => t is UnMount).ToList()),
-                new ThingActivationContext(settings, "IsPlayerInWvwMap", 1, _helper.IsPlayerInWvwMap, true, true, _things.Where(t => t is Warclaw).ToList()),
-                new ThingActivationContext(settings, "IsPlayerGlidingOrFalling", 2, _helper.IsPlayerGlidingOrFalling, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList()),
-                new ThingActivationContext(settings, "IsPlayerUnderWater", 3, _helper.IsPlayerUnderWater, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList()),
-                new ThingActivationContext(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()),
-                new ThingActivationContext(settings, "Default", 99, () => true, true, false, _things)
+                new RadialThingSettings(settings, "IsPlayerMounted", 0, _helper.IsPlayerMounted, true, true, _things.Where(t => t is UnMount).ToList()),
+                new RadialThingSettings(settings, "IsPlayerInWvwMap", 1, _helper.IsPlayerInWvwMap, true, true, _things.Where(t => t is Warclaw).ToList()),
+                new RadialThingSettings(settings, "IsPlayerGlidingOrFalling", 2, _helper.IsPlayerGlidingOrFalling, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList()),
+                new RadialThingSettings(settings, "IsPlayerUnderWater", 3, _helper.IsPlayerUnderWater, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList()),
+                new RadialThingSettings(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()),
+                new RadialThingSettings(settings, "Default", 99, () => true, true, false, _things)
             };
-            MigrateThingActivationContexts(settings);
+            MigrateRadialThingSettings(settings);
 
             foreach (var t in _things)
             {
