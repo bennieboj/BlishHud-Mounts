@@ -300,6 +300,7 @@ namespace Manlaan.Mounts
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
             _settingDefaultMountBinding.Value.Enabled = true;
             _settingDefaultMountBinding.Value.Activated += async delegate { await DoDefaultMountActionAsync(); };
+            _settingDefaultMountBinding.SettingChanged += UpdateSettings;
             _settingDefaultMountChoice = settings.DefineSetting("DefaultMountChoice", "Disabled", () => Strings.Setting_DefaultMountChoice, () => "");
             _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "Radial", () => Strings.Setting_DefaultMountBehaviour, () => "");
             _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false, () => Strings.Setting_DisplayMountQueueing, () => "");
@@ -422,18 +423,12 @@ namespace Manlaan.Mounts
             if (shouldShowModule)
             {
                 _drawManualIcons?.Show();
-                foreach (var mount in _availableOrderedThings)
-                {
-                    mount.CornerIcon?.Show();
-                }
+                _drawCornerIcons?.Show();
             }
             else
             {
                 _drawManualIcons?.Hide();
-                foreach (var mount in _availableOrderedThings)
-                {
-                    mount.CornerIcon?.Hide();
-                }
+                _drawCornerIcons?.Hide();
             }
 
             if (_settingDisplayMountQueueing.Value && _things.Any(m => m.QueuedTimestamp != null))

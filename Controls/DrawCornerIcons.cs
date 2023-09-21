@@ -37,5 +37,25 @@ namespace Manlaan.Mounts.Controls
 
             _disposed = true;
         }
+
+        protected override void OnHidden(EventArgs e)
+        {
+
+            foreach (var mount in Module._availableOrderedThings)
+            {
+                mount.CornerIcon?.Hide();
+            }
+            base.OnHidden(e);
+        }
+
+        protected override void OnShown(EventArgs e)
+        {
+
+            foreach (var mount in Module._availableOrderedThings)
+            {
+                mount.CornerIcon?.Show();
+            }
+            base.OnHidden(e);
+        }
     }
 }
