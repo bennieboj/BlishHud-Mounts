@@ -171,7 +171,7 @@
     <Compile Include="Things\Thing.cs" />
     <Compile Include="Views\ThingSettingsView.cs" />
     <Compile Include="Views\DummySettingsView.cs" />
-    <Compile Include="Views\ContextSettingsView.cs" />
+    <Compile Include="Views\RadialThingSettingsView.cs" />
     <Compile Include="Views\SettingsView.cs" />
     <Compile Include="Views\ThingsUpdatedEventArgs.cs" />
   </ItemGroup>

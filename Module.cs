@@ -162,7 +162,7 @@ namespace Manlaan.Mounts
                 SavesPosition = true,
             };
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SettingsIconTextureName), () => new SettingsView(_textureCache), Strings.Window_AllSettingsTab));
-            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.ContextSettingsTextureName), () => new ContextSettingsView(), Strings.Window_ContextSettingsTab));
+            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.RadialSettingsTextureName), () => new RadialThingSettingsView(), Strings.Window_RadialSettingsTab));
         }
 
         private void ExtractFile(string filePath, string directoryToExtractTo)

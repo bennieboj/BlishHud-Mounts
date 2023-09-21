@@ -210,7 +210,7 @@
   <data name="Window_AllSettingsTab" xml:space="preserve">
     <value>All Settings</value>
   </data>
-  <data name="Window_ContextSettingsTab" xml:space="preserve">
-    <value>Context Settings</value>
+  <data name="Window_RadialSettingsTab" xml:space="preserve">
+    <value>Radial Settings</value>
   </data>
 </root>

@@ -7,7 +7,7 @@ using Blish_HUD.Graphics.UI;
 
 namespace Manlaan.Mounts.Views
 {
-    class ContextSettingsView : View
+    class RadialThingSettingsView : View
     {
         private int labelWidth = 150;
         private int bindingWidth = 170;
@@ -18,7 +18,7 @@ namespace Manlaan.Mounts.Views
         private RadialThingSettings currentContext;
         ThingSettingsView thingSettingsView;
 
-        public ContextSettingsView()
+        public RadialThingSettingsView()
         {
             
         }

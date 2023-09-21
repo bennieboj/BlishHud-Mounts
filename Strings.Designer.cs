@@ -340,11 +340,11 @@ namespace Manlaan.Mounts {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Context Settings.
+        ///   Looks up a localized string similar to Radial Settings.
         /// </summary>
-        internal static string Window_ContextSettingsTab {
+        internal static string Window_RadialSettingsTab {
             get {
-                return ResourceManager.GetString("Window_ContextSettingsTab", resourceCulture);
+                return ResourceManager.GetString("Window_RadialSettingsTab", resourceCulture);
             }
         }
     }
