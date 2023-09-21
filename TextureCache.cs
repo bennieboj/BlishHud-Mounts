@@ -52,7 +52,7 @@ namespace Manlaan.Mounts
             {
                 var filePath = Path.Combine(Module.mountsDirectory, textureName);
                 FileStream titleStream = File.OpenRead(filePath);
-                texture = Texture2D.FromStream(GameService.Graphics.GraphicsDevice, titleStream);
+                texture = Texture2D.FromStream(GameService.Graphics.LendGraphicsDeviceContext().GraphicsDevice, titleStream);
                 titleStream.Close();
                 Color[] buffer = new Color[texture.Width * texture.Height];
                 texture.GetData(buffer);

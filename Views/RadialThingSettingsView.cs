@@ -4,6 +4,7 @@ using Blish_HUD;
 using System.Diagnostics;
 using System.Linq;
 using Blish_HUD.Graphics.UI;
+using Mounts;
 
 namespace Manlaan.Mounts.Views
 {
@@ -52,7 +53,7 @@ namespace Manlaan.Mounts.Views
             {
                 Parent = buildPanel,
                 Location = new Point(labelExplanation.Right, labelExplanation.Top),
-                Text = Strings.Documentation_Button_Label
+                Text = Strings.Add
             };
             documentationButton.Click += (args, sender) => {
                 Process.Start("https://github.com/manlaan/BlishHud-Mounts/#settings");

@@ -4,6 +4,7 @@ using System.Linq;
 using Blish_HUD.Common.UI.Views;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using Mounts;
 
 namespace Manlaan.Mounts.Views
 {

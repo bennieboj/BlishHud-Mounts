@@ -19,7 +19,7 @@ using Manlaan.Mounts.Views;
 using System.IO;
 using Manlaan.Mounts.Things.Mounts;
 using Manlaan.Mounts.Things;
-
+using Mounts;
 
 namespace Manlaan.Mounts
 {
@@ -161,7 +161,8 @@ namespace Manlaan.Mounts
                 Id = $"{this.Namespace}_SettingsWindow",
                 SavesPosition = true,
             };
-            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SettingsTextureName), () => new SettingsView(_textureCache), Strings.Window_AllSettingsTab));
+            var x = Strings.Window_AllSettingsTab;
+            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SettingsTextureName), () => new SettingsView(_textureCache), x));
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.RadialSettingsTextureName), () => new RadialThingSettingsView(), Strings.Window_RadialSettingsTab));
         }
 

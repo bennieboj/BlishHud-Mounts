@@ -7,6 +7,7 @@ using Blish_HUD;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Mounts;
 
 namespace Manlaan.Mounts.Views
 {
