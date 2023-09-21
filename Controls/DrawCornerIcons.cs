@@ -9,6 +9,10 @@ namespace Manlaan.Mounts.Controls
 
         public DrawCornerIcons(TextureCache textureCache)
         {
+            foreach (var thing in Module._things)
+            {
+                thing.DisposeCornerIcon();
+            }
             foreach (var thing in Module._availableOrderedThings)
             {
                 thing.CreateCornerIcon(textureCache.GetMountImgFile(thing));
@@ -25,7 +29,7 @@ namespace Manlaan.Mounts.Controls
             if (disposing)
             {
                 // dispose managed state (managed objects).
-                foreach (var thing in Module._availableOrderedThings)
+                foreach (var thing in Module._things)
                 {
                     thing.DisposeCornerIcon();
                 }
