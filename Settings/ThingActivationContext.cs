@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Manlaan.Mounts
 {
-    public class ThingActivationContext
+    public class ThingActivationContext : ThingsSettings
     {
         public readonly string Name;
         public readonly int Order;
@@ -14,7 +14,7 @@ namespace Manlaan.Mounts
 
         public SettingEntry<bool> IsEnabledSetting;
         public SettingEntry<bool> ApplyInstantlyIfSingleSetting;
-        private SettingEntry<IList<Type>> ThingsSetting;
+        
 
         public ThingActivationContext(SettingCollection settingCollection, string name, int order, Func<bool> isApplicable, bool defaultIsEnabled, bool defaultApplyInstantlyIfSingle, IList<Thing> defaultThings)
         {
@@ -25,24 +25,6 @@ namespace Manlaan.Mounts
             IsEnabledSetting = settingCollection.DefineSetting($"ThingActivationContext{name}IsEnabled", defaultIsEnabled);
             ApplyInstantlyIfSingleSetting = settingCollection.DefineSetting($"ThingActivationContext{name}ApplyInstantlyIfSingle", defaultApplyInstantlyIfSingle);
             ThingsSetting = settingCollection.DefineSetting($"ThingActivationContext{name}Things", (IList<Type>) defaultThings.Select(t => t.GetType()).ToList());
-
-        }
-
-        public void SetThings(IEnumerable<Thing> defaultThings)
-        {
-            ThingsSetting.Value = defaultThings.Select(t => t.GetType()).ToList();
-        }
-
-        public IList<Thing> Things => Module._things.Where(t => ThingsSetting.Value.Any(typeOfThingInContext => typeOfThingInContext == t.GetType())).ToList();
-
-        public void AddThing(Thing thingToAdd)
-        {
-            ThingsSetting.Value.Add(thingToAdd.GetType());
-        }
-
-        public void RemoveThing(Thing thingToAdd)
-        {
-            ThingsSetting.Value.Remove(thingToAdd.GetType());
         }
     }
 }

@@ -134,9 +134,10 @@
     <Compile Include="Controls\DrawMouseCursor.cs" />
     <Compile Include="Controls\DrawRadial.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="Settings\ThingsSettings.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="ThingImageFile.cs" />
-    <Compile Include="ThingActivationContext.cs" />
+    <Compile Include="Settings\ThingActivationContext.cs" />
     <Compile Include="Things\MasterySkill\IMasterySkill.cs" />
     <Compile Include="Things\MasterySkill\ScanForRift.cs" />
     <Compile Include="Things\MasterySkill\SkyscaleLeap.cs" />
@@ -168,9 +169,11 @@
     <Compile Include="Things\Novelty\Music.cs" />
     <Compile Include="Things\Novelty\Novelty.cs" />
     <Compile Include="Things\Thing.cs" />
+    <Compile Include="Views\ThingSettingsView.cs" />
     <Compile Include="Views\DummySettingsView.cs" />
     <Compile Include="Views\ContextSettingsView.cs" />
     <Compile Include="Views\SettingsView.cs" />
+    <Compile Include="Views\ThingsUpdatedEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="AsyncClipboardService, Version=1.7.1.0, Culture=neutral, processorArchitecture=MSIL">

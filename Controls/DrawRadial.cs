@@ -84,7 +84,8 @@ namespace Manlaan.Mounts.Controls
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             RadialThings.Clear();
-            var things = Module.GetApplicableContext().Things;
+            var applicableContext = Module.GetApplicableContext();
+            var things = applicableContext.Things;
 
             if (!things.Any())
             {
@@ -103,7 +104,7 @@ namespace Manlaan.Mounts.Controls
             {
                 if (Module._settingMountRadialRemoveCenterMount.Value)
                 {
-                    things.Remove(thingToPutInCenter);
+                    applicableContext.RemoveThing(thingToPutInCenter);
                 }
                 var texture = _textureCache.GetMountImgFile(thingToPutInCenter);
                 int loc = radius;

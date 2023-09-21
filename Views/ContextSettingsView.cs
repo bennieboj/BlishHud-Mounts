@@ -1,30 +1,27 @@
 ﻿using Blish_HUD.Controls;
 using Microsoft.Xna.Framework;
-using Blish_HUD.Graphics.UI;
 using Blish_HUD;
 using System.Diagnostics;
 using System.Linq;
-using Manlaan.Mounts.Things;
-using Blish_HUD.Common.UI.Views;
+using Blish_HUD.Graphics.UI;
 
 namespace Manlaan.Mounts.Views
 {
     class ContextSettingsView : View
     {
-        private const string NoValueSelected = "Please select a value";
-
         private int labelWidth = 150;
-        private int orderWidth = 80;
         private int bindingWidth = 170;
 
         private Panel contextListPanel;
         Panel contextDetailPanel;
+
         private ThingActivationContext currentContext;
+        ThingSettingsView thingSettingsView;
 
-        public ContextSettingsView(TextureCache textureCache)
+        public ContextSettingsView()
         {
+            
         }
-
         private Panel CreateDefaultPanel(Container buildPanel, Point location, int width = 420)
         {
             return new Panel {
@@ -69,8 +66,6 @@ namespace Manlaan.Mounts.Views
             currentContext = Module.OrderedContexts().First();
             contextDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 300));
             BuildContextDetailPanel();
-
-
         }
 
         private void CreateContextListPanel()
@@ -190,64 +185,21 @@ namespace Manlaan.Mounts.Views
                 currentContext.ApplyInstantlyIfSingleSetting.Value = contextApplyInstantlyIfSingle_Checkbox.Checked;
             };
 
-            int curY = contextApplyInstantlyIfSingle_Label.Bottom;
-            var thingsNotYetInContext = Module._things.Where(t => !currentContext.Things.Any(tt => tt.Equals(t))).ToList();
-            if (thingsNotYetInContext.Any())
+            thingSettingsView = new ThingSettingsView(currentContext)
             {
-                Dropdown addThing_Select = new Dropdown()
-                {
-                    Location = new Point(contextApplyInstantlyIfSingle_Label.Left, contextApplyInstantlyIfSingle_Label.Bottom + 6),
-                    Width = orderWidth,
-                    Parent = contextDetailPanel,
-                };
-                thingsNotYetInContext.ForEach(t => addThing_Select.Items.Add(t.DisplayName));
-                addThing_Select.SelectedItem = thingsNotYetInContext.FirstOrDefault()?.DisplayName;
-                var addThing_Button = new StandardButton
-                {
-                    Parent = contextDetailPanel,
-                    Location = new Point(addThing_Select.Right, addThing_Select.Top),
-                    Text = Strings.Add
-                };
-                addThing_Button.Click += (args, sender) => {
-                    currentContext.AddThing(Module._things.Single(t => t.DisplayName == addThing_Select.SelectedItem));
-                    BuildContextDetailPanel();
-                };
-                curY = addThing_Select.Bottom;
-            }
-
-            int curX = 0;
-            foreach (var thing in currentContext.Things)
-            {
-                Label thingInContext_Label = new Label()
-                {
-                    Location = new Point(curX, curY),
-                    AutoSizeWidth = true,
-                    AutoSizeHeight = false,
-                    Parent = contextDetailPanel,
-                    TextColor = thing.IsAvailable ? Color.White : Color.Red,
-                    Tooltip = thing.IsAvailable ? null : new Tooltip(new BasicTooltipView("NO KEYBIND SET")),
-                    Text = $"{thing.Name}",
-                };
-                var deleteThing_Button = new StandardButton
-                {
-                    Parent = contextDetailPanel,
-                    Location = new Point(thingInContext_Label.Right, thingInContext_Label.Top),
-                    Text = Strings.Delete
-                };
-                deleteThing_Button.Click += (args, sender) =>
-                {
-                    currentContext.RemoveThing(thing);
-                    BuildContextDetailPanel();
-                };
-
-                curX = deleteThing_Button.Right + 6;
-                if (curX > 300)
-                {
-                    curY = deleteThing_Button.Bottom + 6;
-                    curX = 0;
-                }
-            }
+                Location = new Point(0, contextApplyInstantlyIfSingle_Label.Bottom),
+                Parent = contextDetailPanel,
+                Width = 500,
+                Height = 500
+            };
+            thingSettingsView.OnThingsUpdated += OnThingsUpdated;
         }
 
-    }
+        void OnThingsUpdated(object sender, ThingsUpdatedEventArgs e)
+        {
+            currentContext.ApplyInstantlyIfSingleSetting.Value = e.NewCount == 1;
+            BuildContextDetailPanel();
+        }
+
+}
 }

@@ -162,7 +162,7 @@ namespace Manlaan.Mounts
                 SavesPosition = true,
             };
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SettingsIconTextureName), () => new SettingsView(_textureCache), Strings.Window_AllSettingsTab));
-            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.ContextSettingsTextureName), () => new ContextSettingsView(_textureCache), Strings.Window_ContextSettingsTab));
+            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.ContextSettingsTextureName), () => new ContextSettingsView(), Strings.Window_ContextSettingsTab));
         }
 
         private void ExtractFile(string filePath, string directoryToExtractTo)
@@ -339,7 +339,7 @@ namespace Manlaan.Mounts
                 new ThingActivationContext(settings, "IsPlayerGlidingOrFalling", 2, _helper.IsPlayerGlidingOrFalling, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList()),
                 new ThingActivationContext(settings, "IsPlayerUnderWater", 3, _helper.IsPlayerUnderWater, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList()),
                 new ThingActivationContext(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()),
-                new ThingActivationContext(settings, "Default", 99, () => true, true, false, _availableOrderedThings)
+                new ThingActivationContext(settings, "Default", 99, () => true, true, false, _things)
             };
             MigrateThingActivationContexts(settings);
 
