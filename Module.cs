@@ -300,7 +300,7 @@ namespace Manlaan.Mounts
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
             _settingDefaultMountBinding.Value.Enabled = true;
             _settingDefaultMountBinding.Value.Activated += async delegate { await DoDefaultMountActionAsync(); };
-            _settingDefaultMountBinding.SettingChanged += UpdateSettings;
+            _settingDefaultMountBinding.Value.BindingChanged += UpdateSettings;
             _settingDefaultMountChoice = settings.DefineSetting("DefaultMountChoice", "Disabled", () => Strings.Setting_DefaultMountChoice, () => "");
             _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "Radial", () => Strings.Setting_DefaultMountBehaviour, () => "");
             _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false, () => Strings.Setting_DisplayMountQueueing, () => "");
@@ -347,7 +347,7 @@ namespace Manlaan.Mounts
 
             foreach (var t in _things)
             {
-                t.KeybindingSetting.SettingChanged += UpdateSettings;
+                t.KeybindingSetting.Value.BindingChanged += UpdateSettings;
                 t.ImageFileNameSetting.SettingChanged += UpdateSettings;
             }
             _settingDefaultMountChoice.SettingChanged += UpdateSettings;
@@ -359,7 +359,7 @@ namespace Manlaan.Mounts
             _settingMountRadialRadiusModifier.SettingChanged += UpdateSettings;
             _settingMountRadialStartAngle.SettingChanged += UpdateSettings;
             _settingMountRadialCenterMountBehavior.SettingChanged += UpdateSettings;
-            _settingMountRadialToggleActionCameraKeyBinding.SettingChanged += UpdateSettings;
+            _settingMountRadialToggleActionCameraKeyBinding.Value.BindingChanged += UpdateSettings;
             _settingMountRadialIconOpacity.SettingChanged += UpdateSettings;
             _settingMountRadialRemoveCenterMount.SettingChanged += UpdateSettings;
 
@@ -502,7 +502,7 @@ namespace Manlaan.Mounts
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<string> e = null) {
             DrawUI();
         }
-        private void UpdateSettings(object sender = null, ValueChangedEventArgs<KeyBinding> e = null) {
+        private void UpdateSettings(object sender = null, EventArgs e = null) {
             DrawUI();
         }
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<Point> e = null) {
