@@ -86,7 +86,7 @@ namespace Manlaan.Mounts.Views
                     AutoSizeHeight = false,
                     Parent = panel,
                     TextColor = thing.IsAvailable ? Color.White : Color.Red,
-                    Tooltip = thing.IsAvailable ? null : new Tooltip(new BasicTooltipView("NO KEYBIND SET")),
+                    BasicTooltipText = thing.IsAvailable ? null : "NO KEYBIND SET",
                     Text = $"{thing.Name}",
                 };
                 var deleteThing_Button = new StandardButton
