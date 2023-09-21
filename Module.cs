@@ -19,8 +19,7 @@ using Manlaan.Mounts.Views;
 using System.IO;
 using Manlaan.Mounts.Things.Mounts;
 using Manlaan.Mounts.Things;
-using Manlaan.Mounts;
-using System.Runtime;
+
 
 namespace Manlaan.Mounts
 {
@@ -38,9 +37,9 @@ namespace Manlaan.Mounts
 
         internal static Collection<Thing> _things = new Collection<Thing>();
         internal static List<Thing> _availableOrderedThings => _things.Where(m => m.IsAvailable).OrderBy(m => m.OrderSetting.Value).ToList();
-        internal static List<RadialThingSettings> Contexts;
-        internal static List<RadialThingSettings> OrderedContexts() => Contexts.OrderBy(c => c.Order).ToList();
-        internal static RadialThingSettings GetApplicableContext() => OrderedContexts().FirstOrDefault(c => c.IsEnabledSetting.Value && c.IsApplicable());
+        internal static List<RadialThingSettings> RadialSettings;
+        internal static List<RadialThingSettings> OrderedRadialSettings() => RadialSettings.OrderBy(c => c.Order).ToList();
+        internal static RadialThingSettings GetApplicableRadialSettings() => OrderedRadialSettings().FirstOrDefault(c => c.IsEnabledSetting.Value && c.IsApplicable());
 
 
         public static string mountsDirectory;
@@ -161,7 +160,7 @@ namespace Manlaan.Mounts
                 Id = $"{this.Namespace}_SettingsWindow",
                 SavesPosition = true,
             };
-            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SettingsIconTextureName), () => new SettingsView(_textureCache), Strings.Window_AllSettingsTab));
+            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SettingsTextureName), () => new SettingsView(_textureCache), Strings.Window_AllSettingsTab));
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.RadialSettingsTextureName), () => new RadialThingSettingsView(), Strings.Window_RadialSettingsTab));
         }
 
@@ -238,32 +237,32 @@ namespace Manlaan.Mounts
 
 
         /*
-         * Migrate from defaultwatermount, etc to contexts
+         * Migrate from defaultwatermount, etc to RadialTHingSettings
          */
         private void MigrateRadialThingSettings(SettingCollection settings)
         {
             if (settings.ContainsSetting("DefaultFlyingMountChoice"))
             {
-                var flyingContext = Contexts.Single(c => c.Name == "IsPlayerGlidingOrFalling");
+                var flyingRadialSettings = RadialSettings.Single(c => c.Name == "IsPlayerGlidingOrFalling");
                 var settingDefaultFlyingMountChoice = settings["DefaultFlyingMountChoice"] as SettingEntry<string>;
                 if (settingDefaultFlyingMountChoice.Value != "Disabled" && _things.Count(t => t.Name == settingDefaultFlyingMountChoice.Value) == 1)
                 {
-                    flyingContext.ApplyInstantlyIfSingleSetting.Value = true;
-                    flyingContext.IsEnabledSetting.Value = true;
-                    flyingContext.SetThings(new List<Thing> { _things.Single(t => t.Name == settingDefaultFlyingMountChoice.Value) });
+                    flyingRadialSettings.ApplyInstantlyIfSingleSetting.Value = true;
+                    flyingRadialSettings.IsEnabledSetting.Value = true;
+                    flyingRadialSettings.SetThings(new List<Thing> { _things.Single(t => t.Name == settingDefaultFlyingMountChoice.Value) });
                 }
                 settings.UndefineSetting("DefaultFlyingMountChoice");
             }
 
             if (settings.ContainsSetting("DefaultWaterMountChoice"))
             {
-                var underwaterContext = Contexts.Single(c => c.Name == "IsPlayerUnderWater");
+                var underwaterRadialSettings = RadialSettings.Single(c => c.Name == "IsPlayerUnderWater");
                 var settingDefaultWaterMountChoice = settings["DefaultWaterMountChoice"] as SettingEntry<string>;
                 if (settingDefaultWaterMountChoice.Value != "Disabled" && _things.Count(t => t.Name == settingDefaultWaterMountChoice.Value) == 1)
                 {
-                    underwaterContext.ApplyInstantlyIfSingleSetting.Value = true;
-                    underwaterContext.IsEnabledSetting.Value = true;
-                    underwaterContext.SetThings(new List<Thing> { _things.Single(t => t.Name == settingDefaultWaterMountChoice.Value) });
+                    underwaterRadialSettings.ApplyInstantlyIfSingleSetting.Value = true;
+                    underwaterRadialSettings.IsEnabledSetting.Value = true;
+                    underwaterRadialSettings.SetThings(new List<Thing> { _things.Single(t => t.Name == settingDefaultWaterMountChoice.Value) });
                 }
                 settings.UndefineSetting("DefaultWaterMountChoice");
             }
@@ -332,7 +331,7 @@ namespace Manlaan.Mounts
             MigrateDisplaySettings();
             MigrateMountFileNameSettings();
 
-            Contexts = new List<RadialThingSettings>
+            RadialSettings = new List<RadialThingSettings>
             {
                 new RadialThingSettings(settings, "IsPlayerMounted", 0, _helper.IsPlayerMounted, true, true, _things.Where(t => t is UnMount).ToList()),
                 new RadialThingSettings(settings, "IsPlayerInWvwMap", 1, _helper.IsPlayerInWvwMap, true, true, _things.Where(t => t is Warclaw).ToList()),
@@ -385,9 +384,9 @@ namespace Manlaan.Mounts
 
         protected override void OnModuleLoaded(EventArgs e)
         {
-            Contexts.ForEach(c => _debug.Add(c.Name, () => $"{c.IsApplicable()}"));
-            _debug.Add("ApplicableContext", () => $"{GetApplicableContext()?.Name}");
-            _debug.Add("ApplicableMounts", () => $"{string.Join(", ", GetApplicableContext()?.Things.Select(t => t.DisplayName))}"); 
+            RadialSettings.ForEach(c => _debug.Add(c.Name, () => $"{c.IsApplicable()}"));
+            _debug.Add("ApplicableRadialSettings Name", () => $"{GetApplicableRadialSettings()?.Name}");
+            _debug.Add("ApplicableRadialSettings Actions", () => $"{string.Join(", ", GetApplicableRadialSettings()?.Things.Select(t => t.DisplayName))}"); 
 
             DrawUI();
 
@@ -571,9 +570,9 @@ namespace Manlaan.Mounts
         {
             Logger.Debug("DoDefaultMountActionAsync entered");
 
-            var selectedContext = GetApplicableContext();
-            var things = selectedContext.Things;
-            if (things.Count() == 1 && things.FirstOrDefault().IsAvailable && selectedContext.ApplyInstantlyIfSingleSetting.Value)
+            var selectedRadialSettings = GetApplicableRadialSettings();
+            var things = selectedRadialSettings.Things;
+            if (things.Count() == 1 && things.FirstOrDefault().IsAvailable && selectedRadialSettings.ApplyInstantlyIfSingleSetting.Value)
             {
                 await things.FirstOrDefault()?.DoAction();
                 Logger.Debug("DoDefaultMountActionAsync instantmount");

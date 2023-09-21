@@ -52,8 +52,8 @@ namespace Manlaan.Mounts.Views
             panel.ClearChildren();
            
             int curY = 0;
-            var thingsNotYetInContext = Module._things.Where(t => !CurrentThingSettings.Things.Any(tt => tt.Equals(t))).ToList();
-            if (thingsNotYetInContext.Any())
+            var thingsNotYetInSettings = Module._things.Where(t => !CurrentThingSettings.Things.Any(tt => tt.Equals(t))).ToList();
+            if (thingsNotYetInSettings.Any())
             {
                 Dropdown addThing_Select = new Dropdown()
                 {
@@ -61,8 +61,8 @@ namespace Manlaan.Mounts.Views
                     Width = orderWidth,
                     Parent = panel,
                 };
-                thingsNotYetInContext.ForEach(t => addThing_Select.Items.Add(t.DisplayName));
-                addThing_Select.SelectedItem = thingsNotYetInContext.FirstOrDefault()?.DisplayName;
+                thingsNotYetInSettings.ForEach(t => addThing_Select.Items.Add(t.DisplayName));
+                addThing_Select.SelectedItem = thingsNotYetInSettings.FirstOrDefault()?.DisplayName;
                 var addThing_Button = new StandardButton
                 {
                     Parent = panel,
@@ -79,7 +79,7 @@ namespace Manlaan.Mounts.Views
             int curX = 0;
             foreach (var thing in CurrentThingSettings.Things)
             {
-                Label thingInContext_Label = new Label()
+                Label thingInSettings_Label = new Label()
                 {
                     Location = new Point(curX, curY),
                     AutoSizeWidth = true,
@@ -92,7 +92,7 @@ namespace Manlaan.Mounts.Views
                 var deleteThing_Button = new StandardButton
                 {
                     Parent = panel,
-                    Location = new Point(thingInContext_Label.Right, thingInContext_Label.Top),
+                    Location = new Point(thingInSettings_Label.Right, thingInSettings_Label.Top),
                     Text = Strings.Delete
                 };
                 deleteThing_Button.Click += (args, sender) =>

@@ -15,7 +15,7 @@ namespace Manlaan.Mounts
             ThingsSetting.Value = defaultThings.Select(t => t.GetType()).ToList();
         }
 
-        public IEnumerable<Thing> Things => ThingsSetting.Value.Select(typeOfThingInContext => Module._things.Single(t => typeOfThingInContext == t.GetType()));
+        public IEnumerable<Thing> Things => ThingsSetting.Value.Select(typeOfThingInSettings => Module._things.Single(t => typeOfThingInSettings == t.GetType()));
 
         public void AddThing(Thing thingToAdd)
         {

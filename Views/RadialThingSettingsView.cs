@@ -12,10 +12,10 @@ namespace Manlaan.Mounts.Views
         private int labelWidth = 150;
         private int bindingWidth = 170;
 
-        private Panel contextListPanel;
-        Panel contextDetailPanel;
+        private Panel RadialSettingsListPanel;
+        private Panel RadialSettingsDetailPanel;
 
-        private RadialThingSettings currentContext;
+        private RadialThingSettings currentRadialSettings;
         ThingSettingsView thingSettingsView;
 
         public RadialThingSettingsView()
@@ -60,15 +60,15 @@ namespace Manlaan.Mounts.Views
 
             var panelPadding = 20;
 
-            contextListPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 600);
-            CreateContextListPanel();
+            RadialSettingsListPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 600);
+            CreateRadialSettingsListPanel();
 
-            currentContext = Module.OrderedContexts().First();
-            contextDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 300));
-            BuildContextDetailPanel();
+            currentRadialSettings = Module.OrderedRadialSettings().First();
+            RadialSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 300));
+            BuildRadialSettingsDetailPanel();
         }
 
-        private void CreateContextListPanel()
+        private void CreateRadialSettingsListPanel()
         {
             Label orderHeading_Label = new Label()
             {
@@ -76,8 +76,8 @@ namespace Manlaan.Mounts.Views
                 Width = labelWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
-                Parent = contextListPanel,
-                Text = "Context name",
+                Parent = RadialSettingsListPanel,
+                Text = "Name",
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
             Label nameHeader_label = new Label()
@@ -86,7 +86,7 @@ namespace Manlaan.Mounts.Views
                 Width = bindingWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
-                Parent = contextListPanel,
+                Parent = RadialSettingsListPanel,
                 Text = "Evaluation Order",
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
@@ -94,7 +94,7 @@ namespace Manlaan.Mounts.Views
 
             int curY = orderHeading_Label.Bottom + 6;
 
-            foreach (var context in Module.OrderedContexts())
+            foreach (var radialSettings in Module.OrderedRadialSettings())
             {
                 Label name_Label = new Label()
                 {
@@ -102,8 +102,8 @@ namespace Manlaan.Mounts.Views
                     Width = labelWidth,
                     AutoSizeHeight = false,
                     WrapText = false,
-                    Parent = contextListPanel,
-                    Text = $"{context.Name}: ",
+                    Parent = RadialSettingsListPanel,
+                    Text = $"{radialSettings.Name}: ",
                     HorizontalAlignment = HorizontalAlignment.Left,
                 };
                 Label order_Label = new Label()
@@ -112,83 +112,83 @@ namespace Manlaan.Mounts.Views
                     Width = labelWidth,
                     AutoSizeHeight = false,
                     WrapText = false,
-                    Parent = contextListPanel,
-                    Text = $"{context.Order}",
+                    Parent = RadialSettingsListPanel,
+                    Text = $"{radialSettings.Order}",
                     HorizontalAlignment = HorizontalAlignment.Center,
                 };
-                var editContextButton = new StandardButton
+                var editRadialSettingsButton = new StandardButton
                 {
-                    Parent = contextListPanel,
+                    Parent = RadialSettingsListPanel,
                     Location = new Point(order_Label.Right, order_Label.Top),
                     Text = Strings.Edit
                 };
-                editContextButton.Click += (args, sender) => {
-                    currentContext = context;
-                    BuildContextDetailPanel();
+                editRadialSettingsButton.Click += (args, sender) => {
+                    currentRadialSettings = radialSettings;
+                    BuildRadialSettingsDetailPanel();
                 };
 
                 curY = name_Label.Bottom;
             }            
         }
 
-        private void BuildContextDetailPanel()
+        private void BuildRadialSettingsDetailPanel()
         {
-            contextDetailPanel.ClearChildren();
+            RadialSettingsDetailPanel.ClearChildren();
            
-            Label contextName_Label = new Label()
+            Label radialSettingstName_Label = new Label()
             {
                 Location = new Point(0, 0),
                 Width = labelWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
-                Parent = contextDetailPanel,
-                Text = $"{currentContext.Name}"
+                Parent = RadialSettingsDetailPanel,
+                Text = $"{currentRadialSettings.Name}"
             };
 
-            Label contextIsEnabled_Label = new Label()
+            Label radialSettingsIsEnabled_Label = new Label()
             {
-                Location = new Point(0, contextName_Label.Bottom + 6),
+                Location = new Point(0, radialSettingstName_Label.Bottom + 6),
                 Width = labelWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
-                Parent = contextDetailPanel,
+                Parent = RadialSettingsDetailPanel,
                 Text = "Enabled"
             };
-            Checkbox contextIsEnabled_Checkbox = new Checkbox()
+            Checkbox radialSettingsIsEnabled_Checkbox = new Checkbox()
             {
                 Size = new Point(20, 20),
-                Parent = contextDetailPanel,
-                Checked = currentContext.IsEnabledSetting.Value,
-                Location = new Point(contextIsEnabled_Label.Right + 5, contextIsEnabled_Label.Top - 1),
+                Parent = RadialSettingsDetailPanel,
+                Checked = currentRadialSettings.IsEnabledSetting.Value,
+                Location = new Point(radialSettingsIsEnabled_Label.Right + 5, radialSettingsIsEnabled_Label.Top - 1),
             };
-            contextIsEnabled_Checkbox.CheckedChanged += delegate {
-                currentContext.IsEnabledSetting.Value = contextIsEnabled_Checkbox.Checked;
+            radialSettingsIsEnabled_Checkbox.CheckedChanged += delegate {
+                currentRadialSettings.IsEnabledSetting.Value = radialSettingsIsEnabled_Checkbox.Checked;
             };
 
-            Label contextApplyInstantlyIfSingle_Label = new Label()
+            Label radialSettingsApplyInstantlyIfSingle_Label = new Label()
             {
-                Location = new Point(0, contextIsEnabled_Label.Bottom + 6),
+                Location = new Point(0, radialSettingsIsEnabled_Label.Bottom + 6),
                 Width = labelWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
-                Parent = contextDetailPanel,
+                Parent = RadialSettingsDetailPanel,
                 Text = "ApplyInstantlyIfSingle"
             };
-            Checkbox contextApplyInstantlyIfSingle_Checkbox = new Checkbox()
+            Checkbox radialSettingsApplyInstantlyIfSingle_Checkbox = new Checkbox()
             {
                 Size = new Point(20, 20),
-                Parent = contextDetailPanel,
-                Checked = currentContext.ApplyInstantlyIfSingleSetting.Value,
-                Location = new Point(contextApplyInstantlyIfSingle_Label.Right + 5, contextApplyInstantlyIfSingle_Label.Top - 1),
+                Parent = RadialSettingsDetailPanel,
+                Checked = currentRadialSettings.ApplyInstantlyIfSingleSetting.Value,
+                Location = new Point(radialSettingsApplyInstantlyIfSingle_Label.Right + 5, radialSettingsApplyInstantlyIfSingle_Label.Top - 1),
             };
-            contextApplyInstantlyIfSingle_Checkbox.CheckedChanged += delegate {
-                currentContext.ApplyInstantlyIfSingleSetting.Value = contextApplyInstantlyIfSingle_Checkbox.Checked;
+            radialSettingsApplyInstantlyIfSingle_Checkbox.CheckedChanged += delegate {
+                currentRadialSettings.ApplyInstantlyIfSingleSetting.Value = radialSettingsApplyInstantlyIfSingle_Checkbox.Checked;
             };
 
-            thingSettingsView = new ThingSettingsView(currentContext)
+            thingSettingsView = new ThingSettingsView(currentRadialSettings)
             {
-                Location = new Point(0, contextApplyInstantlyIfSingle_Label.Bottom),
-                Parent = contextDetailPanel,
+                Location = new Point(0, radialSettingsApplyInstantlyIfSingle_Label.Bottom),
+                Parent = RadialSettingsDetailPanel,
                 Width = 500,
                 Height = 500
             };
@@ -197,8 +197,8 @@ namespace Manlaan.Mounts.Views
 
         void OnThingsUpdated(object sender, ThingsUpdatedEventArgs e)
         {
-            currentContext.ApplyInstantlyIfSingleSetting.Value = e.NewCount == 1;
-            BuildContextDetailPanel();
+            currentRadialSettings.ApplyInstantlyIfSingleSetting.Value = e.NewCount == 1;
+            BuildRadialSettingsDetailPanel();
         }
 
 }
