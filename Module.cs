@@ -78,6 +78,7 @@ namespace Manlaan.Mounts
 
         public static DebugControl _debug;
         private DrawRadial _radial;
+        private DrawCornerIcons _drawCornerIcons;
         private DrawManualIcons _drawManualIcons;
         private LoadingSpinner _queueingSpinner;
         private DrawMouseCursor _drawMouseCursor;
@@ -523,23 +524,11 @@ namespace Manlaan.Mounts
             DrawUI();
         }
 
-        private void DrawCornerIcons() {
-            foreach (var mount in _availableOrderedThings)
-            {
-                mount.CreateCornerIcon(_textureCache.GetMountImgFile(mount));
-            }
-
-        }
-
         private void DrawUI()
         {   
-            foreach (var thing in _things)
-            {
-                thing.DisposeCornerIcon();
-            }
-
+            _drawCornerIcons?.Dispose();
             if (_settingDisplayCornerIcons.Value)
-                DrawCornerIcons();
+                _drawCornerIcons = new DrawCornerIcons(_textureCache);
 
             _drawManualIcons?.Dispose();
             if (_settingDisplayManualIcons.Value)

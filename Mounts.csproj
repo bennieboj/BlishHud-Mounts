@@ -130,6 +130,7 @@
   <ItemGroup>
     <Compile Include="Controls\DebugControl.cs" />
     <Compile Include="Controls\DebugHelper.cs" />
+    <Compile Include="Controls\DrawCornerIcons.cs" />
     <Compile Include="Controls\DrawManualIcons.cs" />
     <Compile Include="Controls\DrawMouseCursor.cs" />
     <Compile Include="Controls\DrawRadial.cs" />
