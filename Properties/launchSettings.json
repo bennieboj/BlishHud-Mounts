@@ -7,7 +7,7 @@
     },
     "powershell": {
       "commandName": "Executable",
-      "executablePath": "C:\\gw2\\Blish.HUD\\Blish HUD.exe",
+      "executablePath": "C:\\Users\\Ben\\Dropbox (Personal)\\Projects\\Blish-HUD\\Blish HUD\\bin\\x64\\Debug\\net472\\Blish HUD.exe",
       "commandLineArgs": "--process powershell --window ConsoleWindowClass --module \"$(ProjectDir)\\$(BaseOutputPath)\\$(Configuration)/$(TargetFramework)\\$(TargetName).bhm\""
     }
   }
