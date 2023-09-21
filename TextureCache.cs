@@ -51,14 +51,18 @@ namespace Manlaan.Mounts
             try
             {
                 var filePath = Path.Combine(Module.mountsDirectory, textureName);
-                FileStream titleStream = File.OpenRead(filePath);
-                texture = Texture2D.FromStream(GameService.Graphics.LendGraphicsDeviceContext().GraphicsDevice, titleStream);
-                titleStream.Close();
-                Color[] buffer = new Color[texture.Width * texture.Height];
-                texture.GetData(buffer);
-                for (int i = 0; i < buffer.Length; i++)
-                    buffer[i] = Color.FromNonPremultiplied(buffer[i].R, buffer[i].G, buffer[i].B, buffer[i].A);
-                texture.SetData(buffer);
+                using (FileStream titleStream = File.OpenRead(filePath))
+                using (var gdc = GameService.Graphics.LendGraphicsDeviceContext())
+                {
+                    texture = Texture2D.FromStream(gdc.GraphicsDevice, titleStream);
+                    titleStream.Close();
+
+                    Color[] buffer = new Color[texture.Width * texture.Height];
+                    texture.GetData(buffer);
+                    for (int i = 0; i < buffer.Length; i++)
+                        buffer[i] = Color.FromNonPremultiplied(buffer[i].R, buffer[i].G, buffer[i].B, buffer[i].A);
+                    texture.SetData(buffer);
+                }
             }
             catch
             {
