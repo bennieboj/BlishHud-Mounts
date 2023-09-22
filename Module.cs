@@ -63,7 +63,6 @@ namespace Manlaan.Mounts
 
         public static SettingEntry<bool> _settingDisplayModuleOnLoadingScreen;
         public static SettingEntry<bool> _settingMountAutomaticallyAfterLoadingScreen;
-        public static SettingEntry<string> _settingDisplay;
         public static SettingEntry<bool> _settingDisplayCornerIcons;
         public static SettingEntry<bool> _settingDisplayManualIcons;
         public static SettingEntry<string> _settingOrientation;
@@ -178,62 +177,6 @@ namespace Manlaan.Mounts
 
 
 
-        /*
-         * Migrate from seperate settings from MountDisplay
-         * MountDisplay => "Transparent", "Solid", "SolidText"
-         *
-         */
-        private void MigrateDisplaySettings()
-        {
-            if (_settingDisplay.Value.Contains("Corner") || _settingDisplay.Value.Contains("Manual"))
-            {
-                _settingDisplayCornerIcons.Value = _settingDisplay.Value.Contains("Corner");
-                _settingDisplayManualIcons.Value = _settingDisplay.Value.Contains("Solid");
-
-                if (_settingDisplay.Value.Contains("Text"))
-                {
-                    _settingDisplay.Value = "SolidText";
-                }
-                else if (_settingDisplay.Value.Contains("Solid"))
-                {
-                    _settingDisplay.Value = "Solid";
-                }
-                else if (_settingDisplay.Value.Contains("Transparent"))
-                {
-                    _settingDisplay.Value = "Transparent";
-                }
-            }
-        }
-
-        /*
-         * Migrate from seperate settings from MountDisplay
-         * MountDisplay => "Transparent", "Solid", "SolidText"
-         *
-         */
-        private void MigrateMountFileNameSettings()
-        {
-            if (_things.All(m => m.ImageFileNameSetting.Value.Equals("")))
-            {
-                var partOfFileName = "";
-                if (_settingDisplay.Value.Equals("Transparent"))
-                {
-                    partOfFileName = "-trans";
-                }
-                else if (_settingDisplay.Value.Equals("SolidText"))
-                {
-                    partOfFileName = "-text";
-                }
-                else if (_settingDisplay.Value.Equals("Solid"))
-                {
-                    partOfFileName = "";
-                }
-                foreach (var mount in _things)
-                {
-                    mount.ImageFileNameSetting.Value = $"{mount.ImageFileName}{partOfFileName}.png";
-                }                
-            }
-        }
-
 
         /*
          * Migrate from defaultwatermount, etc to RadialTHingSettings
@@ -344,7 +287,6 @@ namespace Manlaan.Mounts
 
             _settingDisplayModuleOnLoadingScreen = settings.DefineSetting("DisplayModuleOnLoadingScreen", false, () => Strings.Setting_DisplayModuleOnLoadingScreen, () => "");
             _settingMountAutomaticallyAfterLoadingScreen = settings.DefineSetting("MountAutomaticallyAfterLoadingScreen", false, () => Strings.Setting_MountAutomaticallyAfterLoadingScreen, () => "");
-            _settingDisplay = settings.DefineSetting("MountDisplay", "Transparent", () => Strings.Setting_MountDisplay, () => "");
             _settingDisplayCornerIcons = settings.DefineSetting("MountDisplayCornerIcons", false, () => Strings.Setting_MountDisplayCornerIcons, () => "");
             _settingDisplayManualIcons = settings.DefineSetting("MountDisplayManualIcons", false, () => Strings.Setting_MountDisplayManualIcons, () => "");
             _settingOrientation = settings.DefineSetting("Orientation", "Horizontal", () => Strings.Setting_Orientation, () => "");
@@ -355,8 +297,6 @@ namespace Manlaan.Mounts
             _settingOpacity = settings.DefineSetting("MountOpacity", 1.0f, () => Strings.Setting_MountOpacity, () => "");
             _settingOpacity.SetRange(0f, 1f);
 
-            MigrateDisplaySettings();
-            MigrateMountFileNameSettings();
 
             RadialSettings = new List<RadialThingSettings>
             {
@@ -384,7 +324,6 @@ namespace Manlaan.Mounts
             _settingMountRadialToggleActionCameraKeyBinding.Value.BindingChanged += UpdateSettings;
             _settingMountRadialIconOpacity.SettingChanged += UpdateSettings;
 
-            _settingDisplay.SettingChanged += UpdateSettings;
             _settingDisplayCornerIcons.SettingChanged += UpdateSettings;
             _settingDisplayManualIcons.SettingChanged += UpdateSettings;
             _settingOrientation.SettingChanged += UpdateSettings;
@@ -408,7 +347,7 @@ namespace Manlaan.Mounts
 
         protected override void OnModuleLoaded(EventArgs e)
         {
-            RadialSettings.ForEach(c => _debug.Add($"RadialSettings {c.Name}", () => $"IsApplicable: {c.IsApplicable()}, Center: {c.GetCenterThing()?.DisplayName}"));
+            RadialSettings.ForEach(c => _debug.Add($"RadialSettings {c.Order} {c.Name}", () => $"IsApplicable: {c.IsApplicable()}, Center: {c.GetCenterThing()?.DisplayName}"));
             _debug.Add("Applicable RadialSettings Name", () => $"{GetApplicableRadialSettings()?.Name}");
             _debug.Add("Applicable RadialSettings Actions", () => $"{string.Join(", ", GetApplicableRadialSettings()?.Things.Select(t => t.DisplayName))}"); 
 
@@ -507,7 +446,6 @@ namespace Manlaan.Mounts
 
             _settingDisplayModuleOnLoadingScreen.SettingChanged -= UpdateSettings;
             _settingMountAutomaticallyAfterLoadingScreen.SettingChanged -= UpdateSettings;
-            _settingDisplay.SettingChanged -= UpdateSettings;
             _settingDisplayCornerIcons.SettingChanged -= UpdateSettings;
             _settingDisplayManualIcons.SettingChanged -= UpdateSettings;
             _settingOrientation.SettingChanged -= UpdateSettings;
