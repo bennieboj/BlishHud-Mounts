@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Manlaan.Mounts.Views
+namespace Mounts.Settings
 {
     public class ThingsUpdatedEventArgs : EventArgs
     {

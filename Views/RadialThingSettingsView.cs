@@ -6,6 +6,7 @@ using System.Linq;
 using Blish_HUD.Graphics.UI;
 using Mounts;
 
+
 namespace Manlaan.Mounts.Views
 {
     class RadialThingSettingsView : View
@@ -185,6 +186,10 @@ namespace Manlaan.Mounts.Views
             radialSettingsApplyInstantlyIfSingle_Checkbox.CheckedChanged += delegate {
                 currentRadialSettings.ApplyInstantlyIfSingleSetting.Value = radialSettingsApplyInstantlyIfSingle_Checkbox.Checked;
             };
+            currentRadialSettings.ApplyInstantlyIfSingleSetting.PropertyChanged += delegate
+            {
+                BuildRadialSettingsDetailPanel();
+            };
 
             thingSettingsView = new ThingSettingsView(currentRadialSettings)
             {
@@ -193,14 +198,6 @@ namespace Manlaan.Mounts.Views
                 Width = 500,
                 Height = 500
             };
-            thingSettingsView.OnThingsUpdated += OnThingsUpdated;
         }
-
-        void OnThingsUpdated(object sender, ThingsUpdatedEventArgs e)
-        {
-            currentRadialSettings.ApplyInstantlyIfSingleSetting.Value = e.NewCount == 1;
-            BuildRadialSettingsDetailPanel();
-        }
-
-}
+    }
 }

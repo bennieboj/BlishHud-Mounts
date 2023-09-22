@@ -1,9 +1,7 @@
 ﻿using Blish_HUD.Controls;
 using Microsoft.Xna.Framework;
 using System.Linq;
-using Blish_HUD.Common.UI.Views;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Mounts;
 
 namespace Manlaan.Mounts.Views
@@ -13,7 +11,6 @@ namespace Manlaan.Mounts.Views
         private int orderWidth = 80;
 
         private Panel panel;
-        public event EventHandler<ThingsUpdatedEventArgs> OnThingsUpdated;
 
         protected ThingsSettings CurrentThingSettings;
 
@@ -33,18 +30,6 @@ namespace Manlaan.Mounts.Views
         public override void Draw(SpriteBatch spriteBatch, Rectangle drawBounds, Rectangle scissor)
         {
             base.Draw(spriteBatch, drawBounds, scissor);
-        }
-
-        private void HandleThingsUpdated() {
-            var myevent = new ThingsUpdatedEventArgs();
-            myevent.NewCount = CurrentThingSettings.Things.Count();
-
-            if (OnThingsUpdated != null)
-            {
-                OnThingsUpdated(this, myevent);
-            }
-
-            BuildThingSettingsPanel();
         }
 
 
@@ -72,7 +57,7 @@ namespace Manlaan.Mounts.Views
                 };
                 addThing_Button.Click += (args, sender) => {
                     CurrentThingSettings.AddThing(Module._things.Single(t => t.DisplayName == addThing_Select.SelectedItem));
-                    HandleThingsUpdated();
+                    BuildThingSettingsPanel();
                 };
                 curY = addThing_Select.Bottom;
             }
@@ -99,7 +84,7 @@ namespace Manlaan.Mounts.Views
                 deleteThing_Button.Click += (args, sender) =>
                 {
                     CurrentThingSettings.RemoveThing(thing);
-                    HandleThingsUpdated();
+                    BuildThingSettingsPanel();
                 };
 
                 curX = deleteThing_Button.Right + 6;
