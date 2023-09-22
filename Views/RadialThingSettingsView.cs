@@ -6,7 +6,6 @@ using System.Linq;
 using Blish_HUD.Graphics.UI;
 using Mounts;
 using System;
-using System.Collections.Generic;
 
 namespace Manlaan.Mounts.Views
 {
@@ -19,8 +18,7 @@ namespace Manlaan.Mounts.Views
         private Panel RadialSettingsDetailPanel;
 
         private RadialThingSettings currentRadialSettings;
-        ThingSettingsView thingSettingsView;
-
+        
         public RadialThingSettingsView()
         {
             
@@ -262,7 +260,7 @@ namespace Manlaan.Mounts.Views
                 currentRadialSettings.RemoveCenterMount.Value = settingRadialRemoveCenterMount_Checkbox.Checked;
             };
 
-            thingSettingsView = new ThingSettingsView(currentRadialSettings)
+            ThingSettingsView thingSettingsView = new ThingSettingsView(currentRadialSettings)
             {
                 Location = new Point(0, settingRadialRemoveCenterMount_Label.Bottom),
                 Parent = RadialSettingsDetailPanel,
