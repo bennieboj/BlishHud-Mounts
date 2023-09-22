@@ -80,24 +80,6 @@ namespace Manlaan.Mounts
             _lastUpdateSeconds = currentUpdateSeconds;
         }
 
-        internal Thing GetCenterThing()
-        {
-            if (Module._settingMountRadialCenterMountBehavior.Value == "Default")
-                return GetDefaultThing();
-            if (Module._settingMountRadialCenterMountBehavior.Value == "LastUsed")
-                return GetLastUsedThing();
-             return null;
-        }
-
-        internal Thing GetDefaultThing()
-        {
-            return Module._things.SingleOrDefault(m => m.Name == Module._settingDefaultMountChoice.Value);
-        }
-        internal Thing GetLastUsedThing()
-        {
-            return Module._things.Where(m => m.LastUsedTimestamp != null).OrderByDescending(m => m.LastUsedTimestamp).FirstOrDefault();
-        }
-
         public static async Task TriggerKeybind(SettingEntry<KeyBinding> keybindingSetting)
         {
             Logger.Debug("TriggerKeybind entered");

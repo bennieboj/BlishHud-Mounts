@@ -11,21 +11,21 @@ namespace Manlaan.Mounts
     {
         protected SettingEntry<IList<Type>> ThingsSetting;
 
-        public event EventHandler<ThingsUpdatedEventArgs> OnThingsUpdated;
+        public event EventHandler<ThingsUpdatedEventArgs> OnThingsUpdatedEventHandler;
 
         public void SetThings(IEnumerable<Thing> defaultThings)
         {
             ThingsSetting.Value = defaultThings.Select(t => t.GetType()).ToList();
         }
 
-        private void HandleThingsUpdated()
+        private void HandleThingsUpdatedInternal()
         {
             var myevent = new ThingsUpdatedEventArgs();
             myevent.NewCount = Things.Count();
 
-            if (OnThingsUpdated != null)
+            if (OnThingsUpdatedEventHandler != null)
             {
-                OnThingsUpdated(this, myevent);
+                OnThingsUpdatedEventHandler(this, myevent);
             }
         }
 
@@ -34,13 +34,13 @@ namespace Manlaan.Mounts
         public void AddThing(Thing thingToAdd)
         {
             ThingsSetting.Value = ThingsSetting.Value.Append(thingToAdd.GetType()).ToList();
-            HandleThingsUpdated();
+            HandleThingsUpdatedInternal();
         }
 
-        public void RemoveThing(Thing thingToAdd)
+        public void RemoveThing(Thing thingToRemove)
         {
-            ThingsSetting.Value.Remove(thingToAdd.GetType());
-            HandleThingsUpdated();
+            ThingsSetting.Value.Remove(thingToRemove.GetType());
+            HandleThingsUpdatedInternal();
         }
     }
 }

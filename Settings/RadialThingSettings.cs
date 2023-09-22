@@ -13,9 +13,15 @@ namespace Manlaan.Mounts
         public readonly int Order;
         public readonly Func<bool> IsApplicable;
 
-        public SettingEntry<bool> IsEnabledSetting;
-        public SettingEntry<bool> ApplyInstantlyIfSingleSetting;
+        public SettingEntry<bool> IsEnabled;
+        public SettingEntry<bool> ApplyInstantlyIfSingle;
+        public SettingEntry<CenterBehavior> CenterThingBehavior;
+        public SettingEntry<bool> RemoveCenterMount;
+        public SettingEntry<string> DefaultThingChoice;
+
+        public static string[] _mountRadialCenterMountBehavior = new string[] { "None", "Default", "LastUsed" };
         
+        //Thing/Type LastUsed
 
         public RadialThingSettings(SettingCollection settingCollection, string name, int order, Func<bool> isApplicable, bool defaultIsEnabled, bool defaultApplyInstantlyIfSingle, IList<Thing> defaultThings)
         {
@@ -23,16 +29,42 @@ namespace Manlaan.Mounts
             Order = order;
             IsApplicable = isApplicable;
 
-            IsEnabledSetting = settingCollection.DefineSetting($"RadialThingSettings{name}IsEnabled", defaultIsEnabled);
-            ApplyInstantlyIfSingleSetting = settingCollection.DefineSetting($"RadialThingSettings{name}ApplyInstantlyIfSingle", defaultApplyInstantlyIfSingle);
+            IsEnabled = settingCollection.DefineSetting($"RadialThingSettings{name}IsEnabled", defaultIsEnabled);
+            ApplyInstantlyIfSingle = settingCollection.DefineSetting($"RadialThingSettings{name}ApplyInstantlyIfSingle", defaultApplyInstantlyIfSingle);
             ThingsSetting = settingCollection.DefineSetting($"RadialThingSettings{name}Things", (IList<Type>) defaultThings.Select(t => t.GetType()).ToList());
 
-            base.OnThingsUpdated += OnThingsUpdated;
+            CenterThingBehavior = settingCollection.DefineSetting($"RadialThingSettings{name}CenterThingBehavior", CenterBehavior.None);
+            RemoveCenterMount = settingCollection.DefineSetting($"RadialThingSettings{name}RemoveCenterThingFromRadial", true);
+            DefaultThingChoice = settingCollection.DefineSetting("DefaultMountChoice", "Disabled");
+
+            base.OnThingsUpdatedEventHandler += OnThingsUpdated;
         }
 
         private void OnThingsUpdated(object sender, ThingsUpdatedEventArgs e)
         {
-            ApplyInstantlyIfSingleSetting.Value = e.NewCount == 1;
+            ApplyInstantlyIfSingle.Value = e.NewCount == 1;
+            if(GetDefaultThing() == null)
+            {
+                DefaultThingChoice.Value = "Disabled";
+            }
+        }
+
+        internal Thing GetCenterThing()
+        {
+            if (CenterThingBehavior.Value == CenterBehavior.Default)
+                return GetDefaultThing();
+            if (CenterThingBehavior.Value == CenterBehavior.LastUsed)
+                return GetLastUsedThing();
+            return null;
+        }
+
+        internal Thing GetDefaultThing()
+        {
+            return Things.SingleOrDefault(m => m.Name == DefaultThingChoice.Value);
+        }
+        internal Thing GetLastUsedThing()
+        {
+            return Module._things.Where(m => m.LastUsedTimestamp != null).OrderByDescending(m => m.LastUsedTimestamp).FirstOrDefault();
         }
     }
 }

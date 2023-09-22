@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using Blish_HUD.Graphics.UI;
 using Mounts;
-
+using System;
 
 namespace Manlaan.Mounts.Views
 {
@@ -160,11 +160,11 @@ namespace Manlaan.Mounts.Views
             {
                 Size = new Point(20, 20),
                 Parent = RadialSettingsDetailPanel,
-                Checked = currentRadialSettings.IsEnabledSetting.Value,
+                Checked = currentRadialSettings.IsEnabled.Value,
                 Location = new Point(radialSettingsIsEnabled_Label.Right + 5, radialSettingsIsEnabled_Label.Top - 1),
             };
             radialSettingsIsEnabled_Checkbox.CheckedChanged += delegate {
-                currentRadialSettings.IsEnabledSetting.Value = radialSettingsIsEnabled_Checkbox.Checked;
+                currentRadialSettings.IsEnabled.Value = radialSettingsIsEnabled_Checkbox.Checked;
             };
 
             Label radialSettingsApplyInstantlyIfSingle_Label = new Label()
@@ -180,20 +180,90 @@ namespace Manlaan.Mounts.Views
             {
                 Size = new Point(20, 20),
                 Parent = RadialSettingsDetailPanel,
-                Checked = currentRadialSettings.ApplyInstantlyIfSingleSetting.Value,
+                Checked = currentRadialSettings.ApplyInstantlyIfSingle.Value,
                 Location = new Point(radialSettingsApplyInstantlyIfSingle_Label.Right + 5, radialSettingsApplyInstantlyIfSingle_Label.Top - 1),
             };
             radialSettingsApplyInstantlyIfSingle_Checkbox.CheckedChanged += delegate {
-                currentRadialSettings.ApplyInstantlyIfSingleSetting.Value = radialSettingsApplyInstantlyIfSingle_Checkbox.Checked;
+                currentRadialSettings.ApplyInstantlyIfSingle.Value = radialSettingsApplyInstantlyIfSingle_Checkbox.Checked;
             };
-            currentRadialSettings.ApplyInstantlyIfSingleSetting.PropertyChanged += delegate
+            currentRadialSettings.ApplyInstantlyIfSingle.PropertyChanged += delegate
             {
                 BuildRadialSettingsDetailPanel();
             };
 
+            Label settingDefaultMount_Label = new Label()
+            {
+                Location = new Point(0, radialSettingsApplyInstantlyIfSingle_Label.Bottom + 6),
+                Width = labelWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = RadialSettingsDetailPanel,
+                Text = "Default mount: ",
+            };
+            Dropdown settingDefaultMount_Select = new Dropdown()
+            {
+                Location = new Point(settingDefaultMount_Label.Right + 5, settingDefaultMount_Label.Top - 4),
+                Width = labelWidth,
+                Parent = RadialSettingsDetailPanel,
+            };
+            settingDefaultMount_Select.Items.Add("Disabled");
+            var mountNames = currentRadialSettings.Things.Select(m => m.Name);
+            foreach (string i in mountNames)
+            {
+                settingDefaultMount_Select.Items.Add(i.ToString());
+            }
+            settingDefaultMount_Select.SelectedItem = mountNames.Any(m => m == currentRadialSettings.DefaultThingChoice.Value) ? currentRadialSettings.DefaultThingChoice.Value : "Disabled";
+            settingDefaultMount_Select.ValueChanged += delegate {
+                currentRadialSettings.DefaultThingChoice.Value = settingDefaultMount_Select.SelectedItem;
+            };
+
+
+            Label settingMountRadialCenterMountBehavior_Label = new Label()
+            {
+                Location = new Point(0, settingDefaultMount_Label.Bottom + 6),
+                Width = labelWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = RadialSettingsDetailPanel,
+                Text = "Center mount: ",
+            };
+            Dropdown settingMountRadialCenterMountBehavior_Select = new Dropdown()
+            {
+                Location = new Point(settingMountRadialCenterMountBehavior_Label.Right + 5, settingMountRadialCenterMountBehavior_Label.Top - 4),
+                Width = labelWidth,
+                Parent = RadialSettingsDetailPanel,
+            };
+            foreach (string i in RadialThingSettings._mountRadialCenterMountBehavior)
+            {
+                settingMountRadialCenterMountBehavior_Select.Items.Add(i.ToString());
+            }
+            settingMountRadialCenterMountBehavior_Select.SelectedItem = currentRadialSettings.CenterThingBehavior.Value.ToString();
+            settingMountRadialCenterMountBehavior_Select.ValueChanged += delegate {
+                currentRadialSettings.CenterThingBehavior.Value = (CenterBehavior) Enum.Parse(typeof(CenterBehavior), settingMountRadialCenterMountBehavior_Select.SelectedItem);
+            };
+            Label settingMountRadialRemoveCenterMount_Label = new Label()
+            {
+                Location = new Point(0, settingMountRadialCenterMountBehavior_Label.Bottom + 6),
+                Width = labelWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = RadialSettingsDetailPanel,
+                Text = "Remove center mount from radial: ",
+            };
+            Checkbox settingMountRadialRemoveCenterMount_Checkbox = new Checkbox()
+            {
+                Size = new Point(labelWidth, 20),
+                Parent = RadialSettingsDetailPanel,
+                Checked = currentRadialSettings.RemoveCenterMount.Value,
+                Location = new Point(settingMountRadialRemoveCenterMount_Label.Right + 5, settingMountRadialRemoveCenterMount_Label.Top - 1),
+            };
+            settingMountRadialRemoveCenterMount_Checkbox.CheckedChanged += delegate {
+                currentRadialSettings.RemoveCenterMount.Value = settingMountRadialRemoveCenterMount_Checkbox.Checked;
+            };
+
             thingSettingsView = new ThingSettingsView(currentRadialSettings)
             {
-                Location = new Point(0, radialSettingsApplyInstantlyIfSingle_Label.Bottom),
+                Location = new Point(0, settingMountRadialRemoveCenterMount_Label.Bottom),
                 Parent = RadialSettingsDetailPanel,
                 Width = 500,
                 Height = 500

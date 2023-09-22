@@ -39,7 +39,7 @@ namespace Manlaan.Mounts
         internal static List<Thing> _availableOrderedThings => _things.Where(m => m.IsAvailable).OrderBy(m => m.OrderSetting.Value).ToList();
         internal static List<RadialThingSettings> RadialSettings;
         internal static List<RadialThingSettings> OrderedRadialSettings() => RadialSettings.OrderBy(c => c.Order).ToList();
-        internal static RadialThingSettings GetApplicableRadialSettings() => OrderedRadialSettings().FirstOrDefault(c => c.IsEnabledSetting.Value && c.IsApplicable());
+        internal static RadialThingSettings GetApplicableRadialSettings() => OrderedRadialSettings().FirstOrDefault(c => c.IsEnabled.Value && c.IsApplicable());
 
 
         public static string mountsDirectory;
@@ -49,9 +49,8 @@ namespace Manlaan.Mounts
 
         public static string[] _mountBehaviour = new string[] { "DefaultMount", "Radial" };
         public static string[] _mountOrientation = new string[] { "Horizontal", "Vertical" };
-        public static string[] _mountRadialCenterMountBehavior = new string[] { "None", "Default", "LastUsed" };
-
-        public static SettingEntry<string> _settingDefaultMountChoice;
+        
+        
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
         public static SettingEntry<bool> _settingDisplayMountQueueing;
         public static SettingEntry<string> _settingDefaultMountBehaviour;
@@ -60,8 +59,6 @@ namespace Manlaan.Mounts
         public static SettingEntry<float> _settingMountRadialStartAngle;
         public static SettingEntry<float> _settingMountRadialIconSizeModifier;
         public static SettingEntry<float> _settingMountRadialIconOpacity;
-        public static SettingEntry<string> _settingMountRadialCenterMountBehavior;
-        public static SettingEntry<bool> _settingMountRadialRemoveCenterMount;
         public static SettingEntry<KeyBinding> _settingMountRadialToggleActionCameraKeyBinding;
 
         public static SettingEntry<bool> _settingDisplayModuleOnLoadingScreen;
@@ -249,8 +246,8 @@ namespace Manlaan.Mounts
                 var settingDefaultFlyingMountChoice = settings["DefaultFlyingMountChoice"] as SettingEntry<string>;
                 if (settingDefaultFlyingMountChoice.Value != "Disabled" && _things.Count(t => t.Name == settingDefaultFlyingMountChoice.Value) == 1)
                 {
-                    flyingRadialSettings.ApplyInstantlyIfSingleSetting.Value = true;
-                    flyingRadialSettings.IsEnabledSetting.Value = true;
+                    flyingRadialSettings.ApplyInstantlyIfSingle.Value = true;
+                    flyingRadialSettings.IsEnabled.Value = true;
                     flyingRadialSettings.SetThings(new List<Thing> { _things.Single(t => t.Name == settingDefaultFlyingMountChoice.Value) });
                 }
                 settings.UndefineSetting("DefaultFlyingMountChoice");
@@ -262,11 +259,41 @@ namespace Manlaan.Mounts
                 var settingDefaultWaterMountChoice = settings["DefaultWaterMountChoice"] as SettingEntry<string>;
                 if (settingDefaultWaterMountChoice.Value != "Disabled" && _things.Count(t => t.Name == settingDefaultWaterMountChoice.Value) == 1)
                 {
-                    underwaterRadialSettings.ApplyInstantlyIfSingleSetting.Value = true;
-                    underwaterRadialSettings.IsEnabledSetting.Value = true;
+                    underwaterRadialSettings.ApplyInstantlyIfSingle.Value = true;
+                    underwaterRadialSettings.IsEnabled.Value = true;
                     underwaterRadialSettings.SetThings(new List<Thing> { _things.Single(t => t.Name == settingDefaultWaterMountChoice.Value) });
                 }
                 settings.UndefineSetting("DefaultWaterMountChoice");
+            }
+
+
+            var defaultRadialSettings = RadialSettings.Single(c => c.Name == "Default");
+            if (settings.ContainsSetting("DefaultMountChoice"))
+            {
+                var settingDefaultMountChoice = settings["DefaultMountChoice"] as SettingEntry<string>;
+                
+                defaultRadialSettings.DefaultThingChoice.Value = settingDefaultMountChoice.Value;
+                
+                settings.UndefineSetting("DefaultMountChoice");
+            }
+
+            if (settings.ContainsSetting("MountRadialRemoveCenterMount"))
+            {
+                var settingMountRadialRemoveCenterMount = settings["MountRadialRemoveCenterMount"] as SettingEntry<bool>;
+
+                defaultRadialSettings.RemoveCenterMount.Value = settingMountRadialRemoveCenterMount.Value;
+
+                settings.UndefineSetting("MountRadialRemoveCenterMount");
+            }
+
+            if (settings.ContainsSetting("MountRadialCenterMountBehavior"))
+            {
+                var settingMountRadialCenterMountBehavior = settings["MountRadialCenterMountBehavior"] as SettingEntry<string>;
+                if (Enum.TryParse<CenterBehavior>(settingMountRadialCenterMountBehavior.Value, out var result))
+                {
+                    defaultRadialSettings.CenterThingBehavior.Value = result;
+                }
+                settings.UndefineSetting("MountRadialCenterMountBehavior");
             }
         }
 
@@ -301,7 +328,6 @@ namespace Manlaan.Mounts
             _settingDefaultMountBinding.Value.Enabled = true;
             _settingDefaultMountBinding.Value.Activated += async delegate { await DoDefaultMountActionAsync(); };
             _settingDefaultMountBinding.Value.BindingChanged += UpdateSettings;
-            _settingDefaultMountChoice = settings.DefineSetting("DefaultMountChoice", "Disabled", () => Strings.Setting_DefaultMountChoice, () => "");
             _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "Radial", () => Strings.Setting_DefaultMountBehaviour, () => "");
             _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false, () => Strings.Setting_DisplayMountQueueing, () => "");
             _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, () => Strings.Setting_MountRadialSpawnAtMouse, () => "");
@@ -313,8 +339,6 @@ namespace Manlaan.Mounts
             _settingMountRadialStartAngle.SetRange(0.0f, 1.0f);
             _settingMountRadialIconOpacity = settings.DefineSetting("MountRadialIconOpacity", 0.5f, () => Strings.Setting_MountRadialIconOpacity, () => "");
             _settingMountRadialIconOpacity.SetRange(0.05f, 1f);
-            _settingMountRadialCenterMountBehavior = settings.DefineSetting("MountRadialCenterMountBehavior", "Default", () => Strings.Setting_MountRadialCenterMountBehavior, () => "");
-            _settingMountRadialRemoveCenterMount = settings.DefineSetting("MountRadialRemoveCenterMount", true, () => Strings.Setting_MountRadialRemoveCenterMount, () => "");
             _settingMountRadialToggleActionCameraKeyBinding = settings.DefineSetting("MountRadialToggleActionCameraKeyBinding", new KeyBinding(Keys.F10), () => Strings.Setting_MountRadialToggleActionCameraKeyBinding, () => "");
 
 
@@ -341,7 +365,7 @@ namespace Manlaan.Mounts
                 new RadialThingSettings(settings, "IsPlayerGlidingOrFalling", 2, _helper.IsPlayerGlidingOrFalling, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList()),
                 new RadialThingSettings(settings, "IsPlayerUnderWater", 3, _helper.IsPlayerUnderWater, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList()),
                 new RadialThingSettings(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()),
-                new RadialThingSettings(settings, "Default", 99, () => true, true, false, _things)
+                new RadialThingSettings(settings, "Default", 99, () => true, true, false, _availableOrderedThings)
             };
             MigrateRadialThingSettings(settings);
 
@@ -350,7 +374,6 @@ namespace Manlaan.Mounts
                 t.KeybindingSetting.Value.BindingChanged += UpdateSettings;
                 t.ImageFileNameSetting.SettingChanged += UpdateSettings;
             }
-            _settingDefaultMountChoice.SettingChanged += UpdateSettings;
             _settingDisplayModuleOnLoadingScreen.SettingChanged += UpdateSettings;
             _settingMountAutomaticallyAfterLoadingScreen.SettingChanged += UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged += UpdateSettings;
@@ -358,10 +381,8 @@ namespace Manlaan.Mounts
             _settingMountRadialIconSizeModifier.SettingChanged += UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged += UpdateSettings;
             _settingMountRadialStartAngle.SettingChanged += UpdateSettings;
-            _settingMountRadialCenterMountBehavior.SettingChanged += UpdateSettings;
             _settingMountRadialToggleActionCameraKeyBinding.Value.BindingChanged += UpdateSettings;
             _settingMountRadialIconOpacity.SettingChanged += UpdateSettings;
-            _settingMountRadialRemoveCenterMount.SettingChanged += UpdateSettings;
 
             _settingDisplay.SettingChanged += UpdateSettings;
             _settingDisplayCornerIcons.SettingChanged += UpdateSettings;
@@ -476,16 +497,13 @@ namespace Manlaan.Mounts
                 t.DisposeCornerIcon();
             }
 
-            _settingDefaultMountChoice.SettingChanged -= UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged -= UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged -= UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged -= UpdateSettings;
             _settingMountRadialStartAngle.SettingChanged -= UpdateSettings;
-            _settingMountRadialCenterMountBehavior.SettingChanged -= UpdateSettings;
             _settingMountRadialToggleActionCameraKeyBinding.SettingChanged -= UpdateSettings;
             _settingMountRadialIconOpacity.SettingChanged -= UpdateSettings;
-            _settingMountRadialRemoveCenterMount.SettingChanged -= UpdateSettings;
 
             _settingDisplayModuleOnLoadingScreen.SettingChanged -= UpdateSettings;
             _settingMountAutomaticallyAfterLoadingScreen.SettingChanged -= UpdateSettings;
@@ -557,14 +575,14 @@ namespace Manlaan.Mounts
 
             var selectedRadialSettings = GetApplicableRadialSettings();
             var things = selectedRadialSettings.Things;
-            if (things.Count() == 1 && things.FirstOrDefault().IsAvailable && selectedRadialSettings.ApplyInstantlyIfSingleSetting.Value)
+            if (things.Count() == 1 && things.FirstOrDefault().IsAvailable && selectedRadialSettings.ApplyInstantlyIfSingle.Value)
             {
                 await things.FirstOrDefault()?.DoAction();
                 Logger.Debug("DoDefaultMountActionAsync instantmount");
                 return;
             }
 
-            var defaultThing = _helper.GetDefaultThing();
+            var defaultThing = selectedRadialSettings.GetDefaultThing();
             if (defaultThing != null && GameService.Input.Mouse.CameraDragging)
             {
                 await (defaultThing?.DoAction() ?? Task.CompletedTask);

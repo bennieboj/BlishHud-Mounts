@@ -320,35 +320,10 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = defaultMountPanel,
                 Text = "Default mount settings: "
-            };
-            Label settingDefaultMount_Label = new Label()
-            {
-                Location = new Point(0, settingDefaultSettingsMount_Label.Bottom + 6),
-                Width = labelWidth2,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = defaultMountPanel,
-                Text = "Default mount: ",
-            };
-            Dropdown settingDefaultMount_Select = new Dropdown()
-            {
-                Location = new Point(settingDefaultMount_Label.Right + 5, settingDefaultMount_Label.Top - 4),
-                Width = mountsAndRadialInputWidth,
-                Parent = defaultMountPanel,
-            };
-            settingDefaultMount_Select.Items.Add("Disabled");
-            var mountNames = Module._things.Select(m => m.Name);
-            foreach (string i in mountNames)
-            {
-                settingDefaultMount_Select.Items.Add(i.ToString());
-            }
-            settingDefaultMount_Select.SelectedItem = mountNames.Any(m => m == Module._settingDefaultMountChoice.Value) ? Module._settingDefaultMountChoice.Value : "Disabled";
-            settingDefaultMount_Select.ValueChanged += delegate {
-                Module._settingDefaultMountChoice.Value = settingDefaultMount_Select.SelectedItem;
-            };                        
+            };                   
             Label settingDefaultMountKeybind_Label = new Label()
             {
-                Location = new Point(0, settingDefaultMount_Label.Bottom + 6),
+                Location = new Point(0, settingDefaultSettingsMount_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -556,51 +531,10 @@ namespace Manlaan.Mounts.Views
                 Parent = radialPanel,
             };
             settingMountRadialIconOpacity_Slider.ValueChanged += delegate { Module._settingMountRadialIconOpacity.Value = settingMountRadialIconOpacity_Slider.Value / 100; };
-            Label settingMountRadialCenterMountBehavior_Label = new Label()
-            {
-                Location = new Point(0, settingMountRadialIconOpacity_Label.Bottom + 6),
-                Width = labelWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = radialPanel,
-                Text = "Center mount: ",
-            };
-            Dropdown settingMountRadialCenterMountBehavior_Select = new Dropdown()
-            {
-                Location = new Point(settingMountRadialCenterMountBehavior_Label.Right + 5, settingMountRadialCenterMountBehavior_Label.Top - 4),
-                Width = mountsAndRadialInputWidth,
-                Parent = radialPanel,
-            };
-            foreach (string i in Module._mountRadialCenterMountBehavior)
-            {
-                settingMountRadialCenterMountBehavior_Select.Items.Add(i.ToString());
-            }
-            settingMountRadialCenterMountBehavior_Select.SelectedItem = Module._settingMountRadialCenterMountBehavior.Value;
-            settingMountRadialCenterMountBehavior_Select.ValueChanged += delegate {
-                Module._settingMountRadialCenterMountBehavior.Value = settingMountRadialCenterMountBehavior_Select.SelectedItem;
-            };
-            Label settingMountRadialRemoveCenterMount_Label = new Label()
-            {
-                Location = new Point(0, settingMountRadialCenterMountBehavior_Label.Bottom + 6),
-                Width = labelWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = radialPanel,
-                Text = "Remove center mount from radial: ",
-            };
-            Checkbox settingMountRadialRemoveCenterMount_Checkbox = new Checkbox()
-            {
-                Size = new Point(labelWidth, 20),
-                Parent = radialPanel,
-                Checked = Module._settingMountRadialRemoveCenterMount.Value,
-                Location = new Point(settingMountRadialRemoveCenterMount_Label.Right + 5, settingMountRadialRemoveCenterMount_Label.Top - 1),
-            };
-            settingMountRadialRemoveCenterMount_Checkbox.CheckedChanged += delegate {
-                Module._settingMountRadialRemoveCenterMount.Value = settingMountRadialRemoveCenterMount_Checkbox.Checked;
-            };
+
             Label settingMountRadialToggleActionCameraKeyBinding_Label = new Label()
             {
-                Location = new Point(0, settingMountRadialRemoveCenterMount_Label.Bottom + 6),
+                Location = new Point(0, settingMountRadialIconOpacity_Label.Bottom + 6),
                 Width = labelWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
