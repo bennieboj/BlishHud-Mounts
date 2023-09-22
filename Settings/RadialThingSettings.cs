@@ -19,8 +19,6 @@ namespace Manlaan.Mounts
         public SettingEntry<bool> RemoveCenterMount;
         public SettingEntry<string> DefaultThingChoice;
 
-        public static string[] _mountRadialCenterMountBehavior = new string[] { "None", "Default", "LastUsed" };
-
         public RadialThingSettings(SettingCollection settingCollection, string name, int order, Func<bool> isApplicable, bool defaultIsEnabled, bool defaultApplyInstantlyIfSingle, IList<Thing> defaultThings)
         {
             Name = name;
