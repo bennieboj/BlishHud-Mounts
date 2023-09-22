@@ -408,9 +408,9 @@ namespace Manlaan.Mounts
 
         protected override void OnModuleLoaded(EventArgs e)
         {
-            RadialSettings.ForEach(c => _debug.Add(c.Name, () => $"{c.IsApplicable()}"));
-            _debug.Add("ApplicableRadialSettings Name", () => $"{GetApplicableRadialSettings()?.Name}");
-            _debug.Add("ApplicableRadialSettings Actions", () => $"{string.Join(", ", GetApplicableRadialSettings()?.Things.Select(t => t.DisplayName))}"); 
+            RadialSettings.ForEach(c => _debug.Add($"RadialSettings {c.Name}", () => $"IsApplicable: {c.IsApplicable()}, Center: {c.GetCenterThing()?.DisplayName}"));
+            _debug.Add("Applicable RadialSettings Name", () => $"{GetApplicableRadialSettings()?.Name}");
+            _debug.Add("Applicable RadialSettings Actions", () => $"{string.Join(", ", GetApplicableRadialSettings()?.Things.Select(t => t.DisplayName))}"); 
 
             DrawUI();
 

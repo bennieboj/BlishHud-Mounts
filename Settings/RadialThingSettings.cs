@@ -20,8 +20,6 @@ namespace Manlaan.Mounts
         public SettingEntry<string> DefaultThingChoice;
 
         public static string[] _mountRadialCenterMountBehavior = new string[] { "None", "Default", "LastUsed" };
-        
-        //Thing/Type LastUsed
 
         public RadialThingSettings(SettingCollection settingCollection, string name, int order, Func<bool> isApplicable, bool defaultIsEnabled, bool defaultApplyInstantlyIfSingle, IList<Thing> defaultThings)
         {
@@ -62,9 +60,10 @@ namespace Manlaan.Mounts
         {
             return Things.SingleOrDefault(m => m.Name == DefaultThingChoice.Value);
         }
+
         internal Thing GetLastUsedThing()
         {
-            return Module._things.Where(m => m.LastUsedTimestamp != null).OrderByDescending(m => m.LastUsedTimestamp).FirstOrDefault();
+            return Things.Where(m => m.LastUsedTimestamp != null).OrderByDescending(m => m.LastUsedTimestamp).FirstOrDefault();
         }
     }
 }
