@@ -20,6 +20,8 @@ using System.IO;
 using Manlaan.Mounts.Things.Mounts;
 using Manlaan.Mounts.Things;
 using Mounts;
+using Mounts.Settings;
+using Gw2Sharp;
 
 namespace Manlaan.Mounts
 {
@@ -38,6 +40,7 @@ namespace Manlaan.Mounts
         internal static Collection<Thing> _things = new Collection<Thing>();
         internal static List<Thing> _availableOrderedThings => _things.Where(m => m.IsAvailable).OrderBy(m => m.OrderSetting.Value).ToList();
         internal static List<RadialThingSettings> RadialSettings;
+        internal static List<IconThingSettings> IconThingSettings;
         internal static List<RadialThingSettings> OrderedRadialSettings() => RadialSettings.OrderBy(c => c.Order).ToList();
         internal static RadialThingSettings GetApplicableRadialSettings() => OrderedRadialSettings().FirstOrDefault(c => c.IsEnabled.Value && c.IsApplicable());
 
@@ -48,9 +51,8 @@ namespace Manlaan.Mounts
         public static List<ThingImageFile> _thingImageFiles = new List<ThingImageFile>();
 
         public static string[] _mountBehaviour = new string[] { "DefaultMount", "Radial" };
-        public static string[] _mountOrientation = new string[] { "Horizontal", "Vertical" };
-        
-        
+
+
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
         public static SettingEntry<bool> _settingDisplayMountQueueing;
         public static SettingEntry<string> _settingDefaultMountBehaviour;
@@ -63,19 +65,12 @@ namespace Manlaan.Mounts
 
         public static SettingEntry<bool> _settingDisplayModuleOnLoadingScreen;
         public static SettingEntry<bool> _settingMountAutomaticallyAfterLoadingScreen;
-        public static SettingEntry<bool> _settingDisplayCornerIcons;
-        public static SettingEntry<bool> _settingDisplayManualIcons;
-        public static SettingEntry<string> _settingOrientation;
-        public static SettingEntry<Point> _settingLoc;
-        public static SettingEntry<bool> _settingDrag;
-        public static SettingEntry<int> _settingImgWidth;
-        public static SettingEntry<float> _settingOpacity;
+
 
 
         public static DebugControl _debug;
         private DrawRadial _radial;
-        private DrawCornerIcons _drawCornerIcons;
-        private DrawManualIcons _drawManualIcons;
+        private ICollection<DrawIcons> _drawIcons = new List<DrawIcons>();
         private LoadingSpinner _queueingSpinner;
         private DrawMouseCursor _drawMouseCursor;
         private Helper _helper;
@@ -160,6 +155,7 @@ namespace Manlaan.Mounts
             var x = Strings.Window_AllSettingsTab;
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SettingsTextureName), () => new SettingsView(_textureCache), x));
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.RadialSettingsTextureName), () => new RadialThingSettingsView(), Strings.Window_RadialSettingsTab));
+            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.IconSettingsTextureName), () => new IconThingSettingsView(), Strings.Window_IconSettingsTab));
         }
 
         private void ExtractFile(string filePath, string directoryToExtractTo)
@@ -176,11 +172,6 @@ namespace Manlaan.Mounts
         }
 
 
-
-
-        /*
-         * Migrate from defaultwatermount, etc to RadialTHingSettings
-         */
         private void MigrateRadialThingSettings(SettingCollection settings)
         {
             if (settings.ContainsSetting("DefaultFlyingMountChoice"))
@@ -214,9 +205,9 @@ namespace Manlaan.Mounts
             if (settings.ContainsSetting("DefaultMountChoice"))
             {
                 var settingDefaultMountChoice = settings["DefaultMountChoice"] as SettingEntry<string>;
-                
+
                 defaultRadialSettings.DefaultThingChoice.Value = settingDefaultMountChoice.Value;
-                
+
                 settings.UndefineSetting("DefaultMountChoice");
             }
 
@@ -237,6 +228,63 @@ namespace Manlaan.Mounts
                     defaultRadialSettings.CenterThingBehavior.Value = result;
                 }
                 settings.UndefineSetting("MountRadialCenterMountBehavior");
+            }
+        }
+
+
+        private void MigrateIconThingSettings(SettingCollection settings)
+        {
+            var defaultIconThingSettings = IconThingSettings.Single(c => c.IsDefault);
+            if (settings.ContainsSetting("MountDisplayManualIcons"))
+            {
+                var settingMountDisplayManualIcons = settings["MountDisplayManualIcons"] as SettingEntry<bool>;
+                defaultIconThingSettings.IsEnabled.Value = settingMountDisplayManualIcons.Value;
+                settings.UndefineSetting("MountDisplayManualIcons");
+            }
+            
+            if (settings.ContainsSetting("MountDisplayCornerIcons"))
+            {
+                var settingMountDisplayCornerIcons = settings["MountDisplayCornerIcons"] as SettingEntry<bool>;
+                defaultIconThingSettings.IsEnabled.Value = settingMountDisplayCornerIcons.Value;
+                settings.UndefineSetting("MountDisplayCornerIcons");
+            }
+
+            if (settings.ContainsSetting("Orientation"))
+            {
+                var settingOrientation = settings["Orientation"] as SettingEntry<string>;
+                if (Enum.TryParse<IconOrientation>(settingOrientation.Value, out var result))
+                {
+                    defaultIconThingSettings.Orientation.Value = result;
+                }
+                settings.UndefineSetting("Orientation");
+            }
+
+            if (settings.ContainsSetting("MountLoc"))
+            {
+                var _settingLoc = settings["MountLoc"] as SettingEntry<Point>;
+                defaultIconThingSettings.Location.Value = _settingLoc.Value;
+                settings.UndefineSetting("MountLoc");
+            }
+
+            if (settings.ContainsSetting("MountDrag"))
+            {
+                var _settingDrag = settings["MountDrag"] as SettingEntry<bool>;
+                defaultIconThingSettings.IsDraggingEnabled.Value = _settingDrag.Value;
+                settings.UndefineSetting("MountDrag");
+            }
+
+            if (settings.ContainsSetting("MountImgWidth"))
+            {
+                var _settingMountImgWidth = settings["MountImgWidth"] as SettingEntry<int>;
+                defaultIconThingSettings.Size.Value = _settingMountImgWidth.Value;
+                settings.UndefineSetting("MountImgWidth");
+            }
+
+            if (settings.ContainsSetting("MountOpacity"))
+            {
+                var _settingMountOpacity = settings["MountOpacity"] as SettingEntry<float>;
+                defaultIconThingSettings.Opacity.Value = _settingMountOpacity.Value;
+                settings.UndefineSetting("MountOpacity");
             }
         }
 
@@ -287,15 +335,7 @@ namespace Manlaan.Mounts
 
             _settingDisplayModuleOnLoadingScreen = settings.DefineSetting("DisplayModuleOnLoadingScreen", false, () => Strings.Setting_DisplayModuleOnLoadingScreen, () => "");
             _settingMountAutomaticallyAfterLoadingScreen = settings.DefineSetting("MountAutomaticallyAfterLoadingScreen", false, () => Strings.Setting_MountAutomaticallyAfterLoadingScreen, () => "");
-            _settingDisplayCornerIcons = settings.DefineSetting("MountDisplayCornerIcons", false, () => Strings.Setting_MountDisplayCornerIcons, () => "");
-            _settingDisplayManualIcons = settings.DefineSetting("MountDisplayManualIcons", false, () => Strings.Setting_MountDisplayManualIcons, () => "");
-            _settingOrientation = settings.DefineSetting("Orientation", "Horizontal", () => Strings.Setting_Orientation, () => "");
-            _settingLoc = settings.DefineSetting("MountLoc", new Point(100, 100), () => Strings.Setting_MountLoc, () => "");
-            _settingDrag = settings.DefineSetting("MountDrag", false, () => Strings.Setting_MountDrag, () => "");
-            _settingImgWidth = settings.DefineSetting("MountImgWidth", 50, () => Strings.Setting_MountImgWidth, () => "");
-            _settingImgWidth.SetRange(0, 200);
-            _settingOpacity = settings.DefineSetting("MountOpacity", 1.0f, () => Strings.Setting_MountOpacity, () => "");
-            _settingOpacity.SetRange(0f, 1f);
+
 
 
             RadialSettings = new List<RadialThingSettings>
@@ -308,6 +348,12 @@ namespace Manlaan.Mounts
                 new RadialThingSettings(settings, "Default", 99, () => true, true, false, _availableOrderedThings)
             };
             MigrateRadialThingSettings(settings);
+
+            IconThingSettings = new List<IconThingSettings>
+            {
+                new IconThingSettings(settings, "Default", false, false, IconOrientation.Horizontal, new Point(100, 100), false, 50, 1.0f, _availableOrderedThings)                
+            };
+            MigrateIconThingSettings(settings);
 
             foreach (var t in _things)
             {
@@ -323,15 +369,6 @@ namespace Manlaan.Mounts
             _settingMountRadialStartAngle.SettingChanged += UpdateSettings;
             _settingMountRadialToggleActionCameraKeyBinding.Value.BindingChanged += UpdateSettings;
             _settingMountRadialIconOpacity.SettingChanged += UpdateSettings;
-
-            _settingDisplayCornerIcons.SettingChanged += UpdateSettings;
-            _settingDisplayManualIcons.SettingChanged += UpdateSettings;
-            _settingOrientation.SettingChanged += UpdateSettings;
-            _settingLoc.SettingChanged += UpdateSettings;
-            _settingDrag.SettingChanged += UpdateSettings;
-            _settingImgWidth.SettingChanged += UpdateSettings;
-            _settingOpacity.SettingChanged += UpdateSettings;
-
         }
 
         public override IView GetSettingsView()
@@ -382,13 +419,11 @@ namespace Manlaan.Mounts
             bool shouldShowModule = ShouldShowModule();
             if (shouldShowModule)
             {
-                _drawManualIcons?.Show();
-                _drawCornerIcons?.Show();
+                foreach (var drawIcons in _drawIcons) drawIcons.Show();
             }
             else
             {
-                _drawManualIcons?.Hide();
-                _drawCornerIcons?.Hide();
+                foreach (var drawIcons in _drawIcons) drawIcons.Hide();
             }
 
             if (_settingDisplayMountQueueing.Value && _things.Any(m => m.QueuedTimestamp != null))
@@ -426,7 +461,7 @@ namespace Manlaan.Mounts
         protected override void Unload()
         {
             _debug?.Dispose();
-            _drawManualIcons?.Dispose();
+            foreach (var drawIcons in _drawIcons) drawIcons.Dispose();
             _radial?.Dispose();
 
             foreach (var t in _things)
@@ -446,13 +481,6 @@ namespace Manlaan.Mounts
 
             _settingDisplayModuleOnLoadingScreen.SettingChanged -= UpdateSettings;
             _settingMountAutomaticallyAfterLoadingScreen.SettingChanged -= UpdateSettings;
-            _settingDisplayCornerIcons.SettingChanged -= UpdateSettings;
-            _settingDisplayManualIcons.SettingChanged -= UpdateSettings;
-            _settingOrientation.SettingChanged -= UpdateSettings;
-            _settingLoc.SettingChanged -= UpdateSettings;
-            _settingDrag.SettingChanged -= UpdateSettings;
-            _settingImgWidth.SettingChanged -= UpdateSettings;
-            _settingOpacity.SettingChanged -= UpdateSettings;
         }
 
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<string> e = null) {
@@ -477,14 +505,9 @@ namespace Manlaan.Mounts
         }
 
         private void DrawUI()
-        {   
-            _drawCornerIcons?.Dispose();
-            if (_settingDisplayCornerIcons.Value)
-                _drawCornerIcons = new DrawCornerIcons(_textureCache);
-
-            _drawManualIcons?.Dispose();
-            if (_settingDisplayManualIcons.Value)
-                _drawManualIcons = new DrawManualIcons(_helper, _textureCache);
+        {
+            foreach (var drawIcons in _drawIcons) drawIcons.Dispose();
+            _drawIcons = IconThingSettings.Select(iconSetting => new DrawIcons(iconSetting, _helper, _textureCache)).ToList();
 
             _queueingSpinner?.Dispose();
             _queueingSpinner = new LoadingSpinner();

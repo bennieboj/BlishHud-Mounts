@@ -71,7 +71,7 @@ namespace Manlaan.Mounts.Views
 
         private void CreateRadialSettingsListPanel()
         {
-            Label orderHeading_Label = new Label()
+            Label nameHeader_Label = new Label()
             {
                 Location = new Point(0, 10),
                 Width = labelWidth,
@@ -81,9 +81,9 @@ namespace Manlaan.Mounts.Views
                 Text = "Name",
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
-            Label nameHeader_label = new Label()
+            Label orderHeader_label = new Label()
             {
-                Location = new Point(orderHeading_Label.Right + 5, orderHeading_Label.Top),
+                Location = new Point(nameHeader_Label.Right + 5, nameHeader_Label.Top),
                 Width = bindingWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -93,7 +93,7 @@ namespace Manlaan.Mounts.Views
             };
 
 
-            int curY = orderHeading_Label.Bottom + 6;
+            int curY = nameHeader_Label.Bottom + 6;
 
             foreach (var radialSettings in Module.OrderedRadialSettings())
             {
@@ -185,7 +185,7 @@ namespace Manlaan.Mounts.Views
             radialSettingsApplyInstantlyIfSingle_Checkbox.CheckedChanged += delegate {
                 currentRadialSettings.ApplyInstantlyIfSingle.Value = radialSettingsApplyInstantlyIfSingle_Checkbox.Checked;
             };
-            currentRadialSettings.ApplyInstantlyIfSingle.PropertyChanged += delegate
+            currentRadialSettings.ApplyInstantlyIfSingle.SettingChanged += delegate
             {
                 BuildRadialSettingsDetailPanel();
             };

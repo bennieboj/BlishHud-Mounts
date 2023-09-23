@@ -340,6 +340,15 @@ namespace Mounts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Icon Settings.
+        /// </summary>
+        internal static string Window_IconSettingsTab {
+            get {
+                return ResourceManager.GetString("Window_IconSettingsTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Radial Settings.
         /// </summary>
         internal static string Window_RadialSettingsTab {

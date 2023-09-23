@@ -88,7 +88,6 @@ namespace Manlaan.Mounts.Things
         public bool Equals(Thing other)
         {
             return !(other is null) &&
-                   EqualityComparer<Helper>.Default.Equals(_helper, other._helper) &&
                    Name == other.Name;
         }
 

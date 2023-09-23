@@ -20,6 +20,7 @@ namespace Manlaan.Mounts
         public static readonly string TabBackgroundTextureName = "156006-big.png";
         public static readonly string SettingsTextureName = "155052.png";
         public static readonly string RadialSettingsTextureName = "156736.png";
+        public static readonly string IconSettingsTextureName = "156736.png";
         public static readonly string AnetIconTextureName = "1441452.png";
 
         public TextureCache(ContentsManager contentsManager)

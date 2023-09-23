@@ -1,6 +1,6 @@
-﻿using Blish_HUD.Settings;
+﻿using Blish_HUD;
+using Blish_HUD.Settings;
 using Manlaan.Mounts.Things;
-using Mounts.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +20,7 @@ namespace Manlaan.Mounts
         public SettingEntry<string> DefaultThingChoice;
 
         public RadialThingSettings(SettingCollection settingCollection, string name, int order, Func<bool> isApplicable, bool defaultIsEnabled, bool defaultApplyInstantlyIfSingle, IList<Thing> defaultThings)
+            : base(settingCollection, defaultThings, $"RadialThingSettings{name}Things")
         {
             Name = name;
             Order = order;
@@ -27,19 +28,18 @@ namespace Manlaan.Mounts
 
             IsEnabled = settingCollection.DefineSetting($"RadialThingSettings{name}IsEnabled", defaultIsEnabled);
             ApplyInstantlyIfSingle = settingCollection.DefineSetting($"RadialThingSettings{name}ApplyInstantlyIfSingle", defaultApplyInstantlyIfSingle);
-            ThingsSetting = settingCollection.DefineSetting($"RadialThingSettings{name}Things", (IList<Type>) defaultThings.Select(t => t.GetType()).ToList());
 
             CenterThingBehavior = settingCollection.DefineSetting($"RadialThingSettings{name}CenterThingBehavior", CenterBehavior.None);
             RemoveCenterMount = settingCollection.DefineSetting($"RadialThingSettings{name}RemoveCenterThingFromRadial", true);
             DefaultThingChoice = settingCollection.DefineSetting("DefaultMountChoice", "Disabled");
 
-            base.OnThingsUpdatedEventHandler += OnThingsUpdated;
+            ThingsSetting.SettingChanged += ThingsSetting_SettingChanged;
         }
 
-        private void OnThingsUpdated(object sender, ThingsUpdatedEventArgs e)
+        private void ThingsSetting_SettingChanged(object sender, ValueChangedEventArgs<IList<Type>> e)
         {
-            ApplyInstantlyIfSingle.Value = e.NewCount == 1;
-            if(GetDefaultThing() == null)
+            ApplyInstantlyIfSingle.Value = ThingsSetting.Value.Count == 1;
+            if (GetDefaultThing() == null)
             {
                 DefaultThingChoice.Value = "Disabled";
             }

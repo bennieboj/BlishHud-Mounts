@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System;
 using Manlaan.Mounts.Things;
 using System.Linq;
-using Mounts.Settings;
 
 namespace Manlaan.Mounts
 {
@@ -11,36 +10,28 @@ namespace Manlaan.Mounts
     {
         protected SettingEntry<IList<Type>> ThingsSetting;
 
-        public event EventHandler<ThingsUpdatedEventArgs> OnThingsUpdatedEventHandler;
-
-        public void SetThings(IEnumerable<Thing> defaultThings)
+        protected ThingsSettings(SettingCollection settingCollection, IEnumerable<Thing> things, string thingSettingsName)
         {
-            ThingsSetting.Value = defaultThings.Select(t => t.GetType()).ToList();
+            ThingsSetting = settingCollection.DefineSetting(thingSettingsName, (IList<Type>)things.Select(t => t.GetType()).ToList());
         }
 
-        private void HandleThingsUpdatedInternal()
+        public void SetThings(IEnumerable<Thing> things)
         {
-            var myevent = new ThingsUpdatedEventArgs();
-            myevent.NewCount = Things.Count();
-
-            if (OnThingsUpdatedEventHandler != null)
-            {
-                OnThingsUpdatedEventHandler(this, myevent);
-            }
+            ThingsSetting.Value = things.Select(t => t.GetType()).ToList();
         }
 
-        public IEnumerable<Thing> Things => ThingsSetting.Value.Select(typeOfThingInSettings => Module._things.Single(t => typeOfThingInSettings == t.GetType()));
+        public ICollection<Thing> Things => ThingsSetting.Value.Select(typeOfThingInSettings => Module._things.Single(t => typeOfThingInSettings == t.GetType())).ToList();
 
         public void AddThing(Thing thingToAdd)
         {
+            //update by assignment to trigger SettingChanged, not by modification of the value itself (would not trigger SettingChanged)
             ThingsSetting.Value = ThingsSetting.Value.Append(thingToAdd.GetType()).ToList();
-            HandleThingsUpdatedInternal();
         }
 
         public void RemoveThing(Thing thingToRemove)
         {
-            ThingsSetting.Value.Remove(thingToRemove.GetType());
-            HandleThingsUpdatedInternal();
+            //update by assignment to trigger SettingChanged, not by modification of the value itself (would not trigger SettingChanged)
+            ThingsSetting.Value = ThingsSetting.Value.Where(t => t != thingToRemove.GetType()).ToList();
         }
     }
 }
