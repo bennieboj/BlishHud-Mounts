@@ -10,7 +10,9 @@ namespace Manlaan.Mounts
 {
     public class IconThingSettings : ThingsSettings
     {
-        public readonly string Name;
+        public int Id { get; }
+
+        public SettingEntry<string> Name;
         public SettingEntry<bool> IsEnabled;
         public SettingEntry<bool> DisplayCornerIcons;
 
@@ -20,27 +22,25 @@ namespace Manlaan.Mounts
         public SettingEntry<int> Size;
         public SettingEntry<float> Opacity;
 
-        public bool IsDefault => Name == "Default";
+        public bool IsDefault => Id == 0;
 
         public bool ShouldDisplayCornerIcons => IsDefault && DisplayCornerIcons.Value;
 
         public event EventHandler<SettingsUpdatedEvent> IconSettingsUpdated;
 
-        public IconThingSettings(SettingCollection settingCollection, string name, bool defaultIsEnabled, 
-            bool defaultDisplayCornerIcons, IconOrientation defaultOrientation, Point defaultLocation,
-            bool defaultIsDraggingEnabled, int defaultSize, float defaultOpacity, IList<Thing> defaultThings)
-            : base(settingCollection, defaultThings, $"IconThingSettings{name}Things")
+        public IconThingSettings(SettingCollection settingCollection, int id, string defaultName = "", List<Thing> defaultThings = null)
+            : base(settingCollection, defaultThings, $"IconThingSettings{id}Things")
         {
-            Name = name;
-
-            IsEnabled = settingCollection.DefineSetting($"IconThingSettings{name}IsEnabled", defaultIsEnabled);
-            DisplayCornerIcons = settingCollection.DefineSetting($"IconThingSettings{name}DisplayCornerIcons", defaultDisplayCornerIcons);
-            Orientation = settingCollection.DefineSetting($"IconThingSettings{name}Orientation", defaultOrientation);
-            Location = settingCollection.DefineSetting($"IconThingSettings{name}Location", defaultLocation);
-            IsDraggingEnabled = settingCollection.DefineSetting($"IconThingSettings{name}IsDragging", defaultIsDraggingEnabled);
-            Size = settingCollection.DefineSetting($"IconThingSettings{name}Size", defaultSize);
+            Id = id;
+            Name = settingCollection.DefineSetting($"IconThingSettings{id}name", defaultName);
+            IsEnabled = settingCollection.DefineSetting($"IconThingSettings{id}IsEnabled", true);
+            DisplayCornerIcons = settingCollection.DefineSetting($"IconThingSettings{id}DisplayCornerIcons", false);
+            Orientation = settingCollection.DefineSetting($"IconThingSettings{id}Orientation", IconOrientation.Horizontal);
+            Location = settingCollection.DefineSetting($"IconThingSettings{id}Location", new Point(100,100));
+            IsDraggingEnabled = settingCollection.DefineSetting($"IconThingSettings{id}IsDragging", false);
+            Size = settingCollection.DefineSetting($"IconThingSettings{id}Size", 50);
             Size.SetRange(0, 200);
-            Opacity = settingCollection.DefineSetting($"IconThingSettings{name}Opacity", defaultOpacity);
+            Opacity = settingCollection.DefineSetting($"IconThingSettings{id}Opacity", 1.0f);
             Opacity.SetRange(0f, 1f);
 
 

@@ -12,6 +12,10 @@ namespace Manlaan.Mounts
 
         protected ThingsSettings(SettingCollection settingCollection, IEnumerable<Thing> things, string thingSettingsName)
         {
+            if(things == null){
+                things = new List<Thing>();
+            }
+
             ThingsSetting = settingCollection.DefineSetting(thingSettingsName, (IList<Type>)things.Select(t => t.GetType()).ToList());
         }
 

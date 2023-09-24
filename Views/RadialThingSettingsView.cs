@@ -62,14 +62,14 @@ namespace Manlaan.Mounts.Views
             var panelPadding = 20;
 
             RadialSettingsListPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 600);
-            CreateRadialSettingsListPanel();
+            BuildRadialSettingsListPanel();
 
             currentRadialSettings = Module.OrderedRadialSettings().First();
             RadialSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 300));
             BuildRadialSettingsDetailPanel();
         }
 
-        private void CreateRadialSettingsListPanel()
+        private void BuildRadialSettingsListPanel()
         {
             Label nameHeader_Label = new Label()
             {
@@ -79,7 +79,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = RadialSettingsListPanel,
                 Text = "Name",
-                HorizontalAlignment = HorizontalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Left,
             };
             Label orderHeader_label = new Label()
             {

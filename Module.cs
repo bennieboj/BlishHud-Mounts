@@ -37,6 +37,7 @@ namespace Manlaan.Mounts
         internal Gw2ApiManager Gw2ApiManager => this.ModuleParameters.Gw2ApiManager;
         #endregion
 
+        internal static SettingCollection settingscollection;
         internal static Collection<Thing> _things = new Collection<Thing>();
         internal static List<Thing> _availableOrderedThings => _things.Where(m => m.IsAvailable).OrderBy(m => m.OrderSetting.Value).ToList();
         internal static List<RadialThingSettings> RadialSettings;
@@ -66,6 +67,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<bool> _settingDisplayModuleOnLoadingScreen;
         public static SettingEntry<bool> _settingMountAutomaticallyAfterLoadingScreen;
 
+        public static SettingEntry<List<int>> _settingDrawIconIds;
 
 
         public static DebugControl _debug;
@@ -290,6 +292,7 @@ namespace Manlaan.Mounts
 
         protected override void DefineSettings(SettingCollection settings)
         {
+            settingscollection = settings;
             _things = new Collection<Thing>
             {
                 new Raptor(settings, _helper),
@@ -331,7 +334,7 @@ namespace Manlaan.Mounts
             _settingMountRadialIconOpacity = settings.DefineSetting("MountRadialIconOpacity", 0.5f, () => Strings.Setting_MountRadialIconOpacity, () => "");
             _settingMountRadialIconOpacity.SetRange(0.05f, 1f);
             _settingMountRadialToggleActionCameraKeyBinding = settings.DefineSetting("MountRadialToggleActionCameraKeyBinding", new KeyBinding(Keys.F10), () => Strings.Setting_MountRadialToggleActionCameraKeyBinding, () => "");
-
+            _settingDrawIconIds = settings.DefineSetting("DrawIconIds", new List<int> { 0 });
 
             _settingDisplayModuleOnLoadingScreen = settings.DefineSetting("DisplayModuleOnLoadingScreen", false, () => Strings.Setting_DisplayModuleOnLoadingScreen, () => "");
             _settingMountAutomaticallyAfterLoadingScreen = settings.DefineSetting("MountAutomaticallyAfterLoadingScreen", false, () => Strings.Setting_MountAutomaticallyAfterLoadingScreen, () => "");
@@ -351,8 +354,9 @@ namespace Manlaan.Mounts
 
             IconThingSettings = new List<IconThingSettings>
             {
-                new IconThingSettings(settings, "Default", false, false, IconOrientation.Horizontal, new Point(100, 100), false, 50, 1.0f, _availableOrderedThings)                
+                new IconThingSettings(settings, 0, "Default", _availableOrderedThings)
             };
+            IconThingSettings.AddRange(_settingDrawIconIds.Value.Skip(1).Select(id => new IconThingSettings(settings, id)));
             MigrateIconThingSettings(settings);
 
             foreach (var t in _things)
@@ -369,6 +373,7 @@ namespace Manlaan.Mounts
             _settingMountRadialStartAngle.SettingChanged += UpdateSettings;
             _settingMountRadialToggleActionCameraKeyBinding.Value.BindingChanged += UpdateSettings;
             _settingMountRadialIconOpacity.SettingChanged += UpdateSettings;
+            _settingDrawIconIds.SettingChanged += UpdateSettings;
         }
 
         public override IView GetSettingsView()
@@ -481,6 +486,7 @@ namespace Manlaan.Mounts
 
             _settingDisplayModuleOnLoadingScreen.SettingChanged -= UpdateSettings;
             _settingMountAutomaticallyAfterLoadingScreen.SettingChanged -= UpdateSettings;
+            _settingDrawIconIds.SettingChanged -= UpdateSettings;
         }
 
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<string> e = null) {
@@ -500,6 +506,10 @@ namespace Manlaan.Mounts
             DrawUI();
         }
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<int> e = null)
+        {
+            DrawUI();
+        }
+        private void UpdateSettings(object sender, ValueChangedEventArgs<List<int>> e)
         {
             DrawUI();
         }

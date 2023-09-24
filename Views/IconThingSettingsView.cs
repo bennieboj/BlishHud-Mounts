@@ -8,6 +8,7 @@ using Mounts;
 using Blish_HUD.Settings.UI.Views;
 using Mounts.Settings;
 using System;
+using Blish_HUD.Settings;
 
 namespace Manlaan.Mounts.Views
 {
@@ -63,39 +64,61 @@ namespace Manlaan.Mounts.Views
             var panelPadding = 20;
 
             IconSettingsListPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 600);
-            CreateRadialSettingsListPanel();
+            BuildRadialSettingsListPanel();
 
             currentIconSettings = Module.IconThingSettings.First();
             IconSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 300));
             BuildRadialSettingsDetailPanel();
         }
 
-        private void CreateRadialSettingsListPanel()
+        private void BuildRadialSettingsListPanel()
         {
-            Label nameHeader_Label = new Label()
+            IconSettingsListPanel.ClearChildren();
+
+            Label idHeader_Label = new Label()
             {
                 Location = new Point(0, 10),
                 Width = labelWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = IconSettingsListPanel,
+                Text = "Id",
+                HorizontalAlignment = HorizontalAlignment.Left,
+            };
+            Label nameHeader_Label = new Label()
+            {
+                Location = new Point(idHeader_Label.Right + 5, idHeader_Label.Top),
+                Width = labelWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = IconSettingsListPanel,
                 Text = "Name",
-                HorizontalAlignment = HorizontalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Left,
             };
 
 
             int curY = nameHeader_Label.Bottom + 6;
 
-            foreach (var radialSettings in Module.IconThingSettings)
+            foreach (var iconSettings in Module.IconThingSettings)
             {
-                Label name_Label = new Label()
+                Label id_Label = new Label()
                 {
-                    Location = new Point(0, curY + 6),
+                    Location = new Point(idHeader_Label.Left, curY + 6),
                     Width = labelWidth,
                     AutoSizeHeight = false,
                     WrapText = false,
                     Parent = IconSettingsListPanel,
-                    Text = $"{radialSettings.Name}: ",
+                    Text = $"{iconSettings.Id}: ",
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                };
+                Label name_Label = new Label()
+                {
+                    Location = new Point(nameHeader_Label.Left, curY + 6),
+                    Width = labelWidth,
+                    AutoSizeHeight = false,
+                    WrapText = false,
+                    Parent = IconSettingsListPanel,
+                    Text = $"{iconSettings.Name.Value}",
                     HorizontalAlignment = HorizontalAlignment.Left,
                 };
                 var editRadialSettingsButton = new StandardButton
@@ -105,23 +128,51 @@ namespace Manlaan.Mounts.Views
                     Text = Strings.Edit
                 };
                 editRadialSettingsButton.Click += (args, sender) => {
-                    SetCurrentSettings(radialSettings);
+                    currentIconSettings = iconSettings;
                     BuildRadialSettingsDetailPanel();
                 };
+                if (!iconSettings.IsDefault)
+                {
+                    var deleteRadialSettingsButton = new StandardButton
+                    {
+                        Parent = IconSettingsListPanel,
+                        Location = new Point(editRadialSettingsButton.Right, editRadialSettingsButton.Top),
+                        Text = Strings.Delete
+                    };
+                    deleteRadialSettingsButton.Click += (args, sender) => {
+
+                        Module.IconThingSettings.Remove(iconSettings);
+                        Module._settingDrawIconIds.Value = Module._settingDrawIconIds.Value.Where(id => id != iconSettings.Id).ToList();
+                        BuildRadialSettingsListPanel();
+                        currentIconSettings = Module.IconThingSettings.Last();
+                        BuildRadialSettingsDetailPanel();
+                    };
+                }
 
                 curY = name_Label.Bottom;
-            }            
-        }
+            }
 
-        private void SetCurrentSettings(IconThingSettings settings)
-        {
-            currentIconSettings = settings;
+            var addIconThingsSettings_Button = new StandardButton
+            {
+                Parent = IconSettingsListPanel,
+                Location = new Point(0, curY  + 6),
+                Text = Strings.Add,
+                Enabled = Module._settingDrawIconIds.Value.Count <= 5
+            };
+            addIconThingsSettings_Button.Click += (args, sender) => {
+                int nextId = Module._settingDrawIconIds.Value.OrderByDescending(id => id).First() + 1;
+                Module.IconThingSettings.Add(new IconThingSettings(Module.settingscollection, nextId));
+                Module._settingDrawIconIds.Value = Module._settingDrawIconIds.Value.Append(nextId).ToList();
+                BuildRadialSettingsListPanel();
+                currentIconSettings = Module.IconThingSettings.Last();
+                BuildRadialSettingsDetailPanel();
+            };
         }
 
         private void BuildRadialSettingsDetailPanel()
         {
             IconSettingsDetailPanel.ClearChildren();
-           
+
             Label radialSettingstName_Label = new Label()
             {
                 Location = new Point(0, 0),
@@ -129,12 +180,40 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = IconSettingsDetailPanel,
-                Text = $"{currentIconSettings.Name}"
+                Text = "Name: "
             };
+
+            var curY = 0;
+            if (currentIconSettings.IsDefault)
+            {
+                Label radialSettingstNameValue_Label = new Label()
+                {
+                    Location = new Point(radialSettingstName_Label.Right + 5, 0),
+                    Width = labelWidth,
+                    Parent = IconSettingsDetailPanel,
+                    Text = $"{currentIconSettings.Name.Value}"
+                };
+                curY = radialSettingstNameValue_Label.Bottom;
+            }
+            else
+            {
+                TextBox radialSettingstName_TextBox = new TextBox()
+                {
+                    Location = new Point(radialSettingstName_Label.Right + 5, 0),
+                    Width = labelWidth,
+                    Parent = IconSettingsDetailPanel,
+                    Text = $"{currentIconSettings.Name.Value}"
+                };
+                radialSettingstName_TextBox.TextChanged += delegate {
+                    currentIconSettings.Name.Value = radialSettingstName_TextBox.Text;
+                    BuildRadialSettingsListPanel();
+                };
+                curY = radialSettingstName_TextBox.Bottom;
+            }
 
             Label radialSettingsIsEnabled_Label = new Label()
             {
-                Location = new Point(0, radialSettingstName_Label.Bottom + 6),
+                Location = new Point(0, curY + 6),
                 Width = labelWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -152,9 +231,35 @@ namespace Manlaan.Mounts.Views
                 currentIconSettings.IsEnabled.Value = radialSettingsIsEnabled_Checkbox.Checked;
             };
 
+            var nextY = radialSettingsIsEnabled_Label.Bottom;
+            if (currentIconSettings.IsDefault)
+            {
+                Label radialSettingsDisplayCornerIcons_Label = new Label()
+                {
+                    Location = new Point(0, radialSettingsIsEnabled_Label.Bottom + 6),
+                    Width = labelWidth,
+                    AutoSizeHeight = false,
+                    WrapText = false,
+                    Parent = IconSettingsDetailPanel,
+                    Text = "Enable corner iccons: "
+                };
+                Checkbox radialSettingsDisplayCornerIcons_Checkbox = new Checkbox()
+                {
+                    Size = new Point(20, 20),
+                    Parent = IconSettingsDetailPanel,
+                    Checked = currentIconSettings.DisplayCornerIcons.Value,
+                    Location = new Point(radialSettingsDisplayCornerIcons_Label.Right + 5, radialSettingsDisplayCornerIcons_Label.Top - 1),
+                };
+                radialSettingsIsEnabled_Checkbox.CheckedChanged += delegate {
+                    currentIconSettings.DisplayCornerIcons.Value = radialSettingsDisplayCornerIcons_Checkbox.Checked;
+                };
+                nextY = radialSettingsDisplayCornerIcons_Label.Bottom;
+            }
+
+
             Label settingManualOrientation_Label = new Label()
             {
-                Location = new Point(0, radialSettingsIsEnabled_Label.Bottom + 6),
+                Location = new Point(0, nextY + 6),
                 Width = 75,
                 AutoSizeHeight = false,
                 WrapText = false,
