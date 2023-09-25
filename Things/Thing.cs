@@ -12,13 +12,12 @@ namespace Manlaan.Mounts.Things
 {
     public abstract class Thing : IEquatable<Thing>
     {
-        public Thing(SettingCollection settingCollection, Helper helper, string name, string displayName, string imageFileName, int defaultOrderSetting)
+        public Thing(SettingCollection settingCollection, Helper helper, string name, string displayName, string imageFileName)
         {
             _helper = helper;
             Name = name;
             DisplayName = displayName;
             ImageFileName = imageFileName;
-            OrderSetting = settingCollection.DefineSetting($"Mount{name}Order2", defaultOrderSetting, () => $"{displayName} Order", () => "");
             KeybindingSetting = settingCollection.DefineSetting($"Mount{name}Binding", new KeyBinding(Keys.None), () => $"{displayName} Binding", () => "");
             ImageFileNameSetting = settingCollection.DefineSetting($"Mount{name}ImageFileName", $"{imageFileName}.png", () => $"{displayName} Image File Name", () => "");
         }

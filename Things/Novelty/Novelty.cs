@@ -5,8 +5,8 @@ namespace Manlaan.Mounts.Things.Mounts
     public abstract class Novelty : Thing
     {
         public Novelty(SettingCollection settingCollection, Helper helper,
-            string name, string displayName, string imageFileName, int defaultOrderSetting) 
-            : base(settingCollection, helper, name, displayName, imageFileName, defaultOrderSetting)
+            string name, string displayName, string imageFileName) 
+            : base(settingCollection, helper, name, displayName, imageFileName)
         {
         }
 

@@ -6,7 +6,7 @@ namespace Manlaan.Mounts.Things.Mounts
     public class Skiff : Mount
     {
         public Skiff(SettingCollection settingCollection, Helper helper) 
-            : base(settingCollection, helper, "Skiff", "Skiff", "skiff", 11)
+            : base(settingCollection, helper, "Skiff", "Skiff", "skiff")
         {
         }
         protected override MountType MountType => MountType.Skiff;

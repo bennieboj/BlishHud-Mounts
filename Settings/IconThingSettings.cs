@@ -54,7 +54,7 @@ namespace Manlaan.Mounts
             ThingsSetting.SettingChanged += ThingsSetting_SettingChanged;
         }
 
-        public void DeleteFromSettings(SettingCollection settingCollection)
+        public override void DeleteFromSettings(SettingCollection settingCollection)
         {
             settingCollection.UndefineSetting($"IconThingSettings{Id}name");
             settingCollection.UndefineSetting($"IconThingSettings{Id}IsEnabled");

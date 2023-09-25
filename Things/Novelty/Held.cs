@@ -5,7 +5,7 @@ namespace Manlaan.Mounts.Things.Mounts
     public class Held : Novelty
     {
         public Held(SettingCollection settingCollection, Helper helper) : 
-            base(settingCollection, helper, "Held", "Held", "held", 15)
+            base(settingCollection, helper, "Held", "Held", "held")
         {
         }
     }

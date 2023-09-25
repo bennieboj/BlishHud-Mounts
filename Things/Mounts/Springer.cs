@@ -6,7 +6,7 @@ namespace Manlaan.Mounts.Things.Mounts
     public class Springer : Mount
     {
         public Springer(SettingCollection settingCollection, Helper helper) :
-            base(settingCollection, helper, "Springer", "Springer", "springer", 2)
+            base(settingCollection, helper, "Springer", "Springer", "springer")
         {
         }
 

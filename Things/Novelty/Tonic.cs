@@ -5,7 +5,7 @@ namespace Manlaan.Mounts.Things.Mounts
     public class Tonic : Novelty
     {
         public Tonic(SettingCollection settingCollection, Helper helper) : 
-            base(settingCollection, helper, "Tonic", "Tonic", "tonic", 17)
+            base(settingCollection, helper, "Tonic", "Tonic", "tonic")
         {
         }
     }

@@ -39,7 +39,7 @@ namespace Manlaan.Mounts
             //update by assignment to trigger SettingChanged, not by modification of the value itself (would not trigger SettingChanged)
             ThingsSetting.Value = ThingsSetting.Value.Where(t => t != thingToRemove.GetType()).ToList();
         }
-        public void DeleteFromSettings(SettingCollection settingCollection)
+        public virtual void DeleteFromSettings(SettingCollection settingCollection)
         {
             settingCollection.UndefineSetting(ThingSettingsName);
         }

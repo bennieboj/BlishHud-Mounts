@@ -6,7 +6,7 @@ namespace Manlaan.Mounts.Things.Mounts
     public class Skimmer : Mount
     {
         public Skimmer(SettingCollection settingCollection, Helper helper) : 
-            base(settingCollection, helper, "Skimmer", "Skimmer", "skimmer", 3)
+            base(settingCollection, helper, "Skimmer", "Skimmer", "skimmer")
         {
         }
 

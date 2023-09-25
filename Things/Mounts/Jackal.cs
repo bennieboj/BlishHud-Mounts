@@ -6,7 +6,7 @@ namespace Manlaan.Mounts.Things.Mounts
     public class Jackal : Mount
     {
         public Jackal(SettingCollection settingCollection, Helper helper) : 
-            base(settingCollection, helper, "Jackal", "Jackal", "jackal", 4)
+            base(settingCollection, helper, "Jackal", "Jackal", "jackal")
         {
         }
 

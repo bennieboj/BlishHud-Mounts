@@ -39,7 +39,6 @@ namespace Manlaan.Mounts
 
         internal static SettingCollection settingscollection;
         internal static Collection<Thing> _things = new Collection<Thing>();
-        internal static List<Thing> _availableOrderedThings => _things.Where(m => m.IsAvailable).OrderBy(m => m.OrderSetting.Value).ToList();
         internal static List<RadialThingSettings> RadialSettings;
         internal static List<IconThingSettings> IconThingSettings;
         internal static List<RadialThingSettings> OrderedRadialSettings() => RadialSettings.OrderBy(c => c.Order).ToList();
@@ -293,8 +292,7 @@ namespace Manlaan.Mounts
         protected override void DefineSettings(SettingCollection settings)
         {
             settingscollection = settings;
-            _things = new Collection<Thing>
-            {
+            var orderedThings = new List<Thing> {
                 new Raptor(settings, _helper),
                 new Springer(settings, _helper),
                 new Skimmer(settings, _helper),
@@ -316,6 +314,7 @@ namespace Manlaan.Mounts
                 new SkyscaleLeap(settings, _helper),
                 new UnMount(settings, _helper)
             };
+            _things = new Collection<Thing>(orderedThings);
 
 
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
@@ -348,13 +347,13 @@ namespace Manlaan.Mounts
                 new RadialThingSettings(settings, "IsPlayerGlidingOrFalling", 2, _helper.IsPlayerGlidingOrFalling, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList()),
                 new RadialThingSettings(settings, "IsPlayerUnderWater", 3, _helper.IsPlayerUnderWater, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList()),
                 new RadialThingSettings(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()),
-                new RadialThingSettings(settings, "Default", 99, () => true, true, false, _availableOrderedThings)
+                new RadialThingSettings(settings, "Default", 99, () => true, true, false, orderedThings)
             };
             MigrateRadialThingSettings(settings);
 
             IconThingSettings = new List<IconThingSettings>
             {
-                new IconThingSettings(settings, 0, "Default", _availableOrderedThings)
+                new IconThingSettings(settings, 0, "Default", orderedThings)
             };
             IconThingSettings.AddRange(_settingDrawIconIds.Value.Skip(1).Select(id => new IconThingSettings(settings, id)));
             MigrateIconThingSettings(settings);

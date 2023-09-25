@@ -5,7 +5,7 @@ namespace Manlaan.Mounts.Things.Mounts
     public class JadeBotWaypoint : MasterySkill
     {
         public JadeBotWaypoint(SettingCollection settingCollection, Helper helper) 
-            : base(settingCollection, helper, "Jade Bot Waypoint", "Jade Bot Waypoint", "jadebotwaypoint", 12)
+            : base(settingCollection, helper, "Jade Bot Waypoint", "Jade Bot Waypoint", "jadebotwaypoint")
         {
         }
     }
