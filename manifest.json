@@ -1,11 +1,11 @@
 {
-  "name": "Mounts",
+  "name": "Mounts & More",
   "version": "1.4.0-beta3",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
 
-  "description": "Mount icons + radial. Settings need to be configured before using the module!",
+  "description": "Mounts, mastery skills and novelty icons in radial, icon rows and corner icons. Settings need to be configured before using the module!",
   "dependencies": {
     "bh.blishhud": ">=1.0.0"
   },
