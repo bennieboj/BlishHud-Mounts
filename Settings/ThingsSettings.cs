@@ -9,14 +9,16 @@ namespace Manlaan.Mounts
     public abstract class ThingsSettings
     {
         protected SettingEntry<IList<Type>> ThingsSetting;
+        private string ThingSettingsName;
 
         protected ThingsSettings(SettingCollection settingCollection, IEnumerable<Thing> things, string thingSettingsName)
         {
+            ThingSettingsName = thingSettingsName;
             if(things == null){
                 things = new List<Thing>();
             }
 
-            ThingsSetting = settingCollection.DefineSetting(thingSettingsName, (IList<Type>)things.Select(t => t.GetType()).ToList());
+            ThingsSetting = settingCollection.DefineSetting(ThingSettingsName, (IList<Type>)things.Select(t => t.GetType()).ToList());
         }
 
         public void SetThings(IEnumerable<Thing> things)
@@ -36,6 +38,10 @@ namespace Manlaan.Mounts
         {
             //update by assignment to trigger SettingChanged, not by modification of the value itself (would not trigger SettingChanged)
             ThingsSetting.Value = ThingsSetting.Value.Where(t => t != thingToRemove.GetType()).ToList();
+        }
+        public void DeleteFromSettings(SettingCollection settingCollection)
+        {
+            settingCollection.UndefineSetting(ThingSettingsName);
         }
     }
 }

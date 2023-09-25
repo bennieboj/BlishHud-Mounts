@@ -140,11 +140,12 @@ namespace Manlaan.Mounts.Views
                         Text = Strings.Delete
                     };
                     deleteRadialSettingsButton.Click += (args, sender) => {
-
-                        Module.IconThingSettings.Remove(iconSettings);
+                        int deleteIndex = Module.IconThingSettings.IndexOf(iconSettings);
+                        Module.IconThingSettings = Module.IconThingSettings.Where(ics => ics.Id != iconSettings.Id).ToList();
+                        iconSettings.DeleteFromSettings(Module.settingscollection);
                         Module._settingDrawIconIds.Value = Module._settingDrawIconIds.Value.Where(id => id != iconSettings.Id).ToList();
                         BuildRadialSettingsListPanel();
-                        currentIconSettings = Module.IconThingSettings.Last();
+                        currentIconSettings = Module.IconThingSettings.ElementAt(Math.Min(deleteIndex, Module.IconThingSettings.Count-1));
                         BuildRadialSettingsDetailPanel();
                     };
                 }
