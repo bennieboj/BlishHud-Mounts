@@ -1,12 +1,16 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls.Extern;
 using Blish_HUD.Input;
+using Blish_HUD.Modules.Managers;
 using Blish_HUD.Settings;
 using Gw2Sharp.Models;
+using Gw2Sharp.WebApi.V2.Models;
 using Manlaan.Mounts.Things;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Manlaan.Mounts
@@ -21,7 +25,29 @@ namespace Manlaan.Mounts
         private float _lastZPosition = 0.0f;
         private double _lastUpdateSeconds = 0.0f;
         private bool _isPlayerGlidingOrFalling = false;
+        private Gw2ApiManager Gw2ApiManager;
+        private bool _isCombatLaunchUnlocked;
 
+        public Helper(Gw2ApiManager gw2ApiManager)
+        {
+            Gw2ApiManager = gw2ApiManager;
+        }
+
+        public bool IsCombatLaunchUnlocked()
+        {
+            return _isCombatLaunchUnlocked;
+        }
+
+        public async Task IsCombatLaunchUnlockedAsync()
+        {
+            if (!Gw2ApiManager.HasPermissions(new List<TokenPermission> { TokenPermission.Progression }))
+            {
+                _isCombatLaunchUnlocked = false;
+            }
+
+            var masteries = await Gw2ApiManager.Gw2ApiClient.V2.Masteries.AllAsync();
+            _isCombatLaunchUnlocked = masteries.Any(m => m.Name == "Combat Launch");
+        }
 
         public bool IsPlayerGlidingOrFalling()
         {
@@ -54,7 +80,7 @@ namespace Manlaan.Mounts
 
         public bool IsPlayerMounted()
         {
-            return GameService.Gw2Mumble.PlayerCharacter.CurrentMount != MountType.None;
+            return GameService.Gw2Mumble.PlayerCharacter.CurrentMount != Gw2Sharp.Models.MountType.None;
         }
 
         public void UpdatePlayerGlidingOrFalling(GameTime gameTime)

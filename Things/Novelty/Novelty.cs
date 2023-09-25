@@ -14,10 +14,5 @@ namespace Manlaan.Mounts.Things.Mounts
         {
             return false;
         }
-
-        public override bool IsUsableOnMount()
-        {
-            return true;
-        }
     }
 }

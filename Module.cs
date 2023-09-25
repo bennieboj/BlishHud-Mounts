@@ -31,7 +31,6 @@ namespace Manlaan.Mounts
         private static readonly Logger Logger = Logger.GetLogger<Module>();
 
         #region Service Managers
-        internal SettingsManager SettingsManager => this.ModuleParameters.SettingsManager;
         internal ContentsManager ContentsManager => this.ModuleParameters.ContentsManager;
         internal DirectoriesManager DirectoriesManager => this.ModuleParameters.DirectoriesManager;
         internal Gw2ApiManager Gw2ApiManager => this.ModuleParameters.Gw2ApiManager;
@@ -84,7 +83,7 @@ namespace Manlaan.Mounts
         public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) : base(moduleParameters)
         {
             _debug = new DebugControl();
-            _helper = new Helper();
+            _helper = new Helper(Gw2ApiManager);
         }
 
         protected override void Initialize()
@@ -386,11 +385,17 @@ namespace Manlaan.Mounts
             return dummySettingWindow;
         }
 
+
         protected override void OnModuleLoaded(EventArgs e)
         {
             RadialSettings.ForEach(c => _debug.Add($"RadialSettings {c.Order} {c.Name}", () => $"IsApplicable: {c.IsApplicable()}, Center: {c.GetCenterThing()?.DisplayName}"));
             _debug.Add("Applicable RadialSettings Name", () => $"{GetApplicableRadialSettings()?.Name}");
-            _debug.Add("Applicable RadialSettings Actions", () => $"{string.Join(", ", GetApplicableRadialSettings()?.Things.Select(t => t.DisplayName))}"); 
+            _debug.Add("Applicable RadialSettings Actions", () => $"{string.Join(", ", GetApplicableRadialSettings()?.Things.Select(t => t.DisplayName))}");
+
+            Gw2ApiManager.SubtokenUpdated += async delegate
+            {
+                await _helper.IsCombatLaunchUnlockedAsync();
+            };
 
             DrawUI();
 

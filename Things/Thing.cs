@@ -57,7 +57,7 @@ namespace Manlaan.Mounts.Things
 
         public async Task DoAction()
         {
-            if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat)
+            if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat && IsUsableInCombat())
             {
                 QueuedTimestamp = DateTime.UtcNow;
                 return;
@@ -82,7 +82,10 @@ namespace Manlaan.Mounts.Things
 
         public abstract bool IsInUse();
 
-        public abstract bool IsUsableOnMount();
+        public virtual bool IsUsableInCombat()
+        {
+            return false;
+        }
 
         public bool Equals(Thing other)
         {

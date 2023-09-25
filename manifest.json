@@ -22,6 +22,18 @@
   ],
   "directories": [ "mounts" ]
 }
+
+/*
+,
+  "api_permissions": {
+    "progression": {
+      "optional": true,
+      "details": "Combat Launch mastery tracking"
+    }
+  }
+*/
+
+
 /*
     "changelog": {
         "1.4.0": "2023-08-??: Add all other items.",

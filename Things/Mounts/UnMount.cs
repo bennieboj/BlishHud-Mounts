@@ -1,4 +1,5 @@
 ﻿using Blish_HUD.Settings;
+using System.Threading.Tasks;
 
 namespace Manlaan.Mounts.Things.Mounts
 {
@@ -14,9 +15,9 @@ namespace Manlaan.Mounts.Things.Mounts
             return false;
         }
 
-        public override bool IsUsableOnMount()
+        public override bool IsUsableInCombat()
         {
-            return false;
+            return true;
         }
     }
 }

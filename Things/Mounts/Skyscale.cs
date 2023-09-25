@@ -1,5 +1,6 @@
 ﻿using Blish_HUD.Settings;
 using Gw2Sharp.Models;
+using System.Threading.Tasks;
 
 namespace Manlaan.Mounts.Things.Mounts
 {
@@ -11,5 +12,10 @@ namespace Manlaan.Mounts.Things.Mounts
         }
 
         protected override MountType MountType => MountType.Skyscale;
+
+        public override bool IsUsableInCombat()
+        {
+            return _helper.IsCombatLaunchUnlocked();
+        }
     }
 }
