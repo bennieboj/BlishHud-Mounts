@@ -44,7 +44,7 @@ namespace Manlaan.Mounts.Controls
 
         private void DrawCornerIcons()
         {
-            if (!_iconThingSettings.IsDefault)
+            if (!_iconThingSettings.ShouldDisplayCornerIcons)
             {
                 return;
             }
@@ -62,6 +62,12 @@ namespace Manlaan.Mounts.Controls
 
         private void DrawManualIcons()
         {
+            if (!_iconThingSettings.IsEnabled.Value)
+            {
+                return;
+            }
+
+
             int curX = 0;
             int curY = 0;
             var things = _iconThingSettings.Things;
