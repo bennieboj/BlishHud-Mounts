@@ -251,7 +251,7 @@ namespace Manlaan.Mounts.Views
                     Checked = currentIconSettings.DisplayCornerIcons.Value,
                     Location = new Point(radialSettingsDisplayCornerIcons_Label.Right + 5, radialSettingsDisplayCornerIcons_Label.Top - 1),
                 };
-                radialSettingsIsEnabled_Checkbox.CheckedChanged += delegate {
+                radialSettingsDisplayCornerIcons_Checkbox.CheckedChanged += delegate {
                     currentIconSettings.DisplayCornerIcons.Value = radialSettingsDisplayCornerIcons_Checkbox.Checked;
                 };
                 nextY = radialSettingsDisplayCornerIcons_Label.Bottom;

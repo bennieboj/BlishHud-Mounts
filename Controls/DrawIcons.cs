@@ -44,16 +44,17 @@ namespace Manlaan.Mounts.Controls
 
         private void DrawCornerIcons()
         {
-            if (!_iconThingSettings.ShouldDisplayCornerIcons)
-            {
-                return;
-            }
-
             //dispose all!
             foreach (var thing in Module._things)
             {
                 thing.DisposeCornerIcon();
             }
+
+            if (!_iconThingSettings.ShouldDisplayCornerIcons)
+            {
+                return;
+            }
+
             foreach (var thing in _iconThingSettings.Things)
             {
                 thing.CreateCornerIcon(_textureCache.GetMountImgFile(thing));
