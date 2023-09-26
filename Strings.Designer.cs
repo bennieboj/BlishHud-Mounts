@@ -331,11 +331,11 @@ namespace Mounts {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to All Settings.
+        ///   Looks up a localized string similar to General Settings.
         /// </summary>
-        internal static string Window_AllSettingsTab {
+        internal static string Window_GeneralSettingsTab {
             get {
-                return ResourceManager.GetString("Window_AllSettingsTab", resourceCulture);
+                return ResourceManager.GetString("Window_GeneralSettingsTab", resourceCulture);
             }
         }
         
@@ -354,6 +354,15 @@ namespace Mounts {
         internal static string Window_RadialSettingsTab {
             get {
                 return ResourceManager.GetString("Window_RadialSettingsTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Support me.
+        /// </summary>
+        internal static string Window_SupportMeTab {
+            get {
+                return ResourceManager.GetString("Window_SupportMeTab", resourceCulture);
             }
         }
     }

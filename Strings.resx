@@ -207,13 +207,16 @@
   <data name="Setting_Orientation" xml:space="preserve">
     <value>Manual Orientation</value>
   </data>
-  <data name="Window_AllSettingsTab" xml:space="preserve">
-    <value>All Settings</value>
+  <data name="Window_GeneralSettingsTab" xml:space="preserve">
+    <value>General Settings</value>
   </data>
   <data name="Window_IconSettingsTab" xml:space="preserve">
     <value>Icon Settings</value>
   </data>
   <data name="Window_RadialSettingsTab" xml:space="preserve">
     <value>Radial Settings</value>
+  </data>
+  <data name="Window_SupportMeTab" xml:space="preserve">
+    <value>Support me</value>
   </data>
 </root>

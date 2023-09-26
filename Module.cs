@@ -149,13 +149,13 @@ namespace Manlaan.Mounts
                 Parent = GameService.Graphics.SpriteScreen,
                 Location = new Point(100, 100),
                 Emblem = mountsIcon,
-                Id = $"{this.Namespace}_SettingsWindow",
+                Id = $"{Namespace}_SettingsWindow",
                 SavesPosition = true,
             };
-            var x = Strings.Window_AllSettingsTab;
-            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SettingsTextureName), () => new SettingsView(_textureCache), x));
+            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SettingsTextureName), () => new SettingsView(_textureCache), Strings.Window_GeneralSettingsTab));
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.RadialSettingsTextureName), () => new RadialThingSettingsView(), Strings.Window_RadialSettingsTab));
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.IconSettingsTextureName), () => new IconThingSettingsView(), Strings.Window_IconSettingsTab));
+            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SupportMeTextureName), () => new SupportMeView(), Strings.Window_SupportMeTab));
         }
 
         private void ExtractFile(string filePath, string directoryToExtractTo)
