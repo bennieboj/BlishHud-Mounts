@@ -17,8 +17,7 @@ The keybinds in the module need to match the ones in you in-game settings:
 1. When you are just standing on the ground, not in combat, etc you should see this result when you press the keybind.
   ![](./readme/initial_setup_result.png)
 
-
-We have 3 types of UI elements:
+There are have 3 types of UI elements visible:
 
 1. radial
 - keybind
@@ -28,19 +27,24 @@ We have 3 types of UI elements:
 - automatic activation when single option selected
 
 1. icon rows
-
+- draggable
+- different rows
 
 1. corner icons
 
 
 
-
-
 - custom icons (folder, diff name, restart modile)
 - default mount, selected when dragging mouse + center option
+- out of combat queuing
 - debug option + instructions
 
 ## FAQ
+
+### Q: I want to support you
+A: I don't expect anything in return, but if you want you can:
+- send me some gold/items ingame: Bennieboj.2607
+- donate via https://ko-fi.com/bennieboj
 
 ### Q: Can I configure mouse buttons for keybinds?
 A: No, this is a limitation of BlishHUD atm, see [this issue](https://github.com/blish-hud/Blish-HUD/issues/611) for more information.
