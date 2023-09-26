@@ -34,7 +34,7 @@ namespace Manlaan.Mounts
             Id = id;
             Name = settingCollection.DefineSetting($"IconThingSettings{Id}name", defaultName);
             IsEnabled = settingCollection.DefineSetting($"IconThingSettings{Id}IsEnabled", true);
-            DisplayCornerIcons = settingCollection.DefineSetting($"IconThingSettings{Id}DisplayCornerIcons", false);
+            DisplayCornerIcons = settingCollection.DefineSetting($"IconThingSettings{Id}DisplayCornerIcons", true);
             Orientation = settingCollection.DefineSetting($"IconThingSettings{Id}Orientation", IconOrientation.Horizontal);
             Location = settingCollection.DefineSetting($"IconThingSettings{Id}Location", new Point(100,100));
             IsDraggingEnabled = settingCollection.DefineSetting($"IconThingSettings{Id}IsDragging", false);

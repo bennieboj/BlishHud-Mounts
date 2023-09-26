@@ -145,7 +145,7 @@ namespace Manlaan.Mounts
                                     new Rectangle(95, 42, 1183 + 38, 900)
                                    )
             {
-                Title = "Mounts",
+                Title = "Mounts & More",
                 Parent = GameService.Graphics.SpriteScreen,
                 Location = new Point(100, 100),
                 Emblem = mountsIcon,
@@ -292,6 +292,7 @@ namespace Manlaan.Mounts
         {
             settingscollection = settings;
             var orderedThings = new List<Thing> {
+                new UnMount(settings, _helper),
                 new Raptor(settings, _helper),
                 new Springer(settings, _helper),
                 new Skimmer(settings, _helper),
@@ -304,14 +305,13 @@ namespace Manlaan.Mounts
                 new Fishing(settings, _helper),
                 new Skiff(settings, _helper),
                 new JadeBotWaypoint(settings, _helper),
+                new ScanForRift(settings, _helper),
+                new SkyscaleLeap(settings, _helper),
                 new Chair(settings, _helper),
                 new Music(settings, _helper),
                 new Held(settings, _helper),
                 new Toy(settings, _helper),
-                new Tonic(settings, _helper),
-                new ScanForRift(settings, _helper),
-                new SkyscaleLeap(settings, _helper),
-                new UnMount(settings, _helper)
+                new Tonic(settings, _helper)
             };
             _things = new Collection<Thing>(orderedThings);
 
@@ -323,13 +323,13 @@ namespace Manlaan.Mounts
             _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "Radial", () => Strings.Setting_DefaultMountBehaviour, () => "");
             _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false, () => Strings.Setting_DisplayMountQueueing, () => "");
             _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, () => Strings.Setting_MountRadialSpawnAtMouse, () => "");
-            _settingMountRadialIconSizeModifier = settings.DefineSetting("MountRadialIconSizeModifier", 0.5f, () => Strings.Setting_MountRadialIconSizeModifier, () => "");
+            _settingMountRadialIconSizeModifier = settings.DefineSetting("MountRadialIconSizeModifier", 0.28f, () => Strings.Setting_MountRadialIconSizeModifier, () => "");
             _settingMountRadialIconSizeModifier.SetRange(0.05f, 1f);
-            _settingMountRadialRadiusModifier = settings.DefineSetting("MountRadialRadiusModifier", 0.5f, () => Strings.Setting_MountRadialRadiusModifier, () => "");
+            _settingMountRadialRadiusModifier = settings.DefineSetting("MountRadialRadiusModifier", 0.6f, () => Strings.Setting_MountRadialRadiusModifier, () => "");
             _settingMountRadialRadiusModifier.SetRange(0.2f, 1f);
             _settingMountRadialStartAngle = settings.DefineSetting("MountRadialStartAngle", 0.0f, () => Strings.Setting_MountRadialStartAngle, () => "");
             _settingMountRadialStartAngle.SetRange(0.0f, 1.0f);
-            _settingMountRadialIconOpacity = settings.DefineSetting("MountRadialIconOpacity", 0.5f, () => Strings.Setting_MountRadialIconOpacity, () => "");
+            _settingMountRadialIconOpacity = settings.DefineSetting("MountRadialIconOpacity", 0.7f, () => Strings.Setting_MountRadialIconOpacity, () => "");
             _settingMountRadialIconOpacity.SetRange(0.05f, 1f);
             _settingMountRadialToggleActionCameraKeyBinding = settings.DefineSetting("MountRadialToggleActionCameraKeyBinding", new KeyBinding(Keys.F10), () => Strings.Setting_MountRadialToggleActionCameraKeyBinding, () => "");
             _settingDrawIconIds = settings.DefineSetting("DrawIconIds", new List<int> { 0 });
