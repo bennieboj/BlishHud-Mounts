@@ -90,16 +90,25 @@ namespace Manlaan.Mounts
             var currentUpdateSeconds = gameTime.TotalGameTime.TotalSeconds;
             var secondsDiff = currentUpdateSeconds - _lastUpdateSeconds;
             var zPositionDiff = currentZPosition - _lastZPosition;
+            var velocity = zPositionDiff / secondsDiff;
 
-            if (zPositionDiff < -0.0001 && secondsDiff != 0)
+            if (secondsDiff < 0.015)
             {
-                var velocity = zPositionDiff / secondsDiff;
-                _isPlayerGlidingOrFalling = velocity < -2.5;
+                return;
             }
-            else
+
+            //Module._debug.Add("velocity", () => $"{velocity}");
+
+            switch (velocity)
             {
+                case double v1 when v1 > 5:
+                case double v2 when v2 < -4:
+                    _isPlayerGlidingOrFalling = true;
+                    break;
+                case double v3 when v3 >= 0 && v3 < 1:
                 _isPlayerGlidingOrFalling = false;
-            }
+                    break;
+            };
 
             _lastZPosition = currentZPosition;
             _lastUpdateSeconds = currentUpdateSeconds;
