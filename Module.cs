@@ -57,6 +57,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<bool> _settingEnableMountQueueing;
         public static SettingEntry<Point> _settingDisplayMountQueueingLocation;
         public static SettingEntry<bool> _settingDragMountQueueing;
+        public static SettingEntry<bool> _settingCombatLaunchMasteryUnlocked;
         public static SettingEntry<string> _settingDefaultMountBehaviour;
         public static SettingEntry<bool> _settingMountRadialSpawnAtMouse;
         public static SettingEntry<float> _settingMountRadialRadiusModifier;
@@ -327,6 +328,7 @@ namespace Manlaan.Mounts
             _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false);
             _settingEnableMountQueueing = settings.DefineSetting("EnableMountQueueing", false);
             _settingDragMountQueueing = settings.DefineSetting("DragMountQueueing", false);
+            _settingCombatLaunchMasteryUnlocked = settings.DefineSetting("CombatLaunchMasteryUnlocked", false);
             _settingDisplayMountQueueingLocation = settings.DefineSetting("DisplayMountQueueingLocation", new Point(200,200));
             _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, () => Strings.Setting_MountRadialSpawnAtMouse, () => "");
             _settingMountRadialIconSizeModifier = settings.DefineSetting("MountRadialIconSizeModifier", 0.28f, () => Strings.Setting_MountRadialIconSizeModifier, () => "");

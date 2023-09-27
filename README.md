@@ -25,13 +25,13 @@ There are have 3 types of UI elements visible:
 - custom radials per context of your character
 - evaluation order
 - automatic activation when single option selected
+- show bounds via debug
 
 1. icon rows
 - draggable
 - different rows
 
 1. corner icons
-
 
 
 - custom icons (folder, diff name, restart modile)
@@ -43,7 +43,7 @@ There are have 3 types of UI elements visible:
 
 ### Q: I want to support you
 A: I don't expect anything in return, but if you want you can:
-- send me some gold/items ingame: Bennieboj.2607
+- send some gold/items ingame: Bennieboj.2607
 - donate via https://ko-fi.com/bennieboj
 
 ### Q: Can I configure mouse buttons for keybinds?
@@ -53,6 +53,8 @@ A: No, this is a limitation of BlishHUD atm, see [this issue](https://github.com
 A: These masteries are not available in the API yet, see these issues for more information:
   - https://github.com/gw2-api/issues/issues/31
   - https://github.com/gw2-api/issues/issues/32
+
+You can however enable the "Combat mastery unlocked" option in the General Settings tab to fix this.
 
 ## Releases
 

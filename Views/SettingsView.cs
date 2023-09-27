@@ -326,6 +326,29 @@ namespace Manlaan.Mounts.Views
             dragMountQueueing_Checkbox.CheckedChanged += delegate {
                 Module._settingDragMountQueueing.Value = dragMountQueueing_Checkbox.Checked;
             };
+
+
+
+            Label combatLaunchMasteryUnlocked_Label = new Label()
+            {
+                Location = new Point(0, dragMountQueueing_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Combat mastery unlocked: ",
+                BasicTooltipText = "EoD and SotO masteries are not detectable in the API yet, see documentation for more info."
+            };
+            Checkbox combatLaunchMasteryUnlocked_Checkbox = new Checkbox()
+            {
+                Size = new Point(20, 20),
+                Parent = defaultMountPanel,
+                Checked = Module._settingCombatLaunchMasteryUnlocked.Value,
+                Location = new Point(combatLaunchMasteryUnlocked_Label.Right + 5, combatLaunchMasteryUnlocked_Label.Top - 1),
+            };
+            combatLaunchMasteryUnlocked_Checkbox.CheckedChanged += delegate {
+                Module._settingCombatLaunchMasteryUnlocked.Value = combatLaunchMasteryUnlocked_Checkbox.Checked;
+            };
         }
 
         private void BuildRadialPanel(Container radialPanel, int labelWidth, int mountsAndRadialInputWidth)

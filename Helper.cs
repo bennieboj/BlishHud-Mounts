@@ -8,6 +8,7 @@ using Gw2Sharp.WebApi.V2.Models;
 using Manlaan.Mounts.Things;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using NAudio.SoundFont;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +36,7 @@ namespace Manlaan.Mounts
 
         public bool IsCombatLaunchUnlocked()
         {
-            return _isCombatLaunchUnlocked;
+            return _isCombatLaunchUnlocked || Module._settingCombatLaunchMasteryUnlocked.Value;
         }
 
         public async Task IsCombatLaunchUnlockedAsync()
