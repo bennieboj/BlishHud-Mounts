@@ -28,6 +28,8 @@ namespace Manlaan.Mounts
 
         public ICollection<Thing> Things => ThingsSetting.Value.Select(typeOfThingInSettings => Module._things.Single(t => typeOfThingInSettings == t.GetType())).ToList();
 
+        public ICollection<Thing> AvailableThings => Things.Where(t => t.IsAvailable).ToList();
+
         public void AddThing(Thing thingToAdd)
         {
             //update by assignment to trigger SettingChanged, not by modification of the value itself (would not trigger SettingChanged)

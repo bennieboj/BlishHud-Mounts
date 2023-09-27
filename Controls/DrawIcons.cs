@@ -56,7 +56,7 @@ namespace Manlaan.Mounts.Controls
                 return;
             }
 
-            foreach (var thing in _iconThingSettings.Things.Where(t => t.IsAvailable))
+            foreach (var thing in _iconThingSettings.AvailableThings)
             {
                 thing.CreateCornerIcon(_textureCache.GetMountImgFile(thing));
             }
@@ -72,7 +72,7 @@ namespace Manlaan.Mounts.Controls
 
             int curX = 0;
             int curY = 0;
-            var things = _iconThingSettings.Things.Where(t => t.IsAvailable);
+            var things = _iconThingSettings.AvailableThings;
             foreach (var thing in things)
             {
                 Texture2D img = _textureCache.GetMountImgFile(thing);

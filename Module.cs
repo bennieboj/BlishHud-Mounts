@@ -49,7 +49,7 @@ namespace Manlaan.Mounts
 
         public static List<ThingImageFile> _thingImageFiles = new List<ThingImageFile>();
 
-        public static string[] _mountBehaviour = new string[] { "DefaultMount", "Radial" };
+        public static string[] _mountBehaviour = new string[] { "Default", "Radial" };
 
 
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
@@ -175,8 +175,16 @@ namespace Manlaan.Mounts
             }
         }
 
+        private void MigrateAwayFromMount(SettingCollection settings)
+        {
+            if (_settingDefaultMountBehaviour.Value == "DefaultMount")
+            {
+                _settingDefaultMountBehaviour.Value = "Default";
+            }
+        }
 
-        private void MigrateRadialThingSettings(SettingCollection settings)
+
+                private void MigrateRadialThingSettings(SettingCollection settings)
         {
             if (settings.ContainsSetting("DefaultFlyingMountChoice"))
             {
@@ -561,11 +569,12 @@ namespace Manlaan.Mounts
             Logger.Debug("DoDefaultMountActionAsync entered");
 
             var selectedRadialSettings = GetApplicableRadialSettings();
-            var things = selectedRadialSettings.Things;
-            if (things.Count() == 1 && things.FirstOrDefault().IsAvailable && selectedRadialSettings.ApplyInstantlyIfSingle.Value)
+            Logger.Debug($"DoDefaultMountActionAsync not showing radial applicable settings: {selectedRadialSettings.Name}");
+            var things = selectedRadialSettings.AvailableThings;
+            if (things.Count() == 1 && selectedRadialSettings.ApplyInstantlyIfSingle.Value)
             {
                 await things.FirstOrDefault()?.DoAction();
-                Logger.Debug("DoDefaultMountActionAsync instantmount");
+                Logger.Debug($"DoDefaultMountActionAsync not showing radial selected thing: {selectedRadialSettings.Things.First().Name}");
                 return;
             }
 
@@ -573,15 +582,15 @@ namespace Manlaan.Mounts
             if (defaultThing != null && GameService.Input.Mouse.CameraDragging)
             {
                 await (defaultThing?.DoAction() ?? Task.CompletedTask);
-                Logger.Debug("DoDefaultMountActionAsync CameraDragging defaultmount");
+                Logger.Debug("DoDefaultMountActionAsync CameraDragging default");
                 return;
             }
 
             switch (_settingDefaultMountBehaviour.Value)
             {
-                case "DefaultMount":
+                case "Default":
                     await (defaultThing?.DoAction() ?? Task.CompletedTask);
-                    Logger.Debug("DoDefaultMountActionAsync DefaultMountBehaviour defaultmount");
+                    Logger.Debug("DoDefaultMountActionAsync DefaultMountBehaviour default");
                     break;
                 case "Radial":
                     if (ShouldShowModule())

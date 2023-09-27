@@ -65,14 +65,15 @@ namespace Manlaan.Mounts.Views
             int curX = 0;
             foreach (var thing in CurrentThingSettings.Things)
             {
+                var isAvailable = thing.IsAvailable;
                 Label thingInSettings_Label = new Label()
                 {
                     Location = new Point(curX, curY),
                     AutoSizeWidth = true,
                     AutoSizeHeight = false,
                     Parent = panel,
-                    TextColor = thing.IsAvailable ? Color.White : Color.Red,
-                    BasicTooltipText = thing.IsAvailable ? null : "NO KEYBIND SET",
+                    TextColor = isAvailable ? Color.White : Color.Red,
+                    BasicTooltipText = isAvailable ? null : "NO KEYBIND SET",
                     Text = $"{thing.Name}",
                 };
                 var deleteThing_Button = new StandardButton

@@ -336,7 +336,7 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                Text = "Combat mastery unlocked: ",
+                Text = "Combat Launch mastery unlocked: ",
                 BasicTooltipText = "EoD and SotO masteries are not detectable in the API yet, see documentation for more info."
             };
             Checkbox combatLaunchMasteryUnlocked_Checkbox = new Checkbox()
