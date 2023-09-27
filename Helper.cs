@@ -8,7 +8,6 @@ using Gw2Sharp.WebApi.V2.Models;
 using Manlaan.Mounts.Things;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using NAudio.SoundFont;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,8 +19,7 @@ namespace Manlaan.Mounts
     {
         private static readonly Logger Logger = Logger.GetLogger<Helper>();
 
-        private Thing ThingOnHide = null;
-        private string CharacterNameOnHide;
+        private Dictionary<string, Thing> StoredThingForLater = new Dictionary<string, Thing>();
 
         private float _lastZPosition = 0.0f;
         private double _lastUpdateSeconds = 0.0f;
@@ -32,6 +30,8 @@ namespace Manlaan.Mounts
         public Helper(Gw2ApiManager gw2ApiManager)
         {
             Gw2ApiManager = gw2ApiManager;
+
+            Module._debug.Add("StoreThingForLaterActivation", () => $"{string.Join(", ", StoredThingForLater.Select(x => x.Key + "=" + x.Value.Name).ToArray())}");
         }
 
         public bool IsCombatLaunchUnlocked()
@@ -159,20 +159,24 @@ namespace Manlaan.Mounts
 
         internal void StoreThingForLaterActivation(Thing mount, string characterName)
         {
-            ThingOnHide = mount;
-            CharacterNameOnHide = characterName;
+            StoredThingForLater[characterName] = mount;
         }
 
-        internal bool IsCharacterTheSameAfterMapLoad(string characterName)
+        internal bool IsSomethingStored(string characterName)
         {
-            return CharacterNameOnHide == characterName;
+            return StoredThingForLater.ContainsKey(characterName);
         }
 
-        internal async Task DoThingActionForLaterActivation()
+        internal void ClearSomethingStored(string characterName)
         {
-            await ThingOnHide?.DoAction();
-            ThingOnHide = null;
-            CharacterNameOnHide = null;            
+            StoredThingForLater.Remove(characterName);
         }
+
+        internal async Task DoThingActionForLaterActivation(string characterName)
+        {
+            await StoredThingForLater[characterName]?.DoAction();
+            ClearSomethingStored(characterName);
+        }
+
     }
 }

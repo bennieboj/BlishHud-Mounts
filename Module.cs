@@ -81,6 +81,7 @@ namespace Manlaan.Mounts
         private TextureCache _textureCache;
 
         private bool _lastIsMountSwitchable = false;
+        private int _lastInUseMountsCount = 0;
 
 
         [ImportingConstructor]
@@ -432,17 +433,24 @@ namespace Manlaan.Mounts
             var moduleShown = !_lastIsMountSwitchable && isMountSwitchable;
             var currentCharacterName = GameService.Gw2Mumble.PlayerCharacter.Name;
             var inUseMountsCount = _things.Count(m => m.IsInUse());
+
+            if (inUseMountsCount == 0 && _lastInUseMountsCount > 0 && moduleHidden == false && moduleShown == false)
+            {
+                _helper.ClearSomethingStored(currentCharacterName);
+            }
+
             if (moduleHidden && inUseMountsCount == 1 && _settingMountAutomaticallyAfterLoadingScreen.Value && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
             {
                 _helper.StoreThingForLaterActivation(_things.Single(m => m.IsInUse()), currentCharacterName);
             }
-            if (moduleShown && inUseMountsCount == 0 && _helper.IsCharacterTheSameAfterMapLoad(currentCharacterName) && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
+            if (moduleShown && inUseMountsCount == 0 && _helper.IsSomethingStored(currentCharacterName) && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                _helper.DoThingActionForLaterActivation();
+                _helper.DoThingActionForLaterActivation(currentCharacterName);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 
+            _lastInUseMountsCount = inUseMountsCount;
             _lastIsMountSwitchable = isMountSwitchable;
 
             bool shouldShowModule = ShouldShowModule();
