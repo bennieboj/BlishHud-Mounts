@@ -69,7 +69,7 @@ namespace Manlaan.Mounts.Views
             Panel mountsPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 600);
             BuildMountsPanel(mountsPanel, labelWidth, bindingWidth, orderWidth);
 
-            Panel defaultMountPanel = CreateDefaultPanel(buildPanel, new Point(10, 650));
+            Panel defaultMountPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + 20, labelExplanation.Bottom + panelPadding));
             BuildDefaultMountPanel(defaultMountPanel, labelWidth2, mountsAndRadialInputWidth);
 
             Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + 20, 500));
@@ -224,30 +224,10 @@ namespace Manlaan.Mounts.Views
             settingDefaultMountBehaviour_Select.ValueChanged += delegate {
                 Module._settingDefaultMountBehaviour.Value = settingDefaultMountBehaviour_Select.SelectedItem;
             };
-            Label settingDisplayMountQueueing_Label = new Label()
-            {
-                Location = new Point(0, settingDefaultMountBehaviour_Label.Bottom + 6),
-                Width = labelWidth2,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = defaultMountPanel,
-                Text = "Display out of combat queueing:"
-            };
-            Checkbox settingDisplayMountQueueing_Checkbox = new Checkbox()
-            {
-                Size = new Point(labelWidth2, 20),
-                Parent = defaultMountPanel,
-                Checked = Module._settingDisplayMountQueueing.Value,
-                Location = new Point(settingDisplayMountQueueing_Label.Right + 5, settingDisplayMountQueueing_Label.Top - 1),
-            };
-            settingDisplayMountQueueing_Checkbox.CheckedChanged += delegate {
-                Module._settingDisplayMountQueueing.Value = settingDisplayMountQueueing_Checkbox.Checked;
-            };
-
 
             Label settingDisplayModuleOnLoadingScreen_Label = new Label()
             {
-                Location = new Point(0, settingDisplayMountQueueing_Label.Bottom + 6),
+                Location = new Point(0, settingDefaultMountBehaviour_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -264,7 +244,6 @@ namespace Manlaan.Mounts.Views
             settingDisplayModuleOnLoadingScreen_Checkbox.CheckedChanged += delegate {
                 Module._settingDisplayModuleOnLoadingScreen.Value = settingDisplayModuleOnLoadingScreen_Checkbox.Checked;
             };
-
 
             Label settingMountAutomaticallyAfterLoadingScreen_Label = new Label()
             {
@@ -284,6 +263,68 @@ namespace Manlaan.Mounts.Views
             };
             settingMountAutomaticallyAfterLoadingScreen_Checkbox.CheckedChanged += delegate {
                 Module._settingMountAutomaticallyAfterLoadingScreen.Value = settingMountAutomaticallyAfterLoadingScreen_Checkbox.Checked;
+            };
+
+
+            Label settingEnableMountQueueing_Label = new Label()
+            {
+                Location = new Point(0, settingMountAutomaticallyAfterLoadingScreen_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Enable out of combat queueing:"
+            };
+            Checkbox settingEnableMountQueueing_Checkbox = new Checkbox()
+            {
+                Size = new Point(labelWidth2, 20),
+                Parent = defaultMountPanel,
+                Checked = Module._settingEnableMountQueueing.Value,
+                Location = new Point(settingEnableMountQueueing_Label.Right + 5, settingEnableMountQueueing_Label.Top - 1),
+            };
+            settingEnableMountQueueing_Checkbox.CheckedChanged += delegate {
+                Module._settingEnableMountQueueing.Value = settingEnableMountQueueing_Checkbox.Checked;
+            };
+
+
+            Label settingDisplayMountQueueing_Label = new Label()
+            {
+                Location = new Point(0, settingEnableMountQueueing_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Display out of combat queueing:"
+            };
+            Checkbox settingDisplayMountQueueing_Checkbox = new Checkbox()
+            {
+                Size = new Point(labelWidth2, 20),
+                Parent = defaultMountPanel,
+                Checked = Module._settingDisplayMountQueueing.Value,
+                Location = new Point(settingDisplayMountQueueing_Label.Right + 5, settingDisplayMountQueueing_Label.Top - 1),
+            };
+            settingDisplayMountQueueing_Checkbox.CheckedChanged += delegate {
+                Module._settingDisplayMountQueueing.Value = settingDisplayMountQueueing_Checkbox.Checked;
+            };
+
+            Label dragMountQueueing_Label = new Label()
+            {
+                Location = new Point(0, settingDisplayMountQueueing_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Drag out of combat queueing: "
+            };
+            Checkbox dragMountQueueing_Checkbox = new Checkbox()
+            {
+                Size = new Point(20, 20),
+                Parent = defaultMountPanel,
+                Checked = Module._settingDragMountQueueing.Value,
+                Location = new Point(dragMountQueueing_Label.Right + 5, dragMountQueueing_Label.Top - 1),
+            };
+            dragMountQueueing_Checkbox.CheckedChanged += delegate {
+                Module._settingDragMountQueueing.Value = dragMountQueueing_Checkbox.Checked;
             };
         }
 

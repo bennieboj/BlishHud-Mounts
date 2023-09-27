@@ -10,11 +10,6 @@ namespace Manlaan.Mounts.Things.Mounts
         {
         }
 
-        public override bool IsInUse()
-        {
-            return false;
-        }
-
         public override bool IsUsableInCombat()
         {
             return true;

@@ -9,10 +9,5 @@ namespace Manlaan.Mounts.Things.Mounts
             : base(settingCollection, helper, name, displayName, imageFileName)
         {
         }
-
-        public override bool IsInUse()
-        {
-            return false;
-        }
     }
 }

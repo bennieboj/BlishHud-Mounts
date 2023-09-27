@@ -54,6 +54,9 @@ namespace Manlaan.Mounts
 
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
         public static SettingEntry<bool> _settingDisplayMountQueueing;
+        public static SettingEntry<bool> _settingEnableMountQueueing;
+        public static SettingEntry<Point> _settingDisplayMountQueueingLocation;
+        public static SettingEntry<bool> _settingDragMountQueueing;
         public static SettingEntry<string> _settingDefaultMountBehaviour;
         public static SettingEntry<bool> _settingMountRadialSpawnAtMouse;
         public static SettingEntry<float> _settingMountRadialRadiusModifier;
@@ -71,7 +74,7 @@ namespace Manlaan.Mounts
         public static DebugControl _debug;
         private DrawRadial _radial;
         private ICollection<DrawIcons> _drawIcons = new List<DrawIcons>();
-        private LoadingSpinner _queueingSpinner;
+        private DrawOutOfCombat _drawOutOfCombat;
         private DrawMouseCursor _drawMouseCursor;
         private Helper _helper;
         private TextureCache _textureCache;
@@ -321,7 +324,10 @@ namespace Manlaan.Mounts
             _settingDefaultMountBinding.Value.Activated += async delegate { await DoDefaultMountActionAsync(); };
             _settingDefaultMountBinding.Value.BindingChanged += UpdateSettings;
             _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "Radial", () => Strings.Setting_DefaultMountBehaviour, () => "");
-            _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false, () => Strings.Setting_DisplayMountQueueing, () => "");
+            _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false);
+            _settingEnableMountQueueing = settings.DefineSetting("EnableMountQueueing", false);
+            _settingDragMountQueueing = settings.DefineSetting("DragMountQueueing", false);
+            _settingDisplayMountQueueingLocation = settings.DefineSetting("DisplayMountQueueingLocation", new Point(200,200));
             _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, () => Strings.Setting_MountRadialSpawnAtMouse, () => "");
             _settingMountRadialIconSizeModifier = settings.DefineSetting("MountRadialIconSizeModifier", 0.28f, () => Strings.Setting_MountRadialIconSizeModifier, () => "");
             _settingMountRadialIconSizeModifier.SetRange(0.05f, 1f);
@@ -365,6 +371,9 @@ namespace Manlaan.Mounts
             _settingDisplayModuleOnLoadingScreen.SettingChanged += UpdateSettings;
             _settingMountAutomaticallyAfterLoadingScreen.SettingChanged += UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged += UpdateSettings;
+            _settingEnableMountQueueing.SettingChanged += UpdateSettings;
+            _settingDragMountQueueing.SettingChanged += UpdateSettings;
+            _settingDisplayMountQueueingLocation.SettingChanged += UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged += UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged += UpdateSettings;
@@ -435,9 +444,9 @@ namespace Manlaan.Mounts
                 foreach (var drawIcons in _drawIcons) drawIcons.Hide();
             }
 
-            if (_settingDisplayMountQueueing.Value && _things.Any(m => m.QueuedTimestamp != null))
+            if (_things.Any(m => m.QueuedTimestamp != null))
             {
-                _queueingSpinner?.Show();
+                _drawOutOfCombat?.ShowSpinner();
             }
 
             //if (GameService.Input.Mouse.CameraDragging && _radial.Visible && !GameService.Input.Mouse.CursorIsVisible)
@@ -481,7 +490,10 @@ namespace Manlaan.Mounts
             }
 
             _settingDisplayMountQueueing.SettingChanged -= UpdateSettings;
-            _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
+            _settingEnableMountQueueing.SettingChanged -= UpdateSettings;
+            _settingDragMountQueueing.SettingChanged -= UpdateSettings;
+            _settingDisplayMountQueueingLocation.SettingChanged -= UpdateSettings;
+            _settingMountRadialSpawnAtMouse.SettingChanged -= UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged -= UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged -= UpdateSettings;
             _settingMountRadialStartAngle.SettingChanged -= UpdateSettings;
@@ -523,11 +535,8 @@ namespace Manlaan.Mounts
             foreach (var drawIcons in _drawIcons) drawIcons.Dispose();
             _drawIcons = IconThingSettings.Select(iconSetting => new DrawIcons(iconSetting, _helper, _textureCache)).ToList();
 
-            _queueingSpinner?.Dispose();
-            _queueingSpinner = new LoadingSpinner();
-            _queueingSpinner.Location = new Point(GameService.Graphics.SpriteScreen.Width / 2 + 400, GameService.Graphics.SpriteScreen.Height - _queueingSpinner.Height - 25);
-            _queueingSpinner.Parent = GameService.Graphics.SpriteScreen;
-            _queueingSpinner.Hide();
+            _drawOutOfCombat?.Dispose();
+            _drawOutOfCombat = new DrawOutOfCombat();
 
             _drawMouseCursor?.Dispose();
             _drawMouseCursor = new DrawMouseCursor(_textureCache);
@@ -591,7 +600,7 @@ namespace Manlaan.Mounts
                 {
                     thing.QueuedTimestamp = null;
                 }
-                _queueingSpinner?.Hide();
+                _drawOutOfCombat?.HideSpinner();
             }
         }
     }
