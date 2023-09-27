@@ -41,7 +41,7 @@ There are have 3 types of UI elements visible:
 ### debugging option and logging
 Before reproducing an issue, please do the following steps:
 - make a screenshot of the relevant module settings and in game settings
-- turn on debug logs in BlishHUD (Settings > Overlay settings > enable debug logging).
+- turn on "debug logs" and "additional debug data" in BlishHUD (Settings > Overlay settings > "enable debug logging" & "show additional debug data").
   ![](./readme/debug_info.png)
 You'll see extra logging and extra debug output on the screen like so:
   ![](./readme/debug_info_result.png)
