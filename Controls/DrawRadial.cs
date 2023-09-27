@@ -86,7 +86,7 @@ namespace Manlaan.Mounts.Controls
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             RadialThings.Clear();
             var applicableRadialSettings = Module.GetApplicableRadialSettings();
-            var things = applicableRadialSettings.Things.ToList();
+            var things = applicableRadialSettings.Things.Where(t => t.IsAvailable).ToList();
 
             if (!things.Any())
             {

@@ -6,6 +6,7 @@ using Mounts.Settings;
 using System.Collections.Generic;
 using Manlaan.Mounts.Things;
 using System;
+using System.Linq;
 
 namespace Manlaan.Mounts.Controls
 {
@@ -55,7 +56,7 @@ namespace Manlaan.Mounts.Controls
                 return;
             }
 
-            foreach (var thing in _iconThingSettings.Things)
+            foreach (var thing in _iconThingSettings.Things.Where(t => t.IsAvailable))
             {
                 thing.CreateCornerIcon(_textureCache.GetMountImgFile(thing));
             }
@@ -71,7 +72,7 @@ namespace Manlaan.Mounts.Controls
 
             int curX = 0;
             int curY = 0;
-            var things = _iconThingSettings.Things;
+            var things = _iconThingSettings.Things.Where(t => t.IsAvailable);
             foreach (var thing in things)
             {
                 Texture2D img = _textureCache.GetMountImgFile(thing);
@@ -95,11 +96,11 @@ namespace Manlaan.Mounts.Controls
 
             if (_iconThingSettings.Orientation.Value == IconOrientation.Horizontal)
             {
-                Size = new Point(_iconThingSettings.Size.Value * things.Count, _iconThingSettings.Size.Value);
+                Size = new Point(_iconThingSettings.Size.Value * things.Count(), _iconThingSettings.Size.Value);
             }
             else
             {
-                Size = new Point(_iconThingSettings.Size.Value, _iconThingSettings.Size.Value * things.Count);
+                Size = new Point(_iconThingSettings.Size.Value, _iconThingSettings.Size.Value * things.Count());
             }
 
             if (_iconThingSettings.IsDraggingEnabled.Value)

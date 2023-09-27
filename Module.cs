@@ -249,7 +249,7 @@ namespace Manlaan.Mounts
             if (settings.ContainsSetting("MountDisplayCornerIcons"))
             {
                 var settingMountDisplayCornerIcons = settings["MountDisplayCornerIcons"] as SettingEntry<bool>;
-                defaultIconThingSettings.IsEnabled.Value = settingMountDisplayCornerIcons.Value;
+                defaultIconThingSettings.DisplayCornerIcons.Value = settingMountDisplayCornerIcons.Value;
                 settings.UndefineSetting("MountDisplayCornerIcons");
             }
 
@@ -318,6 +318,7 @@ namespace Manlaan.Mounts
                 new Tonic(settings, _helper)
             };
             _things = new Collection<Thing>(orderedThings);
+            var thingsForMigration = orderedThings.Where(t => t.IsAvailable).ToList();
 
 
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
@@ -354,13 +355,13 @@ namespace Manlaan.Mounts
                 new RadialThingSettings(settings, "IsPlayerGlidingOrFalling", 2, _helper.IsPlayerGlidingOrFalling, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList()),
                 new RadialThingSettings(settings, "IsPlayerUnderWater", 3, _helper.IsPlayerUnderWater, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList()),
                 new RadialThingSettings(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()),
-                new RadialThingSettings(settings, "Default", 99, () => true, true, false, orderedThings)
+                new RadialThingSettings(settings, "Default", 99, () => true, true, false, thingsForMigration)
             };
             MigrateRadialThingSettings(settings);
 
             IconThingSettings = new List<IconThingSettings>
             {
-                new IconThingSettings(settings, 0, "Default", orderedThings)
+                new IconThingSettings(settings, 0, "Default", thingsForMigration)
             };
             IconThingSettings.AddRange(_settingDrawIconIds.Value.Skip(1).Select(id => new IconThingSettings(settings, id)));
             MigrateIconThingSettings(settings);
