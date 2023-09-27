@@ -21,7 +21,8 @@ namespace Manlaan.Mounts
         public static readonly string SettingsTextureName = "155052.png";
         public static readonly string RadialSettingsTextureName = "1130623-32.png";
         public static readonly string IconSettingsTextureName = "2208345.png";
-        public static readonly string SupportMeTextureName = "156127-32-grey.png";
+        public static readonly string SupportMeTabTextureName = "156127-32-grey.png";
+        public static readonly string KofiTextureName = "kofi-small.png";
         public static readonly string AnetIconTextureName = "1441452.png";
 
         public TextureCache(ContentsManager contentsManager)
@@ -44,7 +45,8 @@ namespace Manlaan.Mounts
             PreCacheTexture(SettingsTextureName, getTextureFromRef);
             PreCacheTexture(RadialSettingsTextureName, getTextureFromRef);
             PreCacheTexture(IconSettingsTextureName, getTextureFromRef);
-            PreCacheTexture(SupportMeTextureName, getTextureFromRef);
+            PreCacheTexture(SupportMeTabTextureName, getTextureFromRef);
+            PreCacheTexture(KofiTextureName, getTextureFromRef);
             PreCacheTexture(AnetIconTextureName, getTextureFromRef);
         }
 

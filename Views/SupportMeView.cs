@@ -1,31 +1,51 @@
 ﻿using Blish_HUD.Controls;
-using Microsoft.Xna.Framework;
 using Blish_HUD;
 using Blish_HUD.Graphics.UI;
+using System.Diagnostics;
+using Microsoft.Xna.Framework;
 
 namespace Manlaan.Mounts.Views
 {
     class SupportMeView : View
-    {       
-        public SupportMeView()
+    {
+        private readonly TextureCache textureCache;
+
+        public SupportMeView(TextureCache textureCache)
         {
-            
+            this.textureCache = textureCache;
         }
 
         protected override void Build(Container buildPanel) {
 
-            Label labelExplanation = new Label()
+            Label l = new Label
             {
-                Location = new Point(10, 10),
+                Text = "I don't expect anything in return, but if you want you can:\n- send some gold/items ingame: Bennieboj.2607\n- donate via Ko-fi:",
+                Location = new Point(300, 300),
                 Width = 800,
                 AutoSizeHeight = true,
                 WrapText = true,
-                Parent = buildPanel,
-                TextColor = Color.Red,
                 Font = GameService.Content.DefaultFont18,
-                Text = "When enabled, a context defines which actions are taken into account. Contexts are optional.\nTODOOOOOOO".Replace(" ", "  "),
-                HorizontalAlignment = HorizontalAlignment.Left
-            };            
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Parent = buildPanel
+            };
+
+            StandardButton kofiSupport = new StandardButton
+            {
+                Left = 370,
+                Top = 400,
+                Icon = textureCache.GetImgFile(TextureCache.KofiTextureName),
+                Height = 60,
+                Width = 130,
+                Parent = buildPanel,
+                Text = "Ko-fi"
+        };
+            kofiSupport.Click += delegate
+            {
+                Process.Start("https://ko-fi.com/bennieboj");
+            };
+
+
+            
         }
     }
 }
