@@ -37,7 +37,20 @@ There are have 3 types of UI elements visible:
 - custom icons (folder, diff name, restart modile)
 - default mount, selected when dragging mouse + center option
 - out of combat queuing
-- debug option + instructions
+
+### debugging option and logging
+Before reproducing an issue, please do the following steps:
+- make a screenshot of the relevant module settings and in game settings
+- turn on debug logs in BlishHUD (Settings > Overlay settings > enable debug logging).
+  ![](./readme/debug_info.png)
+You'll see extra logging and extra debug output on the screen like so:
+  ![](./readme/debug_info_result.png)
+
+
+Then reproduce the issue in as little steps as possible.
+
+Add the latest log file and screenshots with the problem description. Logs can be found at:
+Documents\Guild Wars 2\addons\blishhud\logs (or a similar folder inside your Settings folder when running in portable mode).
 
 ## FAQ
 
