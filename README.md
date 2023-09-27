@@ -75,9 +75,9 @@ These radial settings are globally applied and should be self explanatory:
 - Action camera keybinding (used to toggle action camera, radial doesn't function well in action camera)
 
 ### Radial Settings per context (2nd tab)
-Module versions up until v1.3.3 container hard coded logic for automatic dismounting, default water mount, default flying mount, default WvW mount, etc.
+Module versions up until v1.3.3 contained hard coded logic for automatic dismounting, default water mount, default flying mount, default WvW mount, etc.
 
-Later versions got rid of this since the logic became too complex to maintain. Now this logic is configurable by the end user in the form of so-called radials settings or contexts if you will.
+Later versions got rid of this since the logic became too complex to maintain. Now this logic is configurable by the end user in the form of so-called radials settings (or contexts if you will).
 
 ![](./readme/radial_settings.png)
 

@@ -45,7 +45,7 @@ namespace Manlaan.Mounts.Views
                 Parent = buildPanel,
                 TextColor = Color.Red,
                 Font = GameService.Content.DefaultFont18,
-                Text = "When enabled, a context defines which actions are taken into account. Contexts are optional.\nTODOOOOOOO".Replace(" ", "  "),
+                Text = "When enabled, these radial settings dictate which actions are taken into account in which conditions.\nFor more info, see the documentation.".Replace(" ", "  "),
                 HorizontalAlignment = HorizontalAlignment.Left
             };
 
@@ -53,10 +53,10 @@ namespace Manlaan.Mounts.Views
             {
                 Parent = buildPanel,
                 Location = new Point(labelExplanation.Right, labelExplanation.Top),
-                Text = Strings.Add
+                Text = Strings.Documentation_Button_Label
             };
             documentationButton.Click += (args, sender) => {
-                Process.Start("https://github.com/manlaan/BlishHud-Mounts/#settings");
+                Process.Start("https://github.com/bennieboj/BlishHud-Mounts/#settings");
             };
 
             var panelPadding = 20;

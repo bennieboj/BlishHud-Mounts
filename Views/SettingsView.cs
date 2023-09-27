@@ -50,7 +50,7 @@ namespace Manlaan.Mounts.Views
                 Parent = buildPanel,
                 TextColor = Color.Red,
                 Font = GameService.Content.DefaultFont18,
-                Text = "For this module to work you need to fill in your in-game keykindings in the settings below.\nNo keybind means the mount is DISABLED.".Replace(" ", "  "),
+                Text = "For this module to work you need to fill in your in-game keybindings in the settings below.\nNo keybind means the mount is DISABLED.".Replace(" ", "  "),
                 HorizontalAlignment = HorizontalAlignment.Left
             };
 
@@ -61,7 +61,7 @@ namespace Manlaan.Mounts.Views
                 Text = Strings.Documentation_Button_Label
             };
             documentationButton.Click += (args, sender) => {
-                Process.Start("https://github.com/manlaan/BlishHud-Mounts/#settings");
+                Process.Start("https://github.com/bennieboj/BlishHud-Mounts/#settings");
             };
 
             var panelPadding = 20;
