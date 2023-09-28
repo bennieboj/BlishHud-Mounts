@@ -185,7 +185,7 @@ namespace Manlaan.Mounts
         }
 
 
-                private void MigrateRadialThingSettings(SettingCollection settings)
+        private void MigrateRadialThingSettings(SettingCollection settings)
         {
             if (settings.ContainsSetting("DefaultFlyingMountChoice"))
             {
@@ -374,6 +374,8 @@ namespace Manlaan.Mounts
             };
             IconThingSettings.AddRange(_settingDrawIconIds.Value.Skip(1).Select(id => new IconThingSettings(settings, id)));
             MigrateIconThingSettings(settings);
+
+            MigrateAwayFromMount(settings);
 
             foreach (var t in _things)
             {
