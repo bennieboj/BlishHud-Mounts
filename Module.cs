@@ -412,7 +412,8 @@ namespace Manlaan.Mounts
         {
             RadialSettings.ForEach(c => _debug.Add($"RadialSettings {c.Order} {c.Name}", () => $"IsApplicable: {c.IsApplicable()}, Center: {c.GetCenterThing()?.DisplayName}"));
             _debug.Add("Applicable RadialSettings Name", () => $"{GetApplicableRadialSettings()?.Name}");
-            _debug.Add("Applicable RadialSettings Actions", () => $"{string.Join(", ", GetApplicableRadialSettings()?.Things.Select(t => t.DisplayName))}");
+            _debug.Add("Applicable RadialSettings", () => $"{string.Join(", ", GetApplicableRadialSettings()?.Things.Select(t => t.DisplayName))}");
+            _debug.Add("Queued for out of combat", () => $"{_helper.GetQueuedThing()}");
 
             Gw2ApiManager.SubtokenUpdated += async delegate
             {
@@ -616,8 +617,8 @@ namespace Manlaan.Mounts
         {
             if (!e.Value)
             {
-                var thingInCombat = _things.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault();
-                Logger.Debug($"{nameof(HandleCombatChangeAsync)} OoC queueing false {thingInCombat?.Name}");
+                var thingInCombat = _helper.GetQueuedThing();
+                Logger.Debug($"{nameof(HandleCombatChangeAsync)} Applied queued for out of combat: {thingInCombat?.Name}");
                 await (thingInCombat?.DoAction() ?? Task.CompletedTask);
                 foreach (var thing in _things)
                 {

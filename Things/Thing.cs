@@ -59,7 +59,7 @@ namespace Manlaan.Mounts.Things
         {
             if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat && Module._settingEnableMountQueueing.Value && !IsUsableInCombat())
             {
-                Logger.Debug($"{nameof(DoAction)} OoC queueing true {Name}");
+                Logger.Debug($"{nameof(DoAction)} Set queued for out of combat: {Name}");
                 QueuedTimestamp = DateTime.UtcNow;
                 return;
             }

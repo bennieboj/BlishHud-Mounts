@@ -8,6 +8,7 @@ using Gw2Sharp.WebApi.V2.Models;
 using Manlaan.Mounts.Things;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Mounts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -157,6 +158,11 @@ namespace Manlaan.Mounts
             }
         }
 
+        internal Thing GetQueuedThing()
+        {
+            return Module._things.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault();
+        }
+
         internal void StoreThingForLaterActivation(Thing thing, string characterName, string reason)
         {
             Logger.Debug($"{nameof(StoreThingForLaterActivation)}: {thing.Name} for character: {characterName} with reason: {reason}");
@@ -183,6 +189,5 @@ namespace Manlaan.Mounts
             thing?.DoAction();
             ClearSomethingStoredForLaterActivation(characterName);
         }
-
     }
 }
