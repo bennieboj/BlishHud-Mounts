@@ -36,13 +36,13 @@ On the right you'll see a list of settings:
 - The keybind itself
 - `module keybind` behaviour
   - `radial` (see [radial-settings](#radial-settings)
-  - `default` always use the same mount.
+  - `default` always use the same action.
 
 #### Display the module on the loading screen
 Either display or not display the module on the loading screen.
 
 #### Mount automatically on the same mount when using a loading screen.
-Keep track of which character is mounted on which mount and re-apply this afterwards.
+Keep track of which character is mounted on which mount and re-apply this afterwards. Only applicable on mounts, since for other things we cannot determine if it's in use via the API.
 
 
 #### Out of Combat queuing
@@ -69,7 +69,7 @@ The "Combat Launch mastery unlocked" setting was added to mimick this.
 These radial settings are globally applied and should be self explanatory:
 - Spawn at mouse (either at mouse position or the center of the screen)
 - Radius of the radial
-- Start angle of the first mount in the list
+- Start angle of the first thing/action in the list
 - Icon size
 - Icon opacity
 - Action camera keybinding (used to toggle action camera, radial doesn't function well in action camera)

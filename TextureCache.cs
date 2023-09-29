@@ -90,9 +90,9 @@ namespace Manlaan.Mounts
             return GetTexture(filename);
         }
 
-        public Texture2D GetMountImgFile(Thing mount)
+        public Texture2D GetMountImgFile(Thing thing)
         {
-            return GetTexture(mount.ImageFileNameSetting.Value);
+            return GetTexture(thing.ImageFileNameSetting.Value);
         }
 
         private Texture2D GetTexture (string filename)

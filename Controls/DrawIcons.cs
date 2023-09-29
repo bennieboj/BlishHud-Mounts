@@ -151,9 +151,9 @@ namespace Manlaan.Mounts.Controls
         protected override void OnHidden(EventArgs e)
         {
 
-            foreach (var mount in _iconThingSettings.Things)
+            foreach (var thing in _iconThingSettings.Things)
             {
-                mount.CornerIcon?.Hide();
+                thing.CornerIcon?.Hide();
             }
             base.OnHidden(e);
         }
@@ -161,9 +161,9 @@ namespace Manlaan.Mounts.Controls
         protected override void OnShown(EventArgs e)
         {
 
-            foreach (var mount in _iconThingSettings.Things)
+            foreach (var thing in _iconThingSettings.Things)
             {
-                mount.CornerIcon?.Show();
+                thing.CornerIcon?.Show();
             }
             base.OnHidden(e);
         }

@@ -50,7 +50,7 @@ namespace Manlaan.Mounts.Views
                 Parent = buildPanel,
                 TextColor = Color.Red,
                 Font = GameService.Content.DefaultFont18,
-                Text = "For this module to work you need to fill in your in-game keybindings in the settings below.\nNo keybind means the mount is DISABLED.".Replace(" ", "  "),
+                Text = "For this module to work you need to fill in your in-game keybindings in the settings below.\nNo keybind means the action is DISABLED. For more info, see the documentation.".Replace(" ", "  "),
                 HorizontalAlignment = HorizontalAlignment.Left
             };
 
@@ -174,18 +174,9 @@ namespace Manlaan.Mounts.Views
 
         private void BuildDefaultMountPanel(Panel defaultMountPanel, int labelWidth2, int mountsAndRadialInputWidth)
         {
-            Label settingDefaultSettingsMount_Label = new Label()
-            {
-                Location = new Point(0, 0),
-                Width = labelWidth2,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = defaultMountPanel,
-                Text = "Default mount settings: "
-            };                   
             Label settingDefaultMountKeybind_Label = new Label()
             {
-                Location = new Point(0, settingDefaultSettingsMount_Label.Bottom + 6),
+                Location = new Point(0, 0),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,

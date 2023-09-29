@@ -123,11 +123,11 @@ namespace Manlaan.Mounts.Controls
             }
             double currentAngle = startAngle;
             var partAngleStep = Math.PI * 2 / things.Count();
-            foreach (var mount in things)
+            foreach (var thing in things)
             {
                 var angleMid = currentAngle + partAngleStep / 2;
                 var angleEnd = currentAngle + partAngleStep;
-                var texture = _textureCache.GetMountImgFile(mount);
+                var texture = _textureCache.GetMountImgFile(thing);
 
                 int x = (int)Math.Round(radius + radius * Math.Cos(angleMid));
                 int y = (int)Math.Round(radius + radius * Math.Sin(angleMid));
@@ -146,7 +146,7 @@ namespace Manlaan.Mounts.Controls
                 RadialThings.Add(new RadialThing
                 {
                     Texture = texture,
-                    Thing = mount,
+                    Thing = thing,
                     ImageX = x,
                     ImageY = y,
                     AngleBegin = currentAngle,
