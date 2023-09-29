@@ -1,5 +1,4 @@
 ﻿using Blish_HUD.Settings;
-using System.Threading.Tasks;
 
 namespace Manlaan.Mounts.Things.Mounts
 {

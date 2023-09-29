@@ -5,10 +5,8 @@ using System.Diagnostics;
 using System.Linq;
 using Blish_HUD.Graphics.UI;
 using Mounts;
-using Blish_HUD.Settings.UI.Views;
 using Mounts.Settings;
 using System;
-using Blish_HUD.Settings;
 
 namespace Manlaan.Mounts.Views
 {

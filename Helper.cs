@@ -157,25 +157,31 @@ namespace Manlaan.Mounts
             }
         }
 
-        internal void StoreThingForLaterActivation(Thing mount, string characterName)
+        internal void StoreThingForLaterActivation(Thing thing, string characterName, string reason)
         {
-            StoredThingForLater[characterName] = mount;
+            Logger.Debug($"{nameof(StoreThingForLaterActivation)}: {thing.Name} for character: {characterName} with reason: {reason}");
+            StoredThingForLater[characterName] = thing;
         }
 
-        internal bool IsSomethingStored(string characterName)
+        internal bool IsSomethingStoredForLaterActivation(string characterName)
         {
-            return StoredThingForLater.ContainsKey(characterName);
+            var result = StoredThingForLater.ContainsKey(characterName);
+            Logger.Debug($"{nameof(IsSomethingStoredForLaterActivation)} for character {characterName} : {result}");
+            return result;
         }
 
-        internal void ClearSomethingStored(string characterName)
+        internal void ClearSomethingStoredForLaterActivation(string characterName)
         {
+            Logger.Debug($"{nameof(ClearSomethingStoredForLaterActivation)} for character: {characterName}");
             StoredThingForLater.Remove(characterName);
         }
 
         internal async Task DoThingActionForLaterActivation(string characterName)
         {
-            await StoredThingForLater[characterName]?.DoAction();
-            ClearSomethingStored(characterName);
+            var thing = StoredThingForLater[characterName];
+            Logger.Debug($"{nameof(ClearSomethingStoredForLaterActivation)} {thing?.Name} for character: {characterName}");
+            thing?.DoAction();
+            ClearSomethingStoredForLaterActivation(characterName);
         }
 
     }

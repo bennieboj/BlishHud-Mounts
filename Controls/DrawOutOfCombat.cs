@@ -3,8 +3,6 @@ using Blish_HUD.Controls;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Mounts.Settings;
-using System;
-using System.Linq;
 
 namespace Manlaan.Mounts.Controls
 {

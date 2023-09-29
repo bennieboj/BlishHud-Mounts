@@ -21,7 +21,6 @@ using Manlaan.Mounts.Things.Mounts;
 using Manlaan.Mounts.Things;
 using Mounts;
 using Mounts.Settings;
-using Gw2Sharp;
 
 namespace Manlaan.Mounts
 {
@@ -332,7 +331,7 @@ namespace Manlaan.Mounts
 
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
             _settingDefaultMountBinding.Value.Enabled = true;
-            _settingDefaultMountBinding.Value.Activated += async delegate { await DoDefaultMountActionAsync(); };
+            _settingDefaultMountBinding.Value.Activated += async delegate { await DoKeybindActionAsync(); };
             _settingDefaultMountBinding.Value.BindingChanged += UpdateSettings;
             _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "Radial", () => Strings.Setting_DefaultMountBehaviour, () => "");
             _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false);
@@ -438,14 +437,14 @@ namespace Manlaan.Mounts
 
             if (inUseMountsCount == 0 && _lastInUseMountsCount > 0 && moduleHidden == false && moduleShown == false)
             {
-                _helper.ClearSomethingStored(currentCharacterName);
+                _helper.ClearSomethingStoredForLaterActivation(currentCharacterName);
             }
 
             if (moduleHidden && inUseMountsCount == 1 && _settingMountAutomaticallyAfterLoadingScreen.Value && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
             {
-                _helper.StoreThingForLaterActivation(_things.Single(m => m.IsInUse()), currentCharacterName);
+                _helper.StoreThingForLaterActivation(_things.Single(m => m.IsInUse()), currentCharacterName, "ModuleHidden");
             }
-            if (moduleShown && inUseMountsCount == 0 && _helper.IsSomethingStored(currentCharacterName) && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
+            if (moduleShown && inUseMountsCount == 0 && _helper.IsSomethingStoredForLaterActivation(currentCharacterName) && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 _helper.DoThingActionForLaterActivation(currentCharacterName);
@@ -574,17 +573,17 @@ namespace Manlaan.Mounts
             };
         }
 
-        private async Task DoDefaultMountActionAsync()
+        private async Task DoKeybindActionAsync()
         {
-            Logger.Debug("DoDefaultMountActionAsync entered");
+            Logger.Debug($"{nameof(DoKeybindActionAsync)} entered");
 
             var selectedRadialSettings = GetApplicableRadialSettings();
-            Logger.Debug($"DoDefaultMountActionAsync not showing radial applicable settings: {selectedRadialSettings.Name}");
+            Logger.Debug($"{nameof(DoKeybindActionAsync)} not showing radial applicable settings: {selectedRadialSettings.Name}");
             var things = selectedRadialSettings.AvailableThings;
             if (things.Count() == 1 && selectedRadialSettings.ApplyInstantlyIfSingle.Value)
             {
                 await things.FirstOrDefault()?.DoAction();
-                Logger.Debug($"DoDefaultMountActionAsync not showing radial selected thing: {selectedRadialSettings.Things.First().Name}");
+                Logger.Debug($"{nameof(DoKeybindActionAsync)} not showing radial selected thing: {selectedRadialSettings.Things.First().Name}");
                 return;
             }
 
@@ -592,7 +591,7 @@ namespace Manlaan.Mounts
             if (defaultThing != null && GameService.Input.Mouse.CameraDragging)
             {
                 await (defaultThing?.DoAction() ?? Task.CompletedTask);
-                Logger.Debug("DoDefaultMountActionAsync CameraDragging default");
+                Logger.Debug($"{nameof(DoKeybindActionAsync)} CameraDragging default");
                 return;
             }
 
@@ -600,13 +599,13 @@ namespace Manlaan.Mounts
             {
                 case "Default":
                     await (defaultThing?.DoAction() ?? Task.CompletedTask);
-                    Logger.Debug("DoDefaultMountActionAsync DefaultMountBehaviour default");
+                    Logger.Debug($"{nameof(DoKeybindActionAsync)} DefaultMountBehaviour default");
                     break;
                 case "Radial":
                     if (ShouldShowModule())
                     {
                         _radial?.Show();
-                        Logger.Debug("DoDefaultMountActionAsync DefaultMountBehaviour radial");
+                        Logger.Debug($"{nameof(DoKeybindActionAsync)} DefaultMountBehaviour radial");
                     }
                     break;
             }
@@ -617,7 +616,9 @@ namespace Manlaan.Mounts
         {
             if (!e.Value)
             {
-                await (_things.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault()?.DoAction() ?? Task.CompletedTask);
+                var thingInCombat = _things.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault();
+                Logger.Debug($"{nameof(HandleCombatChangeAsync)} OoC queueing false {thingInCombat?.Name}");
+                await (thingInCombat?.DoAction() ?? Task.CompletedTask);
                 foreach (var thing in _things)
                 {
                     thing.QueuedTimestamp = null;

@@ -59,14 +59,14 @@ namespace Manlaan.Mounts.Things
         {
             if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat && Module._settingEnableMountQueueing.Value && !IsUsableInCombat())
             {
+                Logger.Debug($"{nameof(DoAction)} OoC queueing true {Name}");
                 QueuedTimestamp = DateTime.UtcNow;
                 return;
             }
 
             if (!Module.CanThingBeActivated())
             {
-                _helper.StoreThingForLaterActivation(this, GameService.Gw2Mumble.PlayerCharacter.Name);
-                Logger.Debug($"DoAction StoreThingForLaterActivation: {DisplayName}");
+                _helper.StoreThingForLaterActivation(this, GameService.Gw2Mumble.PlayerCharacter.Name, "NotAbleToActivate");
                 return;
             }
 
