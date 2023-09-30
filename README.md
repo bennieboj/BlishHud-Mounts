@@ -4,6 +4,8 @@ Custom icons, out of combat queueing and automatically loading after map change 
 
 [Settings](#settings) need to be configured before using the module!
 
+![](./readme/initial_setup_result.png)
+
 ## Settings
 
 1. Enable the module
