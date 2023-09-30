@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Manlaan.Mounts {
+namespace Mounts {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Manlaan.Mounts {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Manlaan.Mounts.Strings", typeof(Strings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Mounts.Strings", typeof(Strings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,42 @@ namespace Manlaan.Mounts {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add.
+        /// </summary>
+        internal static string Add {
+            get {
+                return ResourceManager.GetString("Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        internal static string Delete {
+            get {
+                return ResourceManager.GetString("Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Documentation.
+        /// </summary>
+        internal static string Documentation_Button_Label {
+            get {
+                return ResourceManager.GetString("Documentation_Button_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        internal static string Edit {
+            get {
+                return ResourceManager.GetString("Edit", resourceCulture);
             }
         }
         
@@ -295,11 +331,38 @@ namespace Manlaan.Mounts {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to All Settings.
+        ///   Looks up a localized string similar to General Settings.
         /// </summary>
-        internal static string Window_AllSettingsTab {
+        internal static string Window_GeneralSettingsTab {
             get {
-                return ResourceManager.GetString("Window_AllSettingsTab", resourceCulture);
+                return ResourceManager.GetString("Window_GeneralSettingsTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Icon Settings.
+        /// </summary>
+        internal static string Window_IconSettingsTab {
+            get {
+                return ResourceManager.GetString("Window_IconSettingsTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Radial Settings.
+        /// </summary>
+        internal static string Window_RadialSettingsTab {
+            get {
+                return ResourceManager.GetString("Window_RadialSettingsTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Support me.
+        /// </summary>
+        internal static string Window_SupportMeTab {
+            get {
+                return ResourceManager.GetString("Window_SupportMeTab", resourceCulture);
             }
         }
     }

@@ -1,13 +1,13 @@
 {
-  "name": "Mounts",
-  "version": "1.3.3",
+  "name": "Mounts & More",
+  "version": "1.4.0-beta13",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
 
-  "description": "Mount icons + radial. Settings need to be configured before using the module!",
+  "description": "Mounts, mastery skills and novelty icons in radial, icon rows and corner icons. Settings need to be configured before using the module!",
   "dependencies": {
-    "bh.blishhud": ">=0.11.6"
+    "bh.blishhud": ">=1.0.0"
   },
   "url": "https://github.com/manlaan/BlishHud-Mounts",
   "contributors": [
@@ -22,8 +22,21 @@
   ],
   "directories": [ "mounts" ]
 }
+
+/*
+,
+  "api_permissions": {
+    "progression": {
+      "optional": true,
+      "details": "Combat Launch mastery tracking"
+    }
+  }
+*/
+
+
 /*
     "changelog": {
+        "1.4.0": "2023-08-??: Add all other items.",
         "1.3.3": "2023-07-03: Use currently active mount to dismount.",
         "1.3.2": "2023-06-01: fix default mount when dragging (revert 'allow radial when dragging camera' some more)",
         "1.3.1": "2023-05-14:add option to specify your own icons",

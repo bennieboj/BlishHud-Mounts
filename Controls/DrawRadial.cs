@@ -1,24 +1,22 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
-using Blish_HUD.Controls.Intern;
+using Manlaan.Mounts.Things;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
-using SharpDX.Direct2D1.Effects;
+using Mounts;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Manlaan.Mounts.Controls
 {
-    internal class RadialMount
+    internal class RadialThing
     {
         public double AngleBegin { get; set; }
         public double AngleEnd { get; set; }
-        public Mount Mount { get; set; }
+        public Thing Thing { get; set; }
         public Texture2D Texture { get; set; }
         public int ImageX { get; set; }
         public int ImageY { get; set; }
@@ -34,17 +32,17 @@ namespace Manlaan.Mounts.Controls
 
         public EventHandler OnSettingsButtonClicked { get; internal set; }
         private StandardButton _settingsButton;
-        private Label _noMountsLabel;
+        private Label _noThingsLabel;
 
-        private List<RadialMount> RadialMounts = new List<RadialMount>();
+        private List<RadialThing> RadialThings = new List<RadialThing>();
 
-        private RadialMount SelectedMount => RadialMounts.SingleOrDefault(m => m.Selected);
+        private RadialThing SelectedMount => RadialThings.SingleOrDefault(m => m.Selected);
 
         public override int ZIndex { get => base.ZIndex; set => base.ZIndex = value; }
         public bool IsActionCamToggledOnMount { get; private set; }
 
         int radius = 0;
-        int mountIconSize = 0;
+        int thingIconSize = 0;
         int _maxRadialDiameter = 0;
 
         private Point SpawnPoint = default;
@@ -59,13 +57,13 @@ namespace Manlaan.Mounts.Controls
             Shown += async (sender, e) => await HandleShown(sender, e);
             Hidden += async (sender, e) => await HandleHidden(sender, e);
 
-            _noMountsLabel = new Label {
+            _noThingsLabel = new Label {
                 Parent = this,
                 Location = new Point(0, 0),
                 Size = new Point(800,500),
                 Font = GameService.Content.DefaultFont32,
                 TextColor = Color.Red,
-                Text = "NO MOUNTS CONFIGURED, GO TO SETTINGS: "
+                Text = "NOTHING CONFIGURED, GO TO SETTINGS: "
             };
             _settingsButton = new StandardButton
             {
@@ -86,49 +84,50 @@ namespace Manlaan.Mounts.Controls
 
 
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
-            RadialMounts.Clear();
-            var mounts = Module._availableOrderedMounts;
+            RadialThings.Clear();
+            var applicableRadialSettings = Module.GetApplicableRadialSettings();
+            var things = applicableRadialSettings.AvailableThings.ToList();
 
-            if (!mounts.Any())
+            if (!things.Any())
             {
-                _noMountsLabel.Show();
+                _noThingsLabel.Show();
                 _settingsButton.Show();
                 return;
             }
             else
             {
-                _noMountsLabel.Hide();
+                _noThingsLabel.Hide();
                 _settingsButton.Hide();
             }
 
-            Mount mountToPutInCenter = _helper.GetCenterMount();
-            if (mountToPutInCenter != null && mountToPutInCenter.IsAvailable)
+            var thingToPutInCenter = applicableRadialSettings.GetCenterThing();
+            if (thingToPutInCenter != null && thingToPutInCenter.IsAvailable)
             {
-                if (Module._settingMountRadialRemoveCenterMount.Value)
+                if (applicableRadialSettings.RemoveCenterMount.Value)
                 {
-                    mounts.Remove(mountToPutInCenter);
+                    things.Remove(thingToPutInCenter);
                 }
-                var texture = _textureCache.GetMountImgFile(mountToPutInCenter);
+                var texture = _textureCache.GetMountImgFile(thingToPutInCenter);
                 int loc = radius;
-                RadialMounts.Add(new RadialMount { Texture = texture, Mount = mountToPutInCenter, ImageX = loc, ImageY = loc, Default = true });
+                RadialThings.Add(new RadialThing { Texture = texture, Thing = thingToPutInCenter, ImageX = loc, ImageY = loc, Default = true });
             }
 
             double startAngle = Math.PI * Math.Floor(Module._settingMountRadialStartAngle.Value * 360) / 180.0;
             if (DebugHelper.IsDebugEnabled())
             {
                 var spawnPointVec = SpawnPoint.ToVector2();
-                var rectpos = spawnPointVec - new Vector2(mountIconSize / 2, mountIconSize / 2);
-                spriteBatch.DrawRectangle(rectpos, new Size2(mountIconSize, mountIconSize), Color.Red, debugLineThickness);
+                var rectpos = spawnPointVec - new Vector2(thingIconSize / 2, thingIconSize / 2);
+                spriteBatch.DrawRectangle(rectpos, new Size2(thingIconSize, thingIconSize), Color.Red, debugLineThickness);
                 spriteBatch.DrawCircle(spawnPointVec, 1, 50, Color.Red, debugLineThickness);
                 spriteBatch.DrawCircle(spawnPointVec, GetRadius(), 50, Color.Red, debugLineThickness);
             }
             double currentAngle = startAngle;
-            var partAngleStep = Math.PI * 2 / mounts.Count();
-            foreach (var mount in mounts)
+            var partAngleStep = Math.PI * 2 / things.Count();
+            foreach (var thing in things)
             {
                 var angleMid = currentAngle + partAngleStep / 2;
                 var angleEnd = currentAngle + partAngleStep;
-                var texture = _textureCache.GetMountImgFile(mount);
+                var texture = _textureCache.GetMountImgFile(thing);
 
                 int x = (int)Math.Round(radius + radius * Math.Cos(angleMid));
                 int y = (int)Math.Round(radius + radius * Math.Sin(angleMid));
@@ -144,10 +143,10 @@ namespace Manlaan.Mounts.Controls
                 }
 
 
-                RadialMounts.Add(new RadialMount
+                RadialThings.Add(new RadialThing
                 {
                     Texture = texture,
-                    Mount = mount,
+                    Thing = thing,
                     ImageX = x,
                     ImageY = y,
                     AngleBegin = currentAngle,
@@ -197,7 +196,7 @@ namespace Manlaan.Mounts.Controls
 
             var length = new Vector2(diff.Y, diff.X).Length();
             
-            foreach (var radialMount in RadialMounts)
+            foreach (var radialMount in RadialThings)
             {
                 if (length < GetRadius())
                 {
@@ -208,7 +207,7 @@ namespace Manlaan.Mounts.Controls
                     radialMount.Selected = radialMount.AngleBegin <= angle && radialMount.AngleEnd > angle;
                 }
 
-                spriteBatch.DrawOnCtrl(this, radialMount.Texture, new Rectangle(radialMount.ImageX, radialMount.ImageY, mountIconSize, mountIconSize), null, Color.White * (radialMount.Selected ? 1f : Module._settingMountRadialIconOpacity.Value));
+                spriteBatch.DrawOnCtrl(this, radialMount.Texture, new Rectangle(radialMount.ImageX, radialMount.ImageY, thingIconSize, thingIconSize), null, Color.White * (radialMount.Selected ? 1f : Module._settingMountRadialIconOpacity.Value));
             }
 
             //Module._dbg.Add("AngleBegin", () => $"{RadialMounts[8].AngleBegin}");
@@ -221,12 +220,12 @@ namespace Manlaan.Mounts.Controls
 
         private float GetRadius()
         {
-            return (float)(mountIconSize * Math.Sqrt(2) / 2);
+            return (float)(thingIconSize * Math.Sqrt(2) / 2);
         }
 
         public async Task TriggerSelectedMountAsync()
         {
-            await (SelectedMount?.Mount.DoMountAction() ?? Task.CompletedTask);
+            await (SelectedMount?.Thing.DoAction() ?? Task.CompletedTask);
         }
 
 
@@ -236,13 +235,13 @@ namespace Manlaan.Mounts.Controls
             if (!GameService.Input.Mouse.CursorIsVisible && !Module._settingMountRadialToggleActionCameraKeyBinding.IsNull)
             {
                 IsActionCamToggledOnMount = true;
-                await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding);
+                await Helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding);
                 Logger.Debug("HandleShown turned off action cam");
             }
 
             _maxRadialDiameter = Math.Min(GameService.Graphics.SpriteScreen.Width, GameService.Graphics.SpriteScreen.Height);
-            mountIconSize = (int)(_maxRadialDiameter / 4 * Module._settingMountRadialIconSizeModifier.Value);
-            radius = (int)((_maxRadialDiameter / 2 - mountIconSize / 2) * Module._settingMountRadialRadiusModifier.Value);
+            thingIconSize = (int)(_maxRadialDiameter / 4 * Module._settingMountRadialIconSizeModifier.Value);
+            radius = (int)((_maxRadialDiameter / 2 - thingIconSize / 2) * Module._settingMountRadialRadiusModifier.Value);
             Size = new Point(_maxRadialDiameter, _maxRadialDiameter);
 
             if (Module._settingMountRadialSpawnAtMouse.Value)
@@ -255,7 +254,7 @@ namespace Manlaan.Mounts.Controls
                 SpawnPoint = new Point(GameService.Graphics.SpriteScreen.Width / 2, GameService.Graphics.SpriteScreen.Height / 2);
             }
 
-            Location = new Point(SpawnPoint.X - radius - mountIconSize / 2, SpawnPoint.Y - radius - mountIconSize / 2);
+            Location = new Point(SpawnPoint.X - radius - thingIconSize / 2, SpawnPoint.Y - radius - thingIconSize / 2);
         }
 
         private async Task HandleHidden(object sender, EventArgs e)
@@ -263,7 +262,7 @@ namespace Manlaan.Mounts.Controls
             Logger.Debug("HandleHidden entered");
             if (IsActionCamToggledOnMount)
             {
-                await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding);
+                await Helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding);
                 IsActionCamToggledOnMount = false;
                 Logger.Debug("HandleHidden turned back on action cam");
             }

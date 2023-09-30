@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Manlaan.Mounts
 {
-    public class MountImageFile : IEquatable<MountImageFile>, IComparable<MountImageFile>
+    public class ThingImageFile : IEquatable<ThingImageFile>, IComparable<ThingImageFile>
     {
         public string Name { get; set; }
 
-        public MountImageFile()
+        public ThingImageFile()
         {
             Name = "";
         }
@@ -22,11 +18,11 @@ namespace Manlaan.Mounts
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            MountImageFile objAsCls = obj as MountImageFile;
+            ThingImageFile objAsCls = obj as ThingImageFile;
             if (objAsCls == null) return false;
             else return Equals(objAsCls);
         }
-        public bool Equals(MountImageFile other)
+        public bool Equals(ThingImageFile other)
         {
             if (other == null) return false;
             return (this.Name.Equals(other.Name));
@@ -39,7 +35,7 @@ namespace Manlaan.Mounts
         {
             return name1.CompareTo(name2);
         }
-        public int CompareTo(MountImageFile compare)
+        public int CompareTo(ThingImageFile compare)
         {
             if (compare == null)
                 return 1;

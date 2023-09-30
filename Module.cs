@@ -8,7 +8,6 @@ using Blish_HUD.Graphics.UI;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
@@ -16,11 +15,12 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using Manlaan.Mounts.Controls;
 using System.Collections.Generic;
-using Gw2Sharp.Models;
 using Manlaan.Mounts.Views;
-using Blish_HUD.Content;
 using System.IO;
-using SharpDX.DirectWrite;
+using Manlaan.Mounts.Things.Mounts;
+using Manlaan.Mounts.Things;
+using Mounts;
+using Mounts.Settings;
 
 namespace Manlaan.Mounts
 {
@@ -30,72 +30,64 @@ namespace Manlaan.Mounts
         private static readonly Logger Logger = Logger.GetLogger<Module>();
 
         #region Service Managers
-        internal SettingsManager SettingsManager => this.ModuleParameters.SettingsManager;
         internal ContentsManager ContentsManager => this.ModuleParameters.ContentsManager;
         internal DirectoriesManager DirectoriesManager => this.ModuleParameters.DirectoriesManager;
         internal Gw2ApiManager Gw2ApiManager => this.ModuleParameters.Gw2ApiManager;
         #endregion
 
-        internal static Collection<Mount> _mounts;
-        internal static List<Mount> _availableOrderedMounts => _mounts.Where(m => m.IsAvailable).OrderBy(m => m.OrderSetting.Value).ToList();
+        internal static SettingCollection settingscollection;
+        internal static Collection<Thing> _things = new Collection<Thing>();
+        internal static List<RadialThingSettings> RadialSettings;
+        internal static List<IconThingSettings> IconThingSettings;
+        internal static List<RadialThingSettings> OrderedRadialSettings() => RadialSettings.OrderBy(c => c.Order).ToList();
+        internal static RadialThingSettings GetApplicableRadialSettings() => OrderedRadialSettings().FirstOrDefault(c => c.IsEnabled.Value && c.IsApplicable());
+
 
         public static string mountsDirectory;
         private TabbedWindow2 _settingsWindow;
 
-        public static List<MountImageFile> _mountImageFiles = new List<MountImageFile>();
+        public static List<ThingImageFile> _thingImageFiles = new List<ThingImageFile>();
 
-        public static int[] _mountOrder = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        public static string[] _mountBehaviour = new string[] { "DefaultMount", "Radial" };
-        public static string[] _mountOrientation = new string[] { "Horizontal", "Vertical" };
-        public static string[] _mountRadialCenterMountBehavior = new string[] { "None", "Default", "LastUsed" };
+        public static string[] _mountBehaviour = new string[] { "Default", "Radial" };
 
-        public static SettingEntry<string> _settingDefaultMountChoice;
-        public static SettingEntry<string> _settingDefaultWaterMountChoice;
-        public static SettingEntry<string> _settingDefaultFlyingMountChoice;
+
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
         public static SettingEntry<bool> _settingDisplayMountQueueing;
+        public static SettingEntry<bool> _settingEnableMountQueueing;
+        public static SettingEntry<Point> _settingDisplayMountQueueingLocation;
+        public static SettingEntry<bool> _settingDragMountQueueing;
+        public static SettingEntry<bool> _settingCombatLaunchMasteryUnlocked;
         public static SettingEntry<string> _settingDefaultMountBehaviour;
         public static SettingEntry<bool> _settingMountRadialSpawnAtMouse;
         public static SettingEntry<float> _settingMountRadialRadiusModifier;
         public static SettingEntry<float> _settingMountRadialStartAngle;
         public static SettingEntry<float> _settingMountRadialIconSizeModifier;
         public static SettingEntry<float> _settingMountRadialIconOpacity;
-        public static SettingEntry<string> _settingMountRadialCenterMountBehavior;
-        public static SettingEntry<bool> _settingMountRadialRemoveCenterMount;
         public static SettingEntry<KeyBinding> _settingMountRadialToggleActionCameraKeyBinding;
 
         public static SettingEntry<bool> _settingDisplayModuleOnLoadingScreen;
         public static SettingEntry<bool> _settingMountAutomaticallyAfterLoadingScreen;
-        public static SettingEntry<string> _settingDisplay;
-        public static SettingEntry<bool> _settingDisplayCornerIcons;
-        public static SettingEntry<bool> _settingDisplayManualIcons;
-        public static SettingEntry<string> _settingOrientation;
-        private SettingEntry<Point> _settingLoc;
-        public static SettingEntry<bool> _settingDrag;
-        public static SettingEntry<int> _settingImgWidth;
-        public static SettingEntry<float> _settingOpacity;
 
-        private Panel _mountPanel;
+        public static SettingEntry<List<int>> _settingDrawIconIds;
+
+
         public static DebugControl _debug;
         private DrawRadial _radial;
-        private LoadingSpinner _queueingSpinner;
+        private ICollection<DrawIcons> _drawIcons = new List<DrawIcons>();
+        private DrawOutOfCombat _drawOutOfCombat;
         private DrawMouseCursor _drawMouseCursor;
         private Helper _helper;
         private TextureCache _textureCache;
 
-        private float _lastZPosition = 0.0f;
-        private double _lastUpdateSeconds = 0.0f;
-        public static bool IsPlayerGlidingOrFalling;
-
         private bool _lastIsMountSwitchable = false;
-        
-        private bool _dragging;
-        private Point _dragStart = Point.Zero;
+        private int _lastInUseMountsCount = 0;
+
 
         [ImportingConstructor]
         public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) : base(moduleParameters)
         {
-            _helper = new Helper();
+            _debug = new DebugControl();
+            _helper = new Helper(Gw2ApiManager);
         }
 
         protected override void Initialize()
@@ -127,13 +119,24 @@ namespace Manlaan.Mounts
                 "turtle.png",
                 "warclaw-text.png",
                 "warclaw-trans.png",
-                "warclaw.png"
+                "warclaw.png",
+                "fishing.png",
+                "skiff.png",
+                "jadebotwaypoint.png",
+                "chair.png",
+                "music.png",
+                "held.png",
+                "toy.png",
+                "tonic.png",
+                "scanforrift.png",
+                "skyscaleleap.png",
+                "unmount.png"
             };
             mountsDirectory = DirectoriesManager.GetFullDirectoryPath("mounts");
             mountsFilesInRef.ForEach(f => ExtractFile(f, mountsDirectory));
-            _mountImageFiles = Directory.GetFiles(mountsDirectory, ".")
+            _thingImageFiles = Directory.GetFiles(mountsDirectory, ".")
                 .Where(file => file.ToLower().Contains(".png"))
-                .Select(file => new MountImageFile() { Name = file.Substring(mountsDirectory.Length + 1) }).ToList();
+                .Select(file => new ThingImageFile() { Name = file.Substring(mountsDirectory.Length + 1) }).ToList();
             _textureCache = new TextureCache(ContentsManager);
 
             GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += async (sender, e) => await HandleCombatChangeAsync(sender, e);
@@ -143,17 +146,20 @@ namespace Manlaan.Mounts
             _settingsWindow = new TabbedWindow2(
                                     _textureCache.GetImgFile(TextureCache.TabBackgroundTextureName),
                                     new Rectangle(35, 36, 1300, 900),
-                                    new Rectangle(95, 42, 1183 + 38, 792)
+                                    new Rectangle(95, 42, 1183 + 38, 900)
                                    )
             {
-                Title = "Mounts",
+                Title = "Mounts & More",
                 Parent = GameService.Graphics.SpriteScreen,
                 Location = new Point(100, 100),
                 Emblem = mountsIcon,
-                Id = $"{this.Namespace}_SettingsWindow",
+                Id = $"{Namespace}_SettingsWindow",
                 SavesPosition = true,
             };
-            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SettingsIconTextureName), () => new SettingsView(_textureCache), Strings.Window_AllSettingsTab));
+            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SettingsTextureName), () => new SettingsView(_textureCache), Strings.Window_GeneralSettingsTab));
+            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.RadialSettingsTextureName), () => new RadialThingSettingsView(), Strings.Window_RadialSettingsTab));
+            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.IconSettingsTextureName), () => new IconThingSettingsView(), Strings.Window_IconSettingsTab));
+            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SupportMeTabTextureName), () => new SupportMeView(_textureCache), Strings.Window_SupportMeTab));
         }
 
         private void ExtractFile(string filePath, string directoryToExtractTo)
@@ -169,68 +175,136 @@ namespace Manlaan.Mounts
             }
         }
 
-
-
-        /*
-         * Migrate from seperate settings from MountDisplay
-         * MountDisplay => "Transparent", "Solid", "SolidText"
-         *
-         */
-        private void MigrateDisplaySettings()
+        private void MigrateAwayFromMount(SettingCollection settings)
         {
-            if (_settingDisplay.Value.Contains("Corner") || _settingDisplay.Value.Contains("Manual"))
+            if (_settingDefaultMountBehaviour.Value == "DefaultMount")
             {
-                _settingDisplayCornerIcons.Value = _settingDisplay.Value.Contains("Corner");
-                _settingDisplayManualIcons.Value = _settingDisplay.Value.Contains("Solid");
-
-                if (_settingDisplay.Value.Contains("Text"))
-                {
-                    _settingDisplay.Value = "SolidText";
-                }
-                else if (_settingDisplay.Value.Contains("Solid"))
-                {
-                    _settingDisplay.Value = "Solid";
-                }
-                else if (_settingDisplay.Value.Contains("Transparent"))
-                {
-                    _settingDisplay.Value = "Transparent";
-                }
+                _settingDefaultMountBehaviour.Value = "Default";
             }
         }
 
-        /*
-         * Migrate from seperate settings from MountDisplay
-         * MountDisplay => "Transparent", "Solid", "SolidText"
-         *
-         */
-        private void MigrateMountFileNameSettings()
+
+        private void MigrateRadialThingSettings(SettingCollection settings)
         {
-            if (_mounts.All(m => m.ImageFileNameSetting.Value.Equals("")))
+            if (settings.ContainsSetting("DefaultFlyingMountChoice"))
             {
-                var partOfFileName = "";
-                if (_settingDisplay.Value.Equals("Transparent"))
+                var flyingRadialSettings = RadialSettings.Single(c => c.Name == "IsPlayerGlidingOrFalling");
+                var settingDefaultFlyingMountChoice = settings["DefaultFlyingMountChoice"] as SettingEntry<string>;
+                if (settingDefaultFlyingMountChoice.Value != "Disabled" && _things.Count(t => t.Name == settingDefaultFlyingMountChoice.Value) == 1)
                 {
-                    partOfFileName = "-trans";
+                    flyingRadialSettings.ApplyInstantlyIfSingle.Value = true;
+                    flyingRadialSettings.IsEnabled.Value = true;
+                    flyingRadialSettings.SetThings(new List<Thing> { _things.Single(t => t.Name == settingDefaultFlyingMountChoice.Value) });
                 }
-                else if (_settingDisplay.Value.Equals("SolidText"))
+                settings.UndefineSetting("DefaultFlyingMountChoice");
+            }
+
+            if (settings.ContainsSetting("DefaultWaterMountChoice"))
+            {
+                var underwaterRadialSettings = RadialSettings.Single(c => c.Name == "IsPlayerUnderWater");
+                var settingDefaultWaterMountChoice = settings["DefaultWaterMountChoice"] as SettingEntry<string>;
+                if (settingDefaultWaterMountChoice.Value != "Disabled" && _things.Count(t => t.Name == settingDefaultWaterMountChoice.Value) == 1)
                 {
-                    partOfFileName = "-text";
+                    underwaterRadialSettings.ApplyInstantlyIfSingle.Value = true;
+                    underwaterRadialSettings.IsEnabled.Value = true;
+                    underwaterRadialSettings.SetThings(new List<Thing> { _things.Single(t => t.Name == settingDefaultWaterMountChoice.Value) });
                 }
-                else if (_settingDisplay.Value.Equals("Solid"))
+                settings.UndefineSetting("DefaultWaterMountChoice");
+            }
+
+
+            var defaultRadialSettings = RadialSettings.Single(c => c.Name == "Default");
+            if (settings.ContainsSetting("DefaultMountChoice"))
+            {
+                var settingDefaultMountChoice = settings["DefaultMountChoice"] as SettingEntry<string>;
+
+                defaultRadialSettings.DefaultThingChoice.Value = settingDefaultMountChoice.Value;
+
+                settings.UndefineSetting("DefaultMountChoice");
+            }
+
+            if (settings.ContainsSetting("MountRadialRemoveCenterMount"))
+            {
+                var settingMountRadialRemoveCenterMount = settings["MountRadialRemoveCenterMount"] as SettingEntry<bool>;
+
+                defaultRadialSettings.RemoveCenterMount.Value = settingMountRadialRemoveCenterMount.Value;
+
+                settings.UndefineSetting("MountRadialRemoveCenterMount");
+            }
+
+            if (settings.ContainsSetting("MountRadialCenterMountBehavior"))
+            {
+                var settingMountRadialCenterMountBehavior = settings["MountRadialCenterMountBehavior"] as SettingEntry<string>;
+                if (Enum.TryParse<CenterBehavior>(settingMountRadialCenterMountBehavior.Value, out var result))
                 {
-                    partOfFileName = "";
+                    defaultRadialSettings.CenterThingBehavior.Value = result;
                 }
-                foreach (var mount in _mounts)
+                settings.UndefineSetting("MountRadialCenterMountBehavior");
+            }
+        }
+
+
+        private void MigrateIconThingSettings(SettingCollection settings)
+        {
+            var defaultIconThingSettings = IconThingSettings.Single(c => c.IsDefault);
+            if (settings.ContainsSetting("MountDisplayManualIcons"))
+            {
+                var settingMountDisplayManualIcons = settings["MountDisplayManualIcons"] as SettingEntry<bool>;
+                defaultIconThingSettings.IsEnabled.Value = settingMountDisplayManualIcons.Value;
+                settings.UndefineSetting("MountDisplayManualIcons");
+            }
+            
+            if (settings.ContainsSetting("MountDisplayCornerIcons"))
+            {
+                var settingMountDisplayCornerIcons = settings["MountDisplayCornerIcons"] as SettingEntry<bool>;
+                defaultIconThingSettings.DisplayCornerIcons.Value = settingMountDisplayCornerIcons.Value;
+                settings.UndefineSetting("MountDisplayCornerIcons");
+            }
+
+            if (settings.ContainsSetting("Orientation"))
+            {
+                var settingOrientation = settings["Orientation"] as SettingEntry<string>;
+                if (Enum.TryParse<IconOrientation>(settingOrientation.Value, out var result))
                 {
-                    mount.ImageFileNameSetting.Value = $"{mount.ImageFileName}{partOfFileName}.png";
-                }                
+                    defaultIconThingSettings.Orientation.Value = result;
+                }
+                settings.UndefineSetting("Orientation");
+            }
+
+            if (settings.ContainsSetting("MountLoc"))
+            {
+                var _settingLoc = settings["MountLoc"] as SettingEntry<Point>;
+                defaultIconThingSettings.Location.Value = _settingLoc.Value;
+                settings.UndefineSetting("MountLoc");
+            }
+
+            if (settings.ContainsSetting("MountDrag"))
+            {
+                var _settingDrag = settings["MountDrag"] as SettingEntry<bool>;
+                defaultIconThingSettings.IsDraggingEnabled.Value = _settingDrag.Value;
+                settings.UndefineSetting("MountDrag");
+            }
+
+            if (settings.ContainsSetting("MountImgWidth"))
+            {
+                var _settingMountImgWidth = settings["MountImgWidth"] as SettingEntry<int>;
+                defaultIconThingSettings.Size.Value = _settingMountImgWidth.Value;
+                settings.UndefineSetting("MountImgWidth");
+            }
+
+            if (settings.ContainsSetting("MountOpacity"))
+            {
+                var _settingMountOpacity = settings["MountOpacity"] as SettingEntry<float>;
+                defaultIconThingSettings.Opacity.Value = _settingMountOpacity.Value;
+                settings.UndefineSetting("MountOpacity");
             }
         }
 
         protected override void DefineSettings(SettingCollection settings)
         {
-            _mounts = new Collection<Mount>
-            {
+            settingscollection = settings;
+            var orderedThings = new List<Thing> {
+                new UnMount(settings, _helper),
                 new Raptor(settings, _helper),
                 new Springer(settings, _helper),
                 new Skimmer(settings, _helper),
@@ -239,77 +313,87 @@ namespace Manlaan.Mounts
                 new RollerBeetle(settings, _helper),
                 new Warclaw(settings, _helper),
                 new Skyscale(settings, _helper),
-                new SiegeTurtle(settings, _helper)
+                new SiegeTurtle(settings, _helper),
+                new Fishing(settings, _helper),
+                new Skiff(settings, _helper),
+                new JadeBotWaypoint(settings, _helper),
+                new ScanForRift(settings, _helper),
+                new SkyscaleLeap(settings, _helper),
+                new Chair(settings, _helper),
+                new Music(settings, _helper),
+                new Held(settings, _helper),
+                new Toy(settings, _helper),
+                new Tonic(settings, _helper)
             };
+            _things = new Collection<Thing>(orderedThings);
+            var thingsForMigration = orderedThings.Where(t => t.IsAvailable).ToList();
+
 
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
             _settingDefaultMountBinding.Value.Enabled = true;
-            _settingDefaultMountBinding.Value.Activated += async delegate { await DoDefaultMountActionAsync(); };
-            _settingDefaultMountChoice = settings.DefineSetting("DefaultMountChoice", "Disabled", () => Strings.Setting_DefaultMountChoice, () => "");
-            _settingDefaultWaterMountChoice = settings.DefineSetting("DefaultWaterMountChoice", "Disabled", () => Strings.Setting_DefaultWaterMountChoice, () => "");
-            _settingDefaultFlyingMountChoice = settings.DefineSetting("DefaultFlyingMountChoice", "Disabled", () => Strings.Setting_DefaultFlyingMountChoice, () => "");
+            _settingDefaultMountBinding.Value.Activated += async delegate { await DoKeybindActionAsync(); };
+            _settingDefaultMountBinding.Value.BindingChanged += UpdateSettings;
             _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "Radial", () => Strings.Setting_DefaultMountBehaviour, () => "");
-            _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false, () => Strings.Setting_DisplayMountQueueing, () => "");
+            _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false);
+            _settingEnableMountQueueing = settings.DefineSetting("EnableMountQueueing", false);
+            _settingDragMountQueueing = settings.DefineSetting("DragMountQueueing", false);
+            _settingCombatLaunchMasteryUnlocked = settings.DefineSetting("CombatLaunchMasteryUnlocked", false);
+            _settingDisplayMountQueueingLocation = settings.DefineSetting("DisplayMountQueueingLocation", new Point(200,200));
             _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, () => Strings.Setting_MountRadialSpawnAtMouse, () => "");
-            _settingMountRadialIconSizeModifier = settings.DefineSetting("MountRadialIconSizeModifier", 0.5f, () => Strings.Setting_MountRadialIconSizeModifier, () => "");
+            _settingMountRadialIconSizeModifier = settings.DefineSetting("MountRadialIconSizeModifier", 0.28f, () => Strings.Setting_MountRadialIconSizeModifier, () => "");
             _settingMountRadialIconSizeModifier.SetRange(0.05f, 1f);
-            _settingMountRadialRadiusModifier = settings.DefineSetting("MountRadialRadiusModifier", 0.5f, () => Strings.Setting_MountRadialRadiusModifier, () => "");
+            _settingMountRadialRadiusModifier = settings.DefineSetting("MountRadialRadiusModifier", 0.6f, () => Strings.Setting_MountRadialRadiusModifier, () => "");
             _settingMountRadialRadiusModifier.SetRange(0.2f, 1f);
             _settingMountRadialStartAngle = settings.DefineSetting("MountRadialStartAngle", 0.0f, () => Strings.Setting_MountRadialStartAngle, () => "");
             _settingMountRadialStartAngle.SetRange(0.0f, 1.0f);
-            _settingMountRadialIconOpacity = settings.DefineSetting("MountRadialIconOpacity", 0.5f, () => Strings.Setting_MountRadialIconOpacity, () => "");
+            _settingMountRadialIconOpacity = settings.DefineSetting("MountRadialIconOpacity", 0.7f, () => Strings.Setting_MountRadialIconOpacity, () => "");
             _settingMountRadialIconOpacity.SetRange(0.05f, 1f);
-            _settingMountRadialCenterMountBehavior = settings.DefineSetting("MountRadialCenterMountBehavior", "Default", () => Strings.Setting_MountRadialCenterMountBehavior, () => "");
-            _settingMountRadialRemoveCenterMount = settings.DefineSetting("MountRadialRemoveCenterMount", true, () => Strings.Setting_MountRadialRemoveCenterMount, () => "");
             _settingMountRadialToggleActionCameraKeyBinding = settings.DefineSetting("MountRadialToggleActionCameraKeyBinding", new KeyBinding(Keys.F10), () => Strings.Setting_MountRadialToggleActionCameraKeyBinding, () => "");
-
+            _settingDrawIconIds = settings.DefineSetting("DrawIconIds", new List<int> { 0 });
 
             _settingDisplayModuleOnLoadingScreen = settings.DefineSetting("DisplayModuleOnLoadingScreen", false, () => Strings.Setting_DisplayModuleOnLoadingScreen, () => "");
             _settingMountAutomaticallyAfterLoadingScreen = settings.DefineSetting("MountAutomaticallyAfterLoadingScreen", false, () => Strings.Setting_MountAutomaticallyAfterLoadingScreen, () => "");
-            _settingDisplay = settings.DefineSetting("MountDisplay", "Transparent", () => Strings.Setting_MountDisplay, () => "");
-            _settingDisplayCornerIcons = settings.DefineSetting("MountDisplayCornerIcons", false, () => Strings.Setting_MountDisplayCornerIcons, () => "");
-            _settingDisplayManualIcons = settings.DefineSetting("MountDisplayManualIcons", false, () => Strings.Setting_MountDisplayManualIcons, () => "");
-            _settingOrientation = settings.DefineSetting("Orientation", "Horizontal", () => Strings.Setting_Orientation, () => "");
-            _settingLoc = settings.DefineSetting("MountLoc", new Point(100, 100), () => Strings.Setting_MountLoc, () => "");
-            _settingDrag = settings.DefineSetting("MountDrag", false, () => Strings.Setting_MountDrag, () => "");
-            _settingImgWidth = settings.DefineSetting("MountImgWidth", 50, () => Strings.Setting_MountImgWidth, () => "");
-            _settingImgWidth.SetRange(0, 200);
-            _settingOpacity = settings.DefineSetting("MountOpacity", 1.0f, () => Strings.Setting_MountOpacity, () => "");
-            _settingOpacity.SetRange(0f, 1f);
 
-            MigrateDisplaySettings();
-            MigrateMountFileNameSettings();
 
-            foreach (Mount m in _mounts)
+
+            RadialSettings = new List<RadialThingSettings>
             {
-                m.OrderSetting.SettingChanged += UpdateSettings;
-                m.KeybindingSetting.SettingChanged += UpdateSettings;
-                m.ImageFileNameSetting.SettingChanged += UpdateSettings;
+                new RadialThingSettings(settings, "IsPlayerMounted", 0, _helper.IsPlayerMounted, true, true, _things.Where(t => t is UnMount).ToList()),
+                new RadialThingSettings(settings, "IsPlayerInWvwMap", 1, _helper.IsPlayerInWvwMap, true, true, _things.Where(t => t is Warclaw).ToList()),
+                new RadialThingSettings(settings, "IsPlayerGlidingOrFalling", 2, _helper.IsPlayerGlidingOrFalling, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList()),
+                new RadialThingSettings(settings, "IsPlayerUnderWater", 3, _helper.IsPlayerUnderWater, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList()),
+                new RadialThingSettings(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()),
+                new RadialThingSettings(settings, "Default", 99, () => true, true, false, thingsForMigration)
+            };
+            MigrateRadialThingSettings(settings);
+
+            IconThingSettings = new List<IconThingSettings>
+            {
+                new IconThingSettings(settings, 0, "Default", thingsForMigration)
+            };
+            IconThingSettings.AddRange(_settingDrawIconIds.Value.Skip(1).Select(id => new IconThingSettings(settings, id)));
+            MigrateIconThingSettings(settings);
+
+            MigrateAwayFromMount(settings);
+
+            foreach (var t in _things)
+            {
+                t.KeybindingSetting.Value.BindingChanged += UpdateSettings;
+                t.ImageFileNameSetting.SettingChanged += UpdateSettings;
             }
-            _settingDefaultMountChoice.SettingChanged += UpdateSettings;
-            _settingDefaultWaterMountChoice.SettingChanged += UpdateSettings;
-            _settingDefaultFlyingMountChoice.SettingChanged += UpdateSettings;
             _settingDisplayModuleOnLoadingScreen.SettingChanged += UpdateSettings;
             _settingMountAutomaticallyAfterLoadingScreen.SettingChanged += UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged += UpdateSettings;
+            _settingEnableMountQueueing.SettingChanged += UpdateSettings;
+            _settingDragMountQueueing.SettingChanged += UpdateSettings;
+            _settingDisplayMountQueueingLocation.SettingChanged += UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged += UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged += UpdateSettings;
             _settingMountRadialStartAngle.SettingChanged += UpdateSettings;
-            _settingMountRadialCenterMountBehavior.SettingChanged += UpdateSettings;
-            _settingMountRadialToggleActionCameraKeyBinding.SettingChanged += UpdateSettings;
+            _settingMountRadialToggleActionCameraKeyBinding.Value.BindingChanged += UpdateSettings;
             _settingMountRadialIconOpacity.SettingChanged += UpdateSettings;
-            _settingMountRadialRemoveCenterMount.SettingChanged += UpdateSettings;
-
-            _settingDisplay.SettingChanged += UpdateSettings;
-            _settingDisplayCornerIcons.SettingChanged += UpdateSettings;
-            _settingDisplayManualIcons.SettingChanged += UpdateSettings;
-            _settingOrientation.SettingChanged += UpdateSettings;
-            _settingLoc.SettingChanged += UpdateSettings;
-            _settingDrag.SettingChanged += UpdateSettings;
-            _settingImgWidth.SettingChanged += UpdateSettings;
-            _settingOpacity.SettingChanged += UpdateSettings;
-
+            _settingDrawIconIds.SettingChanged += UpdateSettings;
         }
 
         public override IView GetSettingsView()
@@ -323,8 +407,19 @@ namespace Manlaan.Mounts
             return dummySettingWindow;
         }
 
+
         protected override void OnModuleLoaded(EventArgs e)
         {
+            RadialSettings.ForEach(c => _debug.Add($"RadialSettings {c.Order} {c.Name}", () => $"IsApplicable: {c.IsApplicable()}, Center: {c.GetCenterThing()?.Name}, CenterBehavior: {c.CenterThingBehavior.Value.ToString()}, ApplyInstantlyIfSingle: {c.ApplyInstantlyIfSingle.Value}, LastUsed: {c.GetLastUsedThing()?.Name}"));
+            _debug.Add("Applicable RadialSettings Name", () => $"{GetApplicableRadialSettings()?.Name}");
+            _debug.Add("Applicable RadialSettings Names", () => $"{string.Join(", ", GetApplicableRadialSettings()?.AvailableThings.Select(t => t.Name))}");
+            _debug.Add("Queued for out of combat", () => $"{_helper.GetQueuedThing()}");
+
+            Gw2ApiManager.SubtokenUpdated += async delegate
+            {
+                await _helper.IsCombatLaunchUnlockedAsync();
+            };
+
             DrawUI();
 
             // Base handler must be called
@@ -333,72 +428,46 @@ namespace Manlaan.Mounts
 
         protected override void Update(GameTime gameTime)
         {
-            var currentZPosition = GameService.Gw2Mumble.PlayerCharacter.Position.Z;
-            var currentUpdateSeconds = gameTime.TotalGameTime.TotalSeconds;
-            var secondsDiff = currentUpdateSeconds - _lastUpdateSeconds;
-            var zPositionDiff = currentZPosition - _lastZPosition;
-            
-            if (zPositionDiff < -0.0001 && secondsDiff != 0)
-            {
-                var velocity = zPositionDiff / secondsDiff;
-                IsPlayerGlidingOrFalling = velocity < -2.5;
-            }
-            else
-            {
-                IsPlayerGlidingOrFalling = false;
-            }
+            _helper.UpdatePlayerGlidingOrFalling(gameTime);
 
-            _lastZPosition = currentZPosition;
-            _lastUpdateSeconds = currentUpdateSeconds;
-
-            var isMountSwitchable = IsMountSwitchable();
+            var isMountSwitchable = CanThingBeActivated();
             var moduleHidden = _lastIsMountSwitchable && !isMountSwitchable;
             var moduleShown = !_lastIsMountSwitchable && isMountSwitchable;
-            var currentMount = GameService.Gw2Mumble.PlayerCharacter.CurrentMount;
             var currentCharacterName = GameService.Gw2Mumble.PlayerCharacter.Name;
-            if (moduleHidden && currentMount != MountType.None && _settingMountAutomaticallyAfterLoadingScreen.Value)
+            var inUseMountsCount = _things.Count(m => m.IsInUse());
+
+            if (inUseMountsCount == 0 && _lastInUseMountsCount > 0 && moduleHidden == false && moduleShown == false)
             {
-                _helper.StoreMountForLaterUse(_mounts.Single(m => m.MountType == currentMount), currentCharacterName);
-            }
-            if (moduleShown && currentMount == MountType.None && _helper.IsCharacterTheSameAfterMapLoad(currentCharacterName))
-            {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                _helper.DoMountActionForLaterUse();
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                _helper.ClearMountForLaterUse();
+                _helper.ClearSomethingStoredForLaterActivation(currentCharacterName);
             }
 
+            if (moduleHidden && inUseMountsCount == 1 && _settingMountAutomaticallyAfterLoadingScreen.Value && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
+            {
+                _helper.StoreThingForLaterActivation(_things.Single(m => m.IsInUse()), currentCharacterName, "ModuleHidden");
+            }
+            if (moduleShown && inUseMountsCount == 0 && _helper.IsSomethingStoredForLaterActivation(currentCharacterName) && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
+            {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                _helper.DoThingActionForLaterActivation(currentCharacterName);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            }
+
+            _lastInUseMountsCount = inUseMountsCount;
             _lastIsMountSwitchable = isMountSwitchable;
 
             bool shouldShowModule = ShouldShowModule();
             if (shouldShowModule)
             {
-                _mountPanel?.Show();
-                foreach (var mount in _availableOrderedMounts)
-                {
-                    mount.CornerIcon?.Show();
-                }
+                foreach (var drawIcons in _drawIcons) drawIcons.Show();
             }
             else
             {
-                _mountPanel?.Hide();
-                foreach (var mount in _availableOrderedMounts)
-                {
-                    mount.CornerIcon?.Hide();
-                }
-            }
-            
-            if (_dragging)
-            {
-                var nOffset = InputService.Input.Mouse.Position - _dragStart;
-                _mountPanel.Location += nOffset;
-
-                _dragStart = InputService.Input.Mouse.Position;
+                foreach (var drawIcons in _drawIcons) drawIcons.Hide();
             }
 
-            if (_settingDisplayMountQueueing.Value && _mounts.Any(m => m.QueuedTimestamp != null))
+            if (_things.Any(m => m.QueuedTimestamp != null))
             {
-                _queueingSpinner?.Show();
+                _drawOutOfCombat?.ShowSpinner();
             }
 
             //if (GameService.Input.Mouse.CameraDragging && _radial.Visible && !GameService.Input.Mouse.CursorIsVisible)
@@ -419,10 +488,10 @@ namespace Manlaan.Mounts
 
         public static bool ShouldShowModule()
         {
-            return _settingDisplayModuleOnLoadingScreen.Value || IsMountSwitchable();
+            return _settingDisplayModuleOnLoadingScreen.Value || CanThingBeActivated();
         }
 
-        public static bool IsMountSwitchable()
+        public static bool CanThingBeActivated()
         {
             return GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen;
         }
@@ -431,46 +500,36 @@ namespace Manlaan.Mounts
         protected override void Unload()
         {
             _debug?.Dispose();
-            _mountPanel?.Dispose();
+            foreach (var drawIcons in _drawIcons) drawIcons.Dispose();
             _radial?.Dispose();
 
-            foreach (Mount m in _mounts)
+            foreach (var t in _things)
             {
-                m.OrderSetting.SettingChanged -= UpdateSettings;
-                m.KeybindingSetting.SettingChanged -= UpdateSettings;
-                m.ImageFileNameSetting.SettingChanged += UpdateSettings;
-                m.DisposeCornerIcon();
+                t.KeybindingSetting.SettingChanged -= UpdateSettings;
+                t.ImageFileNameSetting.SettingChanged += UpdateSettings;
+                t.DisposeCornerIcon();
             }
 
-            _settingDefaultMountChoice.SettingChanged -= UpdateSettings;
-            _settingDefaultWaterMountChoice.SettingChanged -= UpdateSettings;
-            _settingDefaultFlyingMountChoice.SettingChanged -= UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged -= UpdateSettings;
-            _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
+            _settingEnableMountQueueing.SettingChanged -= UpdateSettings;
+            _settingDragMountQueueing.SettingChanged -= UpdateSettings;
+            _settingDisplayMountQueueingLocation.SettingChanged -= UpdateSettings;
+            _settingMountRadialSpawnAtMouse.SettingChanged -= UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged -= UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged -= UpdateSettings;
             _settingMountRadialStartAngle.SettingChanged -= UpdateSettings;
-            _settingMountRadialCenterMountBehavior.SettingChanged -= UpdateSettings;
             _settingMountRadialToggleActionCameraKeyBinding.SettingChanged -= UpdateSettings;
             _settingMountRadialIconOpacity.SettingChanged -= UpdateSettings;
-            _settingMountRadialRemoveCenterMount.SettingChanged -= UpdateSettings;
 
             _settingDisplayModuleOnLoadingScreen.SettingChanged -= UpdateSettings;
             _settingMountAutomaticallyAfterLoadingScreen.SettingChanged -= UpdateSettings;
-            _settingDisplay.SettingChanged -= UpdateSettings;
-            _settingDisplayCornerIcons.SettingChanged -= UpdateSettings;
-            _settingDisplayManualIcons.SettingChanged -= UpdateSettings;
-            _settingOrientation.SettingChanged -= UpdateSettings;
-            _settingLoc.SettingChanged -= UpdateSettings;
-            _settingDrag.SettingChanged -= UpdateSettings;
-            _settingImgWidth.SettingChanged -= UpdateSettings;
-            _settingOpacity.SettingChanged -= UpdateSettings;
+            _settingDrawIconIds.SettingChanged -= UpdateSettings;
         }
 
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<string> e = null) {
             DrawUI();
         }
-        private void UpdateSettings(object sender = null, ValueChangedEventArgs<KeyBinding> e = null) {
+        private void UpdateSettings(object sender = null, EventArgs e = null) {
             DrawUI();
         }
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<Point> e = null) {
@@ -487,99 +546,18 @@ namespace Manlaan.Mounts
         {
             DrawUI();
         }
-
-        internal void DrawManualIcons() {
-            int curX = 0;
-            int curY = 0;
-            int totalMounts = 0;
-
-            _mountPanel = new Panel() {
-                Parent = GameService.Graphics.SpriteScreen,
-                Location = _settingLoc.Value,
-                Size = new Point(_settingImgWidth.Value * 8, _settingImgWidth.Value * 8),
-            };
-
-            foreach (Mount mount in _availableOrderedMounts) {
-                Texture2D img = _textureCache.GetMountImgFile(mount);
-                Image _btnMount = new Image
-                {
-                    Parent = _mountPanel,
-                    Texture = img,
-                    Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
-                    Location = new Point(curX, curY),
-                    Opacity = _settingOpacity.Value,
-                    BasicTooltipText = mount.DisplayName
-                };
-                _btnMount.LeftMouseButtonPressed += async delegate { await mount.DoMountAction(); };
-
-                if (_settingOrientation.Value.Equals("Horizontal"))
-                    curX += _settingImgWidth.Value;
-                else
-                    curY += _settingImgWidth.Value;
-
-                totalMounts++;
-            }
-
-            if (_settingDrag.Value) {
-                Panel dragBox = new Panel() {
-                    Parent = _mountPanel,
-                    Location = new Point(0, 0),
-                    Size = new Point(_settingImgWidth.Value / 2, _settingImgWidth.Value / 2),
-                    BackgroundColor = Color.White,
-                    ZIndex = 10,
-                };
-                dragBox.LeftMouseButtonPressed += delegate {
-                    _dragging = true;
-                    _dragStart = InputService.Input.Mouse.Position;
-                };
-                dragBox.LeftMouseButtonReleased += delegate {
-                    _dragging = false;
-                    _settingLoc.Value = _mountPanel.Location;
-                };
-            }
-
-            if (_settingOrientation.Value.Equals("Horizontal")) {
-                _mountPanel.Size = new Point(_settingImgWidth.Value * totalMounts, _settingImgWidth.Value);
-            }
-            else {
-                _mountPanel.Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value * totalMounts);
-            }
-
-        }
-        private void DrawCornerIcons() {
-            foreach (Mount mount in _availableOrderedMounts)
-            {
-                mount.CreateCornerIcon(_textureCache.GetMountImgFile(mount));
-            }
-
+        private void UpdateSettings(object sender, ValueChangedEventArgs<List<int>> e)
+        {
+            DrawUI();
         }
 
         private void DrawUI()
         {
-            _mountPanel?.Dispose();
-            foreach (Mount mount in _mounts)
-            {
-                mount.DisposeCornerIcon();
-            }
+            foreach (var drawIcons in _drawIcons) drawIcons.Dispose();
+            _drawIcons = IconThingSettings.Select(iconSetting => new DrawIcons(iconSetting, _helper, _textureCache)).ToList();
 
-            _debug?.Dispose();
-            _debug = new DebugControl()
-            {
-                Parent = GameService.Graphics.SpriteScreen,
-                Location = new Point(0, 0),
-                Size = new Point(500, 500)
-            };
-
-            if (_settingDisplayCornerIcons.Value)
-                DrawCornerIcons();
-            if (_settingDisplayManualIcons.Value)
-                DrawManualIcons();
-
-            _queueingSpinner?.Dispose();
-            _queueingSpinner = new LoadingSpinner();
-            _queueingSpinner.Location = new Point(GameService.Graphics.SpriteScreen.Width / 2 + 400, GameService.Graphics.SpriteScreen.Height - _queueingSpinner.Height - 25);
-            _queueingSpinner.Parent = GameService.Graphics.SpriteScreen;
-            _queueingSpinner.Hide();
+            _drawOutOfCombat?.Dispose();
+            _drawOutOfCombat = new DrawOutOfCombat();
 
             _drawMouseCursor?.Dispose();
             _drawMouseCursor = new DrawMouseCursor(_textureCache);
@@ -596,43 +574,39 @@ namespace Manlaan.Mounts
             };
         }
 
-        private async Task DoDefaultMountActionAsync()
+        private async Task DoKeybindActionAsync()
         {
-            Logger.Debug("DoDefaultMountActionAsync entered");
-            if (GameService.Gw2Mumble.PlayerCharacter.CurrentMount != MountType.None && IsMountSwitchable())
+            Logger.Debug($"{nameof(DoKeybindActionAsync)} entered");
+
+            var selectedRadialSettings = GetApplicableRadialSettings();
+            Logger.Debug($"{nameof(DoKeybindActionAsync)} not showing radial applicable settings: {selectedRadialSettings.Name}");
+            var things = selectedRadialSettings.AvailableThings;
+            if (things.Count() == 1 && selectedRadialSettings.ApplyInstantlyIfSingle.Value)
             {
-                await (_helper.GetCurrentlyActiveMount()?.DoUnmountAction() ?? Task.CompletedTask);
-                Logger.Debug("DoDefaultMountActionAsync dismounted");
+                await things.FirstOrDefault()?.DoAction();
+                Logger.Debug($"{nameof(DoKeybindActionAsync)} not showing radial selected thing: {selectedRadialSettings.Things.First().Name}");
                 return;
             }
 
-            var instantMount = _helper.GetInstantMount();
-            if (instantMount != null)
+            var defaultThing = selectedRadialSettings.GetDefaultThing();
+            if (defaultThing != null && GameService.Input.Mouse.CameraDragging)
             {
-                await instantMount.DoMountAction();
-                Logger.Debug("DoDefaultMountActionAsync instantmount");
-                return;
-            }
-
-            var defaultMount = _helper.GetDefaultMount();
-            if (defaultMount != null && GameService.Input.Mouse.CameraDragging)
-            {
-                await (defaultMount?.DoMountAction() ?? Task.CompletedTask);
-                Logger.Debug("DoDefaultMountActionAsync CameraDragging defaultmount");
+                await (defaultThing?.DoAction() ?? Task.CompletedTask);
+                Logger.Debug($"{nameof(DoKeybindActionAsync)} CameraDragging default");
                 return;
             }
 
             switch (_settingDefaultMountBehaviour.Value)
             {
-                case "DefaultMount":
-                    await (defaultMount?.DoMountAction() ?? Task.CompletedTask);
-                    Logger.Debug("DoDefaultMountActionAsync DefaultMountBehaviour defaultmount");
+                case "Default":
+                    await (defaultThing?.DoAction() ?? Task.CompletedTask);
+                    Logger.Debug($"{nameof(DoKeybindActionAsync)} DefaultMountBehaviour default");
                     break;
                 case "Radial":
                     if (ShouldShowModule())
                     {
                         _radial?.Show();
-                        Logger.Debug("DoDefaultMountActionAsync DefaultMountBehaviour radial");
+                        Logger.Debug($"{nameof(DoKeybindActionAsync)} DefaultMountBehaviour radial");
                     }
                     break;
             }
@@ -643,12 +617,14 @@ namespace Manlaan.Mounts
         {
             if (!e.Value)
             {
-                await (_mounts.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault()?.DoMountAction() ?? Task.CompletedTask);
-                foreach (var mount in _mounts)
+                var thingInCombat = _helper.GetQueuedThing();
+                Logger.Debug($"{nameof(HandleCombatChangeAsync)} Applied queued for out of combat: {thingInCombat?.Name}");
+                await (thingInCombat?.DoAction() ?? Task.CompletedTask);
+                foreach (var thing in _things)
                 {
-                    mount.QueuedTimestamp = null;
+                    thing.QueuedTimestamp = null;
                 }
-                _queueingSpinner?.Hide();
+                _drawOutOfCombat?.HideSpinner();
             }
         }
     }

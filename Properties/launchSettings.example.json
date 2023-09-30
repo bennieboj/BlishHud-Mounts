@@ -1,0 +1,17 @@
+﻿//example launchsettings file, rename to launchsettings.json
+//replace the executablePath with the real BlishHUD path
+//have a look here for inspiration: https://github.com/blish-hud/Example-Blish-HUD-Module/blob/master/ExampleBlishhudModule/Properties/launchSettings.json
+{
+  "profiles": {
+    "gw2": {
+      "commandName": "Executable",
+      "executablePath": "C:\\path\\to\\Blish HUD.exe",
+      "commandLineArgs": "--module \"$(ProjectDir)\\$(BaseOutputPath)\\$(Configuration)/$(TargetFramework)\\$(TargetName).bhm\""
+    },
+    "powershell": {
+      "commandName": "Executable",
+      "executablePath": "C:\\path\\to\\Blish HUD.exe",
+      "commandLineArgs": "--process powershell --window ConsoleWindowClass --module \"$(ProjectDir)\\$(BaseOutputPath)\\$(Configuration)/$(TargetFramework)\\$(TargetName).bhm\""
+    }
+  }
+}

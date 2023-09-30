@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Blish_HUD;
 using Blish_HUD.Modules.Managers;
+using Manlaan.Mounts.Things;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -15,9 +16,13 @@ namespace Manlaan.Mounts
 
 
         public static readonly string MouseTextureName = "255329.png";
-        public static readonly string MountLogoTextureName = "514394-grey.png";
+        public static readonly string MountLogoTextureName = "514394-grey-plus-plus100.png";
         public static readonly string TabBackgroundTextureName = "156006-big.png";
-        public static readonly string SettingsIconTextureName = "155052.png";
+        public static readonly string SettingsTextureName = "155052.png";
+        public static readonly string RadialSettingsTextureName = "1130623-32.png";
+        public static readonly string IconSettingsTextureName = "2208345.png";
+        public static readonly string SupportMeTabTextureName = "156127-32-grey.png";
+        public static readonly string KofiTextureName = "kofi-small.png";
         public static readonly string AnetIconTextureName = "1441452.png";
 
         public TextureCache(ContentsManager contentsManager)
@@ -30,14 +35,18 @@ namespace Manlaan.Mounts
         {
             Func<string, Texture2D> getTextureFromRef = (textureName) => contentsManager.GetTexture(textureName);
 
-            foreach (var mountImageFile in Module._mountImageFiles)
+            foreach (var mountImageFile in Module._thingImageFiles)
             {
                 PreCacheTexture(mountImageFile.Name, PremultiplyTexture);
             }
             PreCacheTexture(MouseTextureName, getTextureFromRef);
             PreCacheTexture(MountLogoTextureName, getTextureFromRef);
             PreCacheTexture(TabBackgroundTextureName, getTextureFromRef);
-            PreCacheTexture(SettingsIconTextureName, getTextureFromRef);
+            PreCacheTexture(SettingsTextureName, getTextureFromRef);
+            PreCacheTexture(RadialSettingsTextureName, getTextureFromRef);
+            PreCacheTexture(IconSettingsTextureName, getTextureFromRef);
+            PreCacheTexture(SupportMeTabTextureName, getTextureFromRef);
+            PreCacheTexture(KofiTextureName, getTextureFromRef);
             PreCacheTexture(AnetIconTextureName, getTextureFromRef);
         }
 
@@ -48,14 +57,18 @@ namespace Manlaan.Mounts
             try
             {
                 var filePath = Path.Combine(Module.mountsDirectory, textureName);
-                FileStream titleStream = File.OpenRead(filePath);
-                texture = Texture2D.FromStream(GameService.Graphics.GraphicsDevice, titleStream);
-                titleStream.Close();
-                Color[] buffer = new Color[texture.Width * texture.Height];
-                texture.GetData(buffer);
-                for (int i = 0; i < buffer.Length; i++)
-                    buffer[i] = Color.FromNonPremultiplied(buffer[i].R, buffer[i].G, buffer[i].B, buffer[i].A);
-                texture.SetData(buffer);
+                using (FileStream titleStream = File.OpenRead(filePath))
+                using (var gdc = GameService.Graphics.LendGraphicsDeviceContext())
+                {
+                    texture = Texture2D.FromStream(gdc.GraphicsDevice, titleStream);
+                    titleStream.Close();
+
+                    Color[] buffer = new Color[texture.Width * texture.Height];
+                    texture.GetData(buffer);
+                    for (int i = 0; i < buffer.Length; i++)
+                        buffer[i] = Color.FromNonPremultiplied(buffer[i].R, buffer[i].G, buffer[i].B, buffer[i].A);
+                    texture.SetData(buffer);
+                }
             }
             catch
             {
@@ -77,9 +90,9 @@ namespace Manlaan.Mounts
             return GetTexture(filename);
         }
 
-        public Texture2D GetMountImgFile(Mount mount)
+        public Texture2D GetMountImgFile(Thing thing)
         {
-            return GetTexture(mount.ImageFileNameSetting.Value);
+            return GetTexture(thing.ImageFileNameSetting.Value);
         }
 
         private Texture2D GetTexture (string filename)

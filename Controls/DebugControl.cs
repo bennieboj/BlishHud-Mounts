@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 
 namespace Manlaan.Mounts.Controls
 {
@@ -13,6 +14,9 @@ namespace Manlaan.Mounts.Controls
 
         public DebugControl()
         {
+            Parent = GameService.Graphics.SpriteScreen;
+            Location = new Point(0, 0);
+            Size = new Point(1920, 1920);
             Visible = true;
             StringsToDisplay = new ConcurrentDictionary<string, Func<string>>();
         }
@@ -37,7 +41,7 @@ namespace Manlaan.Mounts.Controls
             if(!DebugHelper.IsDebugEnabled()) return;
 
             int i = 0;
-            foreach (var item in StringsToDisplay)
+            foreach (var item in StringsToDisplay.OrderBy(s => s.Key))
             {
                 DrawDbg(spriteBatch, i, $"{item.Key}: {item.Value.Invoke()}");
                 i += 30;

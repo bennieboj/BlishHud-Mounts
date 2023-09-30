@@ -1,13 +1,12 @@
 ﻿using Blish_HUD.Controls;
 using Microsoft.Xna.Framework;
-using Blish_HUD.Settings.UI.Views;
 using Blish_HUD.Graphics.UI;
 using System.Linq;
 using Blish_HUD;
-using Blish_HUD.Modules.Managers;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using System;
+using System.Diagnostics;
+using Mounts;
 
 namespace Manlaan.Mounts.Views
 {
@@ -15,15 +14,12 @@ namespace Manlaan.Mounts.Views
     {
         private const string NoValueSelected = "Please select a value";
 
-        private TextureCache TextureCache { get; }
-
         private Texture2D anetTexture { get; }
 
         private Panel ManualPanel { get; set; }
 
         public SettingsView(TextureCache textureCache)
         {
-            TextureCache = textureCache;
             anetTexture = textureCache.GetImgFile(TextureCache.AnetIconTextureName);
         }
 
@@ -54,8 +50,18 @@ namespace Manlaan.Mounts.Views
                 Parent = buildPanel,
                 TextColor = Color.Red,
                 Font = GameService.Content.DefaultFont18,
-                Text = "For this module to work you need to fill in your in-game keykindings in the settings below.\nNo keybind means the mount is DISABLED.".Replace(" ", "  "),
+                Text = "For this module to work you need to fill in your in-game keybindings in the settings below.\nNo keybind means the action is DISABLED. For more info, see the documentation.".Replace(" ", "  "),
                 HorizontalAlignment = HorizontalAlignment.Left
+            };
+
+            var documentationButton = new StandardButton
+            {
+                Parent = buildPanel,
+                Location = new Point(labelExplanation.Right, labelExplanation.Top),
+                Text = Strings.Documentation_Button_Label
+            };
+            documentationButton.Click += (args, sender) => {
+                Process.Start("https://github.com/bennieboj/BlishHud-Mounts/#settings");
             };
 
             var panelPadding = 20;
@@ -63,151 +69,14 @@ namespace Manlaan.Mounts.Views
             Panel mountsPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 600);
             BuildMountsPanel(mountsPanel, labelWidth, bindingWidth, orderWidth);
 
-            Panel otherPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + panelPadding, labelExplanation.Bottom + panelPadding));
-            BuildOtherPanel(otherPanel, bindingWidth, labelWidth);
-
-            ManualPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + panelPadding, 150 + panelPadding));
-            BuildManualPanel(ManualPanel, buildPanel);
-
-            Panel defaultMountPanel = CreateDefaultPanel(buildPanel, new Point(10, 350));
+            Panel defaultMountPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + 20, labelExplanation.Bottom + panelPadding));
             BuildDefaultMountPanel(defaultMountPanel, labelWidth2, mountsAndRadialInputWidth);
 
-            Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + 20, 350));
+            Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + 20, 500));
             BuildRadialPanel(radialPanel, labelWidth2, mountsAndRadialInputWidth);
-
-            DisplayManualPanelIfNeeded();
         }
 
-        private void BuildManualPanel(Panel manualPanel, Container buildPanel)
-        {
-            Label settingManual_Label = new Label()
-            {
-                Location = new Point(0, 2),
-                Width = manualPanel.Width,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = manualPanel,
-                Text = "Manual Settings",
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
 
-            Label settingManualOrientation_Label = new Label()
-            {
-                Location = new Point(0, settingManual_Label.Bottom + 6),
-                Width = 75,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = manualPanel,
-                Text = "Orientation: ",
-            };
-            Dropdown settingManualOrientation_Select = new Dropdown()
-            {
-                Location = new Point(settingManualOrientation_Label.Right + 5, settingManualOrientation_Label.Top - 4),
-                Width = 100,
-                Parent = manualPanel,
-            };
-            foreach (string s in Module._mountOrientation)
-            {
-                settingManualOrientation_Select.Items.Add(s);
-            }
-            settingManualOrientation_Select.SelectedItem = Module._settingOrientation.Value;
-            settingManualOrientation_Select.ValueChanged += delegate {
-                Module._settingOrientation.Value = settingManualOrientation_Select.SelectedItem;
-            };
-
-            Label settingManualWidth_Label = new Label()
-            {
-                Location = new Point(0, settingManualOrientation_Label.Bottom + 6),
-                Width = 75,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = manualPanel,
-                Text = "Icon Width: ",
-            };
-            TrackBar settingImgWidth_Slider = new TrackBar()
-            {
-                Location = new Point(settingManualWidth_Label.Right + 5, settingManualWidth_Label.Top),
-                Width = 220,
-                MaxValue = 200,
-                MinValue = 0,
-                Value = Module._settingImgWidth.Value,
-                Parent = manualPanel,
-            };
-            settingImgWidth_Slider.ValueChanged += delegate { Module._settingImgWidth.Value = (int)settingImgWidth_Slider.Value; };
-
-            Label settingManualOpacity_Label = new Label()
-            {
-                Location = new Point(0, settingManualWidth_Label.Bottom + 6),
-                Width = 75,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = manualPanel,
-                Text = "Opacity: ",
-            };
-            TrackBar settingOpacity_Slider = new TrackBar()
-            {
-                Location = new Point(settingManualOpacity_Label.Right + 5, settingManualOpacity_Label.Top),
-                Width = 220,
-                MaxValue = 100,
-                MinValue = 0,
-                Value = Module._settingOpacity.Value * 100,
-                Parent = manualPanel,
-            };
-            settingOpacity_Slider.ValueChanged += delegate { Module._settingOpacity.Value = settingOpacity_Slider.Value / 100; };
-
-            IView settingClockDrag_View = SettingView.FromType(Module._settingDrag, buildPanel.Width);
-            ViewContainer settingClockDrag_Container = new ViewContainer()
-            {
-                WidthSizingMode = SizingMode.Fill,
-                Location = new Point(0, settingManualOpacity_Label.Bottom + 3),
-                Parent = manualPanel
-            };
-            settingClockDrag_Container.Show(settingClockDrag_View);
-        }
-
-        private void BuildOtherPanel(Panel otherPanel, int bindingWidth, int labelWidth)
-        {
-            Label settingDisplayCornerIcons_Label = new Label()
-            {
-                Location = new Point(0, 4),
-                Width = bindingWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = otherPanel,
-                Text = "Display Corner Icons: ",
-            };
-            Checkbox settingDisplayCornerIcons_Checkbox = new Checkbox()
-            {
-                Size = new Point(bindingWidth, 20),
-                Parent = otherPanel,
-                Checked = Module._settingDisplayCornerIcons.Value,
-                Location = new Point(settingDisplayCornerIcons_Label.Right + 5, settingDisplayCornerIcons_Label.Top - 1),
-            };
-            settingDisplayCornerIcons_Checkbox.CheckedChanged += delegate {
-                Module._settingDisplayCornerIcons.Value = settingDisplayCornerIcons_Checkbox.Checked;
-            };
-            Label settingDisplayManualIcons_Label = new Label()
-            {
-                Location = new Point(0, settingDisplayCornerIcons_Label.Bottom + 6),
-                Width = bindingWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = otherPanel,
-                Text = "Display Manual Icons: ",
-            };
-            Checkbox settingDisplayManualIcons_Checkbox = new Checkbox()
-            {
-                Size = new Point(bindingWidth, 20),
-                Parent = otherPanel,
-                Checked = Module._settingDisplayManualIcons.Value,
-                Location = new Point(settingDisplayManualIcons_Label.Right + 5, settingDisplayManualIcons_Label.Top - 1),
-            };
-            settingDisplayManualIcons_Checkbox.CheckedChanged += delegate
-            {
-                Module._settingDisplayManualIcons.Value = settingDisplayManualIcons_Checkbox.Checked;
-                DisplayManualPanelIfNeeded();
-            };
-        }
 
         private void BuildMountsPanel(Panel mountsPanel, int labelWidth, int bindingWidth, int orderWidth)
         {
@@ -228,19 +97,9 @@ namespace Manlaan.Mounts.Views
                 Text = "must match in-game key binding",
                 HorizontalAlignment = HorizontalAlignment.Left
             };
-            Label settingOrder_Label = new Label()
-            {
-                Location = new Point(labelWidth + 5, keybindWarning_Label.Bottom + 6),
-                Width = orderWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = mountsPanel,
-                Text = "Order",
-                HorizontalAlignment = HorizontalAlignment.Center,
-            };
             Label settingBinding_Label = new Label()
             {
-                Location = new Point(settingOrder_Label.Right + 5, settingOrder_Label.Top),
+                Location = new Point(labelWidth + 5, keybindWarning_Label.Bottom + 6),
                 Width = bindingWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -258,7 +117,7 @@ namespace Manlaan.Mounts.Views
 
             Label settingMountImageFile_Label = new Label()
             {
-                Location = new Point(settingBinding_Image.Right + 5, settingOrder_Label.Top),
+                Location = new Point(settingBinding_Image.Right + 5, settingBinding_Label.Top),
                 Width = bindingWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -267,9 +126,9 @@ namespace Manlaan.Mounts.Views
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
 
-            int curY = settingOrder_Label.Bottom;
+            int curY = settingBinding_Label.Bottom;
 
-            foreach (var mount in Module._mounts)
+            foreach (var thing in Module._things)
             {
                 Label settingMount_Label = new Label()
                 {
@@ -278,37 +137,17 @@ namespace Manlaan.Mounts.Views
                     AutoSizeHeight = false,
                     WrapText = false,
                     Parent = mountsPanel,
-                    Text = $"{mount.DisplayName}: ",
+                    Text = $"{thing.DisplayName}: ",
                 };
-                Dropdown settingMount_Select = new Dropdown()
-                {
-                    Location = new Point(settingMount_Label.Right + 5, settingMount_Label.Top - 4),
-                    Width = orderWidth,
-                    Parent = mountsPanel,
-                };
-                foreach (int i in Module._mountOrder)
-                {
-                    if (i == 0)
-                        settingMount_Select.Items.Add("Disabled");
-                    else
-                        settingMount_Select.Items.Add(i.ToString());
-                }
-                settingMount_Select.SelectedItem = mount.OrderSetting.Value == 0 ? "Disabled" : mount.OrderSetting.Value.ToString();
-                settingMount_Select.ValueChanged += delegate {
-                    if (settingMount_Select.SelectedItem.Equals("Disabled"))
-                        mount.OrderSetting.Value = 0;
-                    else
-                        mount.OrderSetting.Value = int.Parse(settingMount_Select.SelectedItem);
-                };
-                KeybindingAssigner settingMount_Keybind = new KeybindingAssigner(mount.KeybindingSetting.Value)
+                KeybindingAssigner settingMount_Keybind = new KeybindingAssigner(thing.KeybindingSetting.Value)
                 {
                     NameWidth = 0,
                     Size = new Point(bindingWidth, 20),
                     Parent = mountsPanel,
-                    Location = new Point(settingMount_Select.Right + 5, settingMount_Label.Top - 1),
+                    Location = new Point(settingMount_Label.Right + 5, settingMount_Label.Top - 1),
                 };
                 settingMount_Keybind.BindingChanged += delegate {
-                    mount.KeybindingSetting.Value = settingMount_Keybind.KeyBinding;
+                    thing.KeybindingSetting.Value = settingMount_Keybind.KeyBinding;
                 };
 
                 Dropdown settingMountImageFile_Select = new Dropdown()
@@ -318,15 +157,15 @@ namespace Manlaan.Mounts.Views
                     Parent = mountsPanel,
                 };
                 settingMountImageFile_Select.Items.Add(NoValueSelected);
-                Module._mountImageFiles
-                    .Where(mIF => mIF.Name.Contains(mount.ImageFileName)).OrderByDescending(mIF => mIF.Name).ToList()
+                Module._thingImageFiles
+                    .Where(mIF => mIF.Name.Contains(thing.ImageFileName)).OrderByDescending(mIF => mIF.Name).ToList()
                     .ForEach(mIF => settingMountImageFile_Select.Items.Add(mIF.Name));
-                settingMountImageFile_Select.SelectedItem = mount.ImageFileNameSetting.Value == "" ? NoValueSelected : mount.ImageFileNameSetting.Value;
+                settingMountImageFile_Select.SelectedItem = thing.ImageFileNameSetting.Value == "" ? NoValueSelected : thing.ImageFileNameSetting.Value;
                 settingMountImageFile_Select.ValueChanged += delegate {
                     if (settingMountImageFile_Select.SelectedItem.Equals(NoValueSelected))
-                        mount.ImageFileNameSetting.Value = "";
+                        thing.ImageFileNameSetting.Value = "";
                     else
-                        mount.ImageFileNameSetting.Value = settingMountImageFile_Select.SelectedItem;
+                        thing.ImageFileNameSetting.Value = settingMountImageFile_Select.SelectedItem;
                 };
 
                 curY = settingMount_Label.Bottom;
@@ -335,93 +174,9 @@ namespace Manlaan.Mounts.Views
 
         private void BuildDefaultMountPanel(Panel defaultMountPanel, int labelWidth2, int mountsAndRadialInputWidth)
         {
-            Label settingDefaultSettingsMount_Label = new Label()
-            {
-                Location = new Point(0, 0),
-                Width = labelWidth2,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = defaultMountPanel,
-                Text = "Default mount settings: "
-            };
-            Label settingDefaultMount_Label = new Label()
-            {
-                Location = new Point(0, settingDefaultSettingsMount_Label.Bottom + 6),
-                Width = labelWidth2,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = defaultMountPanel,
-                Text = "Default mount: ",
-            };
-            Dropdown settingDefaultMount_Select = new Dropdown()
-            {
-                Location = new Point(settingDefaultMount_Label.Right + 5, settingDefaultMount_Label.Top - 4),
-                Width = mountsAndRadialInputWidth,
-                Parent = defaultMountPanel,
-            };
-            settingDefaultMount_Select.Items.Add("Disabled");
-            var mountNames = Module._mounts.Select(m => m.Name);
-            foreach (string i in mountNames)
-            {
-                settingDefaultMount_Select.Items.Add(i.ToString());
-            }
-            settingDefaultMount_Select.SelectedItem = mountNames.Any(m => m == Module._settingDefaultMountChoice.Value) ? Module._settingDefaultMountChoice.Value : "Disabled";
-            settingDefaultMount_Select.ValueChanged += delegate {
-                Module._settingDefaultMountChoice.Value = settingDefaultMount_Select.SelectedItem;
-            };
-            Label settingDefaultWaterMount_Label = new Label()
-            {
-                Location = new Point(0, settingDefaultMount_Select.Bottom + 6),
-                Width = labelWidth2,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = defaultMountPanel,
-                Text = "Default water mount: ",
-            };
-            Dropdown settingDefaultWaterMount_Select = new Dropdown()
-            {
-                Location = new Point(settingDefaultWaterMount_Label.Right + 5, settingDefaultWaterMount_Label.Top - 4),
-                Width = mountsAndRadialInputWidth,
-                Parent = defaultMountPanel,
-            };
-            settingDefaultWaterMount_Select.Items.Add("Disabled");
-            var mountNamesWater = Module._mounts.Where(m => m.IsWaterMount).Select(m => m.Name);
-            foreach (string i in mountNamesWater)
-            {
-                settingDefaultWaterMount_Select.Items.Add(i.ToString());
-            }
-            settingDefaultWaterMount_Select.SelectedItem = mountNamesWater.Any(m => m == Module._settingDefaultWaterMountChoice.Value) ? Module._settingDefaultWaterMountChoice.Value : "Disabled";
-            settingDefaultWaterMount_Select.ValueChanged += delegate {
-                Module._settingDefaultWaterMountChoice.Value = settingDefaultWaterMount_Select.SelectedItem;
-            };
-            Label settingDefaultFlyingMount_Label = new Label()
-            {
-                Location = new Point(0, settingDefaultWaterMount_Label.Bottom + 6),
-                Width = labelWidth2,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = defaultMountPanel,
-                Text = "Default flying mount: ",
-            };
-            Dropdown settingDefaultFlyingMount_Select = new Dropdown()
-            {
-                Location = new Point(settingDefaultFlyingMount_Label.Right + 5, settingDefaultFlyingMount_Label.Top - 4),
-                Width = mountsAndRadialInputWidth,
-                Parent = defaultMountPanel,
-            };
-            settingDefaultFlyingMount_Select.Items.Add("Disabled");
-            var mountNamesFlying = Module._mounts.Where(m => m.IsFlyingMount).Select(m => m.Name);
-            foreach (string i in mountNamesFlying)
-            {
-                settingDefaultFlyingMount_Select.Items.Add(i.ToString());
-            }
-            settingDefaultFlyingMount_Select.SelectedItem = mountNamesFlying.Any(m => m == Module._settingDefaultFlyingMountChoice.Value) ? Module._settingDefaultFlyingMountChoice.Value : "Disabled";
-            settingDefaultFlyingMount_Select.ValueChanged += delegate {
-                Module._settingDefaultFlyingMountChoice.Value = settingDefaultFlyingMount_Select.SelectedItem;
-            };
             Label settingDefaultMountKeybind_Label = new Label()
             {
-                Location = new Point(0, settingDefaultFlyingMount_Select.Bottom + 6),
+                Location = new Point(0, 0),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -460,30 +215,10 @@ namespace Manlaan.Mounts.Views
             settingDefaultMountBehaviour_Select.ValueChanged += delegate {
                 Module._settingDefaultMountBehaviour.Value = settingDefaultMountBehaviour_Select.SelectedItem;
             };
-            Label settingDisplayMountQueueing_Label = new Label()
-            {
-                Location = new Point(0, settingDefaultMountBehaviour_Label.Bottom + 6),
-                Width = labelWidth2,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = defaultMountPanel,
-                Text = "Display out of combat queueing:"
-            };
-            Checkbox settingDisplayMountQueueing_Checkbox = new Checkbox()
-            {
-                Size = new Point(labelWidth2, 20),
-                Parent = defaultMountPanel,
-                Checked = Module._settingDisplayMountQueueing.Value,
-                Location = new Point(settingDisplayMountQueueing_Label.Right + 5, settingDisplayMountQueueing_Label.Top - 1),
-            };
-            settingDisplayMountQueueing_Checkbox.CheckedChanged += delegate {
-                Module._settingDisplayMountQueueing.Value = settingDisplayMountQueueing_Checkbox.Checked;
-            };
-
 
             Label settingDisplayModuleOnLoadingScreen_Label = new Label()
             {
-                Location = new Point(0, settingDisplayMountQueueing_Label.Bottom + 6),
+                Location = new Point(0, settingDefaultMountBehaviour_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -500,7 +235,6 @@ namespace Manlaan.Mounts.Views
             settingDisplayModuleOnLoadingScreen_Checkbox.CheckedChanged += delegate {
                 Module._settingDisplayModuleOnLoadingScreen.Value = settingDisplayModuleOnLoadingScreen_Checkbox.Checked;
             };
-
 
             Label settingMountAutomaticallyAfterLoadingScreen_Label = new Label()
             {
@@ -520,6 +254,91 @@ namespace Manlaan.Mounts.Views
             };
             settingMountAutomaticallyAfterLoadingScreen_Checkbox.CheckedChanged += delegate {
                 Module._settingMountAutomaticallyAfterLoadingScreen.Value = settingMountAutomaticallyAfterLoadingScreen_Checkbox.Checked;
+            };
+
+
+            Label settingEnableMountQueueing_Label = new Label()
+            {
+                Location = new Point(0, settingMountAutomaticallyAfterLoadingScreen_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Enable out of combat queueing:"
+            };
+            Checkbox settingEnableMountQueueing_Checkbox = new Checkbox()
+            {
+                Size = new Point(labelWidth2, 20),
+                Parent = defaultMountPanel,
+                Checked = Module._settingEnableMountQueueing.Value,
+                Location = new Point(settingEnableMountQueueing_Label.Right + 5, settingEnableMountQueueing_Label.Top - 1),
+            };
+            settingEnableMountQueueing_Checkbox.CheckedChanged += delegate {
+                Module._settingEnableMountQueueing.Value = settingEnableMountQueueing_Checkbox.Checked;
+            };
+
+
+            Label settingDisplayMountQueueing_Label = new Label()
+            {
+                Location = new Point(0, settingEnableMountQueueing_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Display out of combat queueing:"
+            };
+            Checkbox settingDisplayMountQueueing_Checkbox = new Checkbox()
+            {
+                Size = new Point(labelWidth2, 20),
+                Parent = defaultMountPanel,
+                Checked = Module._settingDisplayMountQueueing.Value,
+                Location = new Point(settingDisplayMountQueueing_Label.Right + 5, settingDisplayMountQueueing_Label.Top - 1),
+            };
+            settingDisplayMountQueueing_Checkbox.CheckedChanged += delegate {
+                Module._settingDisplayMountQueueing.Value = settingDisplayMountQueueing_Checkbox.Checked;
+            };
+
+            Label dragMountQueueing_Label = new Label()
+            {
+                Location = new Point(0, settingDisplayMountQueueing_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Drag out of combat queueing: "
+            };
+            Checkbox dragMountQueueing_Checkbox = new Checkbox()
+            {
+                Size = new Point(20, 20),
+                Parent = defaultMountPanel,
+                Checked = Module._settingDragMountQueueing.Value,
+                Location = new Point(dragMountQueueing_Label.Right + 5, dragMountQueueing_Label.Top - 1),
+            };
+            dragMountQueueing_Checkbox.CheckedChanged += delegate {
+                Module._settingDragMountQueueing.Value = dragMountQueueing_Checkbox.Checked;
+            };
+
+
+
+            Label combatLaunchMasteryUnlocked_Label = new Label()
+            {
+                Location = new Point(0, dragMountQueueing_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Combat Launch mastery unlocked: ",
+                BasicTooltipText = "EoD and SotO masteries are not detectable in the API yet, see documentation for more info."
+            };
+            Checkbox combatLaunchMasteryUnlocked_Checkbox = new Checkbox()
+            {
+                Size = new Point(20, 20),
+                Parent = defaultMountPanel,
+                Checked = Module._settingCombatLaunchMasteryUnlocked.Value,
+                Location = new Point(combatLaunchMasteryUnlocked_Label.Right + 5, combatLaunchMasteryUnlocked_Label.Top - 1),
+            };
+            combatLaunchMasteryUnlocked_Checkbox.CheckedChanged += delegate {
+                Module._settingCombatLaunchMasteryUnlocked.Value = combatLaunchMasteryUnlocked_Checkbox.Checked;
             };
         }
 
@@ -629,51 +448,10 @@ namespace Manlaan.Mounts.Views
                 Parent = radialPanel,
             };
             settingMountRadialIconOpacity_Slider.ValueChanged += delegate { Module._settingMountRadialIconOpacity.Value = settingMountRadialIconOpacity_Slider.Value / 100; };
-            Label settingMountRadialCenterMountBehavior_Label = new Label()
-            {
-                Location = new Point(0, settingMountRadialIconOpacity_Label.Bottom + 6),
-                Width = labelWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = radialPanel,
-                Text = "Center mount: ",
-            };
-            Dropdown settingMountRadialCenterMountBehavior_Select = new Dropdown()
-            {
-                Location = new Point(settingMountRadialCenterMountBehavior_Label.Right + 5, settingMountRadialCenterMountBehavior_Label.Top - 4),
-                Width = mountsAndRadialInputWidth,
-                Parent = radialPanel,
-            };
-            foreach (string i in Module._mountRadialCenterMountBehavior)
-            {
-                settingMountRadialCenterMountBehavior_Select.Items.Add(i.ToString());
-            }
-            settingMountRadialCenterMountBehavior_Select.SelectedItem = Module._settingMountRadialCenterMountBehavior.Value;
-            settingMountRadialCenterMountBehavior_Select.ValueChanged += delegate {
-                Module._settingMountRadialCenterMountBehavior.Value = settingMountRadialCenterMountBehavior_Select.SelectedItem;
-            };
-            Label settingMountRadialRemoveCenterMount_Label = new Label()
-            {
-                Location = new Point(0, settingMountRadialCenterMountBehavior_Label.Bottom + 6),
-                Width = labelWidth,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = radialPanel,
-                Text = "Remove center mount from radial: ",
-            };
-            Checkbox settingMountRadialRemoveCenterMount_Checkbox = new Checkbox()
-            {
-                Size = new Point(labelWidth, 20),
-                Parent = radialPanel,
-                Checked = Module._settingMountRadialRemoveCenterMount.Value,
-                Location = new Point(settingMountRadialRemoveCenterMount_Label.Right + 5, settingMountRadialRemoveCenterMount_Label.Top - 1),
-            };
-            settingMountRadialRemoveCenterMount_Checkbox.CheckedChanged += delegate {
-                Module._settingMountRadialRemoveCenterMount.Value = settingMountRadialRemoveCenterMount_Checkbox.Checked;
-            };
+
             Label settingMountRadialToggleActionCameraKeyBinding_Label = new Label()
             {
-                Location = new Point(0, settingMountRadialRemoveCenterMount_Label.Bottom + 6),
+                Location = new Point(0, settingMountRadialIconOpacity_Label.Bottom + 6),
                 Width = labelWidth,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -694,14 +472,6 @@ namespace Manlaan.Mounts.Views
                 Parent = radialPanel,
                 Location = new Point(settingMountRadialToggleActionCameraKeyBinding_Label.Right + 4, settingMountRadialToggleActionCameraKeyBinding_Label.Top - 1),
             };
-        }
-
-        private void DisplayManualPanelIfNeeded()
-        {
-            if (Module._settingDisplayManualIcons.Value)
-                ManualPanel.Show();
-            else
-                ManualPanel.Hide();
         }
     }
 }
