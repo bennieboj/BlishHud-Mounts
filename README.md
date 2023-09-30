@@ -24,7 +24,7 @@ The keybinds in the module need to match the ones in you in-game settings:
 
 ##### Custom icons
 To use custom icons:
-- Apen the designated folder:
+- Open the designated folder:
   ![](./readme/custom_icons.png)
 - Add your new icons, name them like the existing icons `raptor-something-new.png`. Do not replace files, use new filenames or your icons will be replaced.
 - Restart the module by disabling and enabling it (see screenshot step 1)
