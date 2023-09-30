@@ -410,7 +410,7 @@ namespace Manlaan.Mounts
 
         protected override void OnModuleLoaded(EventArgs e)
         {
-            RadialSettings.ForEach(c => _debug.Add($"RadialSettings {c.Order} {c.Name}", () => $"IsApplicable: {c.IsApplicable()}, Center: {c.GetCenterThing()?.Name}, CenterBehavior: {c.CenterThingBehavior}, ApplyInstantlyIfSingle: {c.ApplyInstantlyIfSingle}, LastUsed: {c.GetLastUsedThing()?.Name}"));
+            RadialSettings.ForEach(c => _debug.Add($"RadialSettings {c.Order} {c.Name}", () => $"IsApplicable: {c.IsApplicable()}, Center: {c.GetCenterThing()?.Name}, CenterBehavior: {c.CenterThingBehavior.Value.ToString()}, ApplyInstantlyIfSingle: {c.ApplyInstantlyIfSingle.Value}, LastUsed: {c.GetLastUsedThing()?.Name}"));
             _debug.Add("Applicable RadialSettings Name", () => $"{GetApplicableRadialSettings()?.Name}");
             _debug.Add("Applicable RadialSettings Names", () => $"{string.Join(", ", GetApplicableRadialSettings()?.AvailableThings.Select(t => t.Name))}");
             _debug.Add("Queued for out of combat", () => $"{_helper.GetQueuedThing()}");
