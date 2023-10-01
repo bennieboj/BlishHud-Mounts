@@ -161,6 +161,8 @@ namespace Manlaan.Mounts.Views
                 Parent = RadialSettingsDetailPanel,
                 Checked = currentRadialSettings.IsEnabled.Value,
                 Location = new Point(radialSettingsIsEnabled_Label.Right + 5, radialSettingsIsEnabled_Label.Top - 1),
+                Enabled = !currentRadialSettings.IsDefault,
+                BasicTooltipText = currentRadialSettings.IsDefault ? "Cannot disabled Default" : null
             };
             radialSettingsIsEnabled_Checkbox.CheckedChanged += delegate {
                 currentRadialSettings.IsEnabled.Value = radialSettingsIsEnabled_Checkbox.Checked;
