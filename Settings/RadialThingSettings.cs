@@ -38,7 +38,7 @@ namespace Manlaan.Mounts
             ThingsSetting.SettingChanged += ThingsSetting_SettingChanged;
         }
 
-        private void ThingsSetting_SettingChanged(object sender, ValueChangedEventArgs<IList<Type>> e)
+        private void ThingsSetting_SettingChanged(object sender, ValueChangedEventArgs<IList<string>> e)
         {
             ApplyInstantlyIfSingle.Value = ThingsSetting.Value.Count == 1;
             if (GetDefaultThing() == null)

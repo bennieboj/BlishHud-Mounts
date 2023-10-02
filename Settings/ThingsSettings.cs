@@ -8,7 +8,7 @@ namespace Manlaan.Mounts
 {
     public abstract class ThingsSettings
     {
-        protected SettingEntry<IList<Type>> ThingsSetting;
+        protected SettingEntry<IList<string>> ThingsSetting;
         private string ThingSettingsName;
 
         protected ThingsSettings(SettingCollection settingCollection, IEnumerable<Thing> things, string thingSettingsName)
@@ -18,28 +18,28 @@ namespace Manlaan.Mounts
                 things = new List<Thing>();
             }
 
-            ThingsSetting = settingCollection.DefineSetting(ThingSettingsName, (IList<Type>)things.Select(t => t.GetType()).ToList());
+            ThingsSetting = settingCollection.DefineSetting(ThingSettingsName, (IList<string>)things.Select(t => t.GetType().FullName).ToList());
         }
 
         public void SetThings(IEnumerable<Thing> things)
         {
-            ThingsSetting.Value = things.Select(t => t.GetType()).ToList();
+            ThingsSetting.Value = things.Select(t => t.GetType().FullName).ToList();
         }
 
-        public ICollection<Thing> Things => ThingsSetting.Value.Select(typeOfThingInSettings => Module._things.Single(t => typeOfThingInSettings == t.GetType())).ToList();
+        public ICollection<Thing> Things => ThingsSetting.Value.Select(typeOfThingInSettings => Module._things.Single(t => typeOfThingInSettings == t.GetType().FullName)).ToList();
 
         public ICollection<Thing> AvailableThings => Things.Where(t => t.IsAvailable).ToList();
 
         public void AddThing(Thing thingToAdd)
         {
             //update by assignment to trigger SettingChanged, not by modification of the value itself (would not trigger SettingChanged)
-            ThingsSetting.Value = ThingsSetting.Value.Append(thingToAdd.GetType()).ToList();
+            ThingsSetting.Value = ThingsSetting.Value.Append(thingToAdd.GetType().FullName).ToList();
         }
 
         public void RemoveThing(Thing thingToRemove)
         {
             //update by assignment to trigger SettingChanged, not by modification of the value itself (would not trigger SettingChanged)
-            ThingsSetting.Value = ThingsSetting.Value.Where(t => t != thingToRemove.GetType()).ToList();
+            ThingsSetting.Value = ThingsSetting.Value.Where(t => t != thingToRemove.GetType().FullName).ToList();
         }
         public virtual void DeleteFromSettings(SettingCollection settingCollection)
         {

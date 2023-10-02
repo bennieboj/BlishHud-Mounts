@@ -77,7 +77,7 @@ namespace Manlaan.Mounts
             }
         }
 
-        private void ThingsSetting_SettingChanged(object sender, ValueChangedEventArgs<IList<Type>> e)
+        private void ThingsSetting_SettingChanged(object sender, ValueChangedEventArgs<IList<string>> e)
         {
             UpdateIconThingSettingsInternal();
         }
