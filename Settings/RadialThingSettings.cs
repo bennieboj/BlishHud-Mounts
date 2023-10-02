@@ -1,6 +1,7 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Settings;
 using Manlaan.Mounts.Things;
+using Mounts.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,8 @@ namespace Manlaan.Mounts
         public SettingEntry<CenterBehavior> CenterThingBehavior;
         public SettingEntry<bool> RemoveCenterMount;
         public SettingEntry<string> DefaultThingChoice;
+
+        public event EventHandler<SettingsUpdatedEvent> RadialSettingsUpdated;
 
         public bool IsDefault => Order == 99;
 
@@ -44,6 +47,13 @@ namespace Manlaan.Mounts
             if (GetDefaultThing() == null)
             {
                 DefaultThingChoice.Value = "Disabled";
+            }
+
+            var myevent = new SettingsUpdatedEvent();
+
+            if (RadialSettingsUpdated != null)
+            {
+                RadialSettingsUpdated(this, myevent);
             }
         }
 

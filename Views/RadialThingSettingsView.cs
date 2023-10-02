@@ -6,6 +6,7 @@ using System.Linq;
 using Blish_HUD.Graphics.UI;
 using Mounts;
 using System;
+using Mounts.Settings;
 
 namespace Manlaan.Mounts.Views
 {
@@ -23,7 +24,7 @@ namespace Manlaan.Mounts.Views
         {
             
         }
-        private Panel CreateDefaultPanel(Container buildPanel, Point location, int width = 420)
+        private Panel CreateDefaultPanel(Container buildPanel, Point location, int width)
         {
             return new Panel {
                 CanScroll = false,
@@ -61,12 +62,11 @@ namespace Manlaan.Mounts.Views
 
             var panelPadding = 20;
 
-            RadialSettingsListPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 600);
+            RadialSettingsListPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 800);
             BuildRadialSettingsListPanel();
 
-            currentRadialSettings = Module.OrderedRadialSettings().First();
-            RadialSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 300));
-            BuildRadialSettingsDetailPanel();
+            RadialSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 300), 800);
+            BuildRadialSettingsDetailPanel(Module.OrderedRadialSettings().First());
         }
 
         private void BuildRadialSettingsListPanel()
@@ -124,16 +124,25 @@ namespace Manlaan.Mounts.Views
                     Text = Strings.Edit
                 };
                 editRadialSettingsButton.Click += (args, sender) => {
-                    currentRadialSettings = radialSettings;
-                    BuildRadialSettingsDetailPanel();
+                    BuildRadialSettingsDetailPanel(radialSettings);
                 };
 
                 curY = name_Label.Bottom;
             }            
         }
 
-        private void BuildRadialSettingsDetailPanel()
+        private void BuildRadialSettingsDetailPanel(RadialThingSettings newCurrentRadialSettings = null)
         {
+            if(newCurrentRadialSettings != null)
+            {
+                if(currentRadialSettings != null)
+                {
+                    currentRadialSettings.RadialSettingsUpdated -= CurrentRadialSettings_RadialSettingsUpdated;
+                }
+                currentRadialSettings = newCurrentRadialSettings;
+                currentRadialSettings.RadialSettingsUpdated += CurrentRadialSettings_RadialSettingsUpdated;
+            }
+
             RadialSettingsDetailPanel.ClearChildren();
            
             Label radialSettingstName_Label = new Label()
@@ -265,10 +274,13 @@ namespace Manlaan.Mounts.Views
             ThingSettingsView thingSettingsView = new ThingSettingsView(currentRadialSettings)
             {
                 Location = new Point(0, settingRadialRemoveCenterMount_Label.Bottom),
-                Parent = RadialSettingsDetailPanel,
-                Width = 500,
-                Height = 500
+                Parent = RadialSettingsDetailPanel
             };
+        }
+
+        private void CurrentRadialSettings_RadialSettingsUpdated(object sender, SettingsUpdatedEvent e)
+        {
+            BuildRadialSettingsDetailPanel();
         }
     }
 }

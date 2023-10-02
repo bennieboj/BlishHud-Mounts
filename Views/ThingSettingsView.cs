@@ -17,10 +17,12 @@ namespace Manlaan.Mounts.Views
         public ThingSettingsView(ThingsSettings currentThingSettings)
         {
             CurrentThingSettings = currentThingSettings;
+            Width = 600;
+            Height = 600;
             panel = new Panel
             {
                 CanScroll = false,
-                Width = 420,
+                Width = 600,
                 HeightSizingMode = SizingMode.AutoSize,
                 Parent = this
             };
@@ -38,7 +40,7 @@ namespace Manlaan.Mounts.Views
             panel.ClearChildren();
            
             int curY = 0;
-            var thingsNotYetInSettings = Module._things.Where(t => !CurrentThingSettings.Things.Any(tt => tt.Equals(t))).ToList();
+            var thingsNotYetInSettings = Module._things.Where(t => t.IsAvailable).Where(t => !CurrentThingSettings.Things.Any(tt => tt.Equals(t))).ToList();
             if (thingsNotYetInSettings.Any())
             {
                 Dropdown addThing_Select = new Dropdown()
@@ -46,6 +48,7 @@ namespace Manlaan.Mounts.Views
                     Location = new Point(0, 6),
                     Width = orderWidth,
                     Parent = panel,
+                    BasicTooltipText = "Only things that have a keybind in the General Settings tab will show up here."
                 };
                 thingsNotYetInSettings.ForEach(t => addThing_Select.Items.Add(t.DisplayName));
                 addThing_Select.SelectedItem = thingsNotYetInSettings.FirstOrDefault()?.DisplayName;
@@ -62,10 +65,14 @@ namespace Manlaan.Mounts.Views
                 curY = addThing_Select.Bottom;
             }
 
-            int curX = 0;
-            foreach (var thing in CurrentThingSettings.Things)
+            foreach (var thingItemAndIndex in CurrentThingSettings.Things.Select((value, i) => new { i, value }))
             {
+                var thing = thingItemAndIndex.value;
+                var index = thingItemAndIndex.i;
                 var isAvailable = thing.IsAvailable;
+
+                var curX = index%2 == 0 ? 0 : 250;
+                curY += index % 2 == 0 ? 30 : 0;
                 Label thingInSettings_Label = new Label()
                 {
                     Location = new Point(curX, curY),
@@ -73,7 +80,7 @@ namespace Manlaan.Mounts.Views
                     AutoSizeHeight = false,
                     Parent = panel,
                     TextColor = isAvailable ? Color.White : Color.Red,
-                    BasicTooltipText = isAvailable ? null : "NO KEYBIND SET",
+                    BasicTooltipText = isAvailable ? null : "No keybind is set in the General Settings tab",
                     Text = $"{thing.Name}",
                 };
                 var deleteThing_Button = new StandardButton
@@ -87,13 +94,6 @@ namespace Manlaan.Mounts.Views
                     CurrentThingSettings.RemoveThing(thing);
                     BuildThingSettingsPanel();
                 };
-
-                curX = deleteThing_Button.Right + 6;
-                if (curX > 300)
-                {
-                    curY = deleteThing_Button.Bottom + 6;
-                    curX = 0;
-                }
             }
         }
     }

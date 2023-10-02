@@ -344,8 +344,6 @@ namespace Manlaan.Mounts.Views
             {
                 Location = new Point(0, radialSettingsIsDraggingEnabled_Label.Bottom),
                 Parent = IconSettingsDetailPanel,
-                Width = 500,
-                Height = 500
             };
         }
     }
