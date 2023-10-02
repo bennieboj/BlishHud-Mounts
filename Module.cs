@@ -48,8 +48,10 @@ namespace Manlaan.Mounts
 
         public static List<ThingImageFile> _thingImageFiles = new List<ThingImageFile>();
 
-        public static string[] _mountBehaviour = new string[] { "Default", "Radial" };
+        public static string[] _keybindBehaviours = new string[] { "Default", "Radial" };
 
+
+        public static SettingEntry<int> _settingsLastRunMigrationVersion;
 
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
         public static SettingEntry<bool> _settingDisplayMountQueueing;
@@ -58,6 +60,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<bool> _settingDragMountQueueing;
         public static SettingEntry<bool> _settingCombatLaunchMasteryUnlocked;
         public static SettingEntry<string> _settingDefaultMountBehaviour;
+        public static SettingEntry<string> _settingKeybindBehaviour;
         public static SettingEntry<bool> _settingMountRadialSpawnAtMouse;
         public static SettingEntry<float> _settingMountRadialRadiusModifier;
         public static SettingEntry<float> _settingMountRadialStartAngle;
@@ -175,11 +178,20 @@ namespace Manlaan.Mounts
             }
         }
 
+        /***
+         * version 1.4.0 = migration version 1
+         * 
+         ***/
+
         private void MigrateAwayFromMount(SettingCollection settings)
         {
             if (_settingDefaultMountBehaviour.Value == "DefaultMount")
             {
-                _settingDefaultMountBehaviour.Value = "Default";
+                _settingKeybindBehaviour.Value = "Default";
+            }
+            if (_settingDefaultMountBehaviour.Value == "Radial")
+            {
+                _settingKeybindBehaviour.Value = "Radial";
             }
         }
 
@@ -196,7 +208,6 @@ namespace Manlaan.Mounts
                     flyingRadialSettings.IsEnabled.Value = true;
                     flyingRadialSettings.SetThings(new List<Thing> { _things.Single(t => t.Name == settingDefaultFlyingMountChoice.Value) });
                 }
-                settings.UndefineSetting("DefaultFlyingMountChoice");
             }
 
             if (settings.ContainsSetting("DefaultWaterMountChoice"))
@@ -209,7 +220,6 @@ namespace Manlaan.Mounts
                     underwaterRadialSettings.IsEnabled.Value = true;
                     underwaterRadialSettings.SetThings(new List<Thing> { _things.Single(t => t.Name == settingDefaultWaterMountChoice.Value) });
                 }
-                settings.UndefineSetting("DefaultWaterMountChoice");
             }
 
 
@@ -220,7 +230,6 @@ namespace Manlaan.Mounts
 
                 defaultRadialSettings.DefaultThingChoice.Value = settingDefaultMountChoice.Value;
 
-                settings.UndefineSetting("DefaultMountChoice");
             }
 
             if (settings.ContainsSetting("MountRadialRemoveCenterMount"))
@@ -228,8 +237,6 @@ namespace Manlaan.Mounts
                 var settingMountRadialRemoveCenterMount = settings["MountRadialRemoveCenterMount"] as SettingEntry<bool>;
 
                 defaultRadialSettings.RemoveCenterMount.Value = settingMountRadialRemoveCenterMount.Value;
-
-                settings.UndefineSetting("MountRadialRemoveCenterMount");
             }
 
             if (settings.ContainsSetting("MountRadialCenterMountBehavior"))
@@ -239,7 +246,6 @@ namespace Manlaan.Mounts
                 {
                     defaultRadialSettings.CenterThingBehavior.Value = result;
                 }
-                settings.UndefineSetting("MountRadialCenterMountBehavior");
             }
         }
 
@@ -251,14 +257,12 @@ namespace Manlaan.Mounts
             {
                 var settingMountDisplayManualIcons = settings["MountDisplayManualIcons"] as SettingEntry<bool>;
                 defaultIconThingSettings.IsEnabled.Value = settingMountDisplayManualIcons.Value;
-                settings.UndefineSetting("MountDisplayManualIcons");
             }
             
             if (settings.ContainsSetting("MountDisplayCornerIcons"))
             {
                 var settingMountDisplayCornerIcons = settings["MountDisplayCornerIcons"] as SettingEntry<bool>;
                 defaultIconThingSettings.DisplayCornerIcons.Value = settingMountDisplayCornerIcons.Value;
-                settings.UndefineSetting("MountDisplayCornerIcons");
             }
 
             if (settings.ContainsSetting("Orientation"))
@@ -268,35 +272,30 @@ namespace Manlaan.Mounts
                 {
                     defaultIconThingSettings.Orientation.Value = result;
                 }
-                settings.UndefineSetting("Orientation");
             }
 
             if (settings.ContainsSetting("MountLoc"))
             {
                 var _settingLoc = settings["MountLoc"] as SettingEntry<Point>;
                 defaultIconThingSettings.Location.Value = _settingLoc.Value;
-                settings.UndefineSetting("MountLoc");
             }
 
             if (settings.ContainsSetting("MountDrag"))
             {
                 var _settingDrag = settings["MountDrag"] as SettingEntry<bool>;
                 defaultIconThingSettings.IsDraggingEnabled.Value = _settingDrag.Value;
-                settings.UndefineSetting("MountDrag");
             }
 
             if (settings.ContainsSetting("MountImgWidth"))
             {
                 var _settingMountImgWidth = settings["MountImgWidth"] as SettingEntry<int>;
                 defaultIconThingSettings.Size.Value = _settingMountImgWidth.Value;
-                settings.UndefineSetting("MountImgWidth");
             }
 
             if (settings.ContainsSetting("MountOpacity"))
             {
                 var _settingMountOpacity = settings["MountOpacity"] as SettingEntry<float>;
                 defaultIconThingSettings.Opacity.Value = _settingMountOpacity.Value;
-                settings.UndefineSetting("MountOpacity");
             }
         }
 
@@ -328,12 +327,13 @@ namespace Manlaan.Mounts
             _things = new Collection<Thing>(orderedThings);
             var thingsForMigration = orderedThings.Where(t => t.IsAvailable).ToList();
 
-
+            _settingsLastRunMigrationVersion = settings.DefineSetting("LastRunMigrationVersion", 0);
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
             _settingDefaultMountBinding.Value.Enabled = true;
             _settingDefaultMountBinding.Value.Activated += async delegate { await DoKeybindActionAsync(); };
             _settingDefaultMountBinding.Value.BindingChanged += UpdateSettings;
-            _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "Radial", () => Strings.Setting_DefaultMountBehaviour, () => "");
+            _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "Radial");
+            _settingKeybindBehaviour = settings.DefineSetting("KeybindBehaviour", "Radial");
             _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false);
             _settingEnableMountQueueing = settings.DefineSetting("EnableMountQueueing", false);
             _settingDragMountQueueing = settings.DefineSetting("DragMountQueueing", false);
@@ -365,16 +365,21 @@ namespace Manlaan.Mounts
                 new RadialThingSettings(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()),
                 new RadialThingSettings(settings, "Default", 99, () => true, true, false, thingsForMigration)
             };
-            MigrateRadialThingSettings(settings);
+
 
             IconThingSettings = new List<IconThingSettings>
             {
                 new IconThingSettings(settings, 0, "Default", thingsForMigration)
             };
             IconThingSettings.AddRange(_settingDrawIconIds.Value.Skip(1).Select(id => new IconThingSettings(settings, id)));
-            MigrateIconThingSettings(settings);
 
-            MigrateAwayFromMount(settings);
+            if (_settingsLastRunMigrationVersion.Value < 1)
+            {
+                MigrateRadialThingSettings(settings);
+                MigrateIconThingSettings(settings);
+                MigrateAwayFromMount(settings);
+                _settingsLastRunMigrationVersion.Value = 1;
+            }
 
             foreach (var t in _things)
             {
@@ -596,17 +601,17 @@ namespace Manlaan.Mounts
                 return;
             }
 
-            switch (_settingDefaultMountBehaviour.Value)
+            switch (_settingKeybindBehaviour.Value)
             {
                 case "Default":
                     await (defaultThing?.DoAction() ?? Task.CompletedTask);
-                    Logger.Debug($"{nameof(DoKeybindActionAsync)} DefaultMountBehaviour default");
+                    Logger.Debug($"{nameof(DoKeybindActionAsync)} KeybindBehaviour default");
                     break;
                 case "Radial":
                     if (ShouldShowModule())
                     {
                         _radial?.Show();
-                        Logger.Debug($"{nameof(DoKeybindActionAsync)} DefaultMountBehaviour radial");
+                        Logger.Debug($"{nameof(DoKeybindActionAsync)} KeybindBehaviour radial");
                     }
                     break;
             }

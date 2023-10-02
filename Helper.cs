@@ -8,7 +8,6 @@ using Gw2Sharp.WebApi.V2.Models;
 using Manlaan.Mounts.Things;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Mounts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
