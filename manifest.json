@@ -1,6 +1,6 @@
 {
   "name": "Mounts & More",
-  "version": "1.4.0-beta16",
+  "version": "1.4.0-beta17",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -36,6 +36,7 @@
 
 /*
     "changelog": {
+        "1.4.0-beta17": "2023-10-09: Add all other items + make settings backwards compatible",
         "1.4.0-beta13": "2023-09-30: Add all other items.",
         "1.3.3": "2023-07-03: Use currently active mount to dismount.",
         "1.3.2": "2023-06-01: fix default mount when dragging (revert 'allow radial when dragging camera' some more)",

@@ -68,10 +68,10 @@ namespace Manlaan.Mounts.Views
             foreach (var thingItemAndIndex in CurrentThingSettings.Things.Select((value, i) => new { i, value }))
             {
                 var thing = thingItemAndIndex.value;
-                var index = thingItemAndIndex.i;
+                int index = thingItemAndIndex.i;
                 var isAvailable = thing.IsAvailable;
 
-                var curX = index%2 == 0 ? 0 : 250;
+                var curX = index%2 == 0 ? 0 : 300;
                 curY += index % 2 == 0 ? 30 : 0;
                 Label thingInSettings_Label = new Label()
                 {
@@ -81,7 +81,7 @@ namespace Manlaan.Mounts.Views
                     Parent = panel,
                     TextColor = isAvailable ? Color.White : Color.Red,
                     BasicTooltipText = isAvailable ? null : "No keybind is set in the General Settings tab",
-                    Text = $"{thing.Name}",
+                    Text = $"{index+1}. {thing.Name}",
                 };
                 var deleteThing_Button = new StandardButton
                 {
