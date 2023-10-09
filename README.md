@@ -93,7 +93,7 @@ In above picture we see all states the player character can be in:
 - on water surface
 - default
 
-These contexts are avaulated according to the evalation order from lowest to highest, first the one wit 0, then 1, etc till 99.
+These contexts are evaluated according to the evalation order from lowest to highest, first the one with 0, then 1, etc till 99.
 This is done because there might be overlap in these states e.g.: a player can both be underwater and mounted.
 Only 1 radial/context can be active at the same time.
 Being mounted takes precedence in-game so we need to take of that first.
