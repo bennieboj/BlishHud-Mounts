@@ -23,7 +23,7 @@ namespace Manlaan.Mounts.Views
         {
             
         }
-        private Panel CreateDefaultPanel(Container buildPanel, Point location, int width = 420)
+        private Panel CreateDefaultPanel(Container buildPanel, Point location, int width)
         {
             return new Panel {
                 CanScroll = false,
@@ -61,11 +61,11 @@ namespace Manlaan.Mounts.Views
 
             var panelPadding = 20;
 
-            IconSettingsListPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 600);
+            IconSettingsListPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 800);
             BuildRadialSettingsListPanel();
 
             currentIconSettings = Module.IconThingSettings.First();
-            IconSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 300));
+            IconSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 300), 800);
             BuildRadialSettingsDetailPanel();
         }
 
