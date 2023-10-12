@@ -12,6 +12,7 @@ namespace Manlaan.Mounts.Views
 {
     class IconThingSettingsView : View
     {
+        private int totalWidth = 1000;
         private int labelWidth = 170;
 
         private Panel IconSettingsListPanel;
@@ -39,7 +40,7 @@ namespace Manlaan.Mounts.Views
             Label labelExplanation = new Label()
             {
                 Location = new Point(10, 10),
-                Width = 800,
+                Width = totalWidth,
                 AutoSizeHeight = true,
                 WrapText = true,
                 Parent = buildPanel,
@@ -61,15 +62,15 @@ namespace Manlaan.Mounts.Views
 
             var panelPadding = 20;
 
-            IconSettingsListPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 800);
-            BuildRadialSettingsListPanel();
+            IconSettingsListPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), totalWidth);
+            BuildIconSettingsListPanel();
 
             currentIconSettings = Module.IconThingSettings.First();
-            IconSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 300), 800);
-            BuildRadialSettingsDetailPanel();
+            IconSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 300), totalWidth);
+            BuildIconSettingsDetailPanel();
         }
 
-        private void BuildRadialSettingsListPanel()
+        private void BuildIconSettingsListPanel()
         {
             IconSettingsListPanel.ClearChildren();
 
@@ -127,7 +128,7 @@ namespace Manlaan.Mounts.Views
                 };
                 editRadialSettingsButton.Click += (args, sender) => {
                     currentIconSettings = iconSettings;
-                    BuildRadialSettingsDetailPanel();
+                    BuildIconSettingsDetailPanel();
                 };
                 if (!iconSettings.IsDefault)
                 {
@@ -142,9 +143,9 @@ namespace Manlaan.Mounts.Views
                         Module.IconThingSettings = Module.IconThingSettings.Where(ics => ics.Id != iconSettings.Id).ToList();
                         iconSettings.DeleteFromSettings(Module.settingscollection);
                         Module._settingDrawIconIds.Value = Module._settingDrawIconIds.Value.Where(id => id != iconSettings.Id).ToList();
-                        BuildRadialSettingsListPanel();
+                        BuildIconSettingsListPanel();
                         currentIconSettings = Module.IconThingSettings.ElementAt(Math.Min(deleteIndex, Module.IconThingSettings.Count-1));
-                        BuildRadialSettingsDetailPanel();
+                        BuildIconSettingsDetailPanel();
                     };
                 }
 
@@ -162,13 +163,13 @@ namespace Manlaan.Mounts.Views
                 int nextId = Module._settingDrawIconIds.Value.OrderByDescending(id => id).First() + 1;
                 Module.IconThingSettings.Add(new IconThingSettings(Module.settingscollection, nextId));
                 Module._settingDrawIconIds.Value = Module._settingDrawIconIds.Value.Append(nextId).ToList();
-                BuildRadialSettingsListPanel();
+                BuildIconSettingsListPanel();
                 currentIconSettings = Module.IconThingSettings.Last();
-                BuildRadialSettingsDetailPanel();
+                BuildIconSettingsDetailPanel();
             };
         }
 
-        private void BuildRadialSettingsDetailPanel()
+        private void BuildIconSettingsDetailPanel()
         {
             IconSettingsDetailPanel.ClearChildren();
 
@@ -205,7 +206,7 @@ namespace Manlaan.Mounts.Views
                 };
                 radialSettingstName_TextBox.TextChanged += delegate {
                     currentIconSettings.Name.Value = radialSettingstName_TextBox.Text;
-                    BuildRadialSettingsListPanel();
+                    BuildIconSettingsListPanel();
                 };
                 curY = radialSettingstName_TextBox.Bottom;
             }
@@ -342,7 +343,7 @@ namespace Manlaan.Mounts.Views
 
             ThingSettingsView thingSettingsView = new ThingSettingsView(currentIconSettings)
             {
-                Location = new Point(0, radialSettingsIsDraggingEnabled_Label.Bottom),
+                Location = new Point(500, 0),
                 Parent = IconSettingsDetailPanel,
             };
         }

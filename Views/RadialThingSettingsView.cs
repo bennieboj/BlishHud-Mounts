@@ -12,6 +12,7 @@ namespace Manlaan.Mounts.Views
 {
     class RadialThingSettingsView : View
     {
+        private int totalWidth = 1000;
         private int labelWidth = 170;
         private int bindingWidth = 170;
 
@@ -40,7 +41,7 @@ namespace Manlaan.Mounts.Views
             Label labelExplanation = new Label()
             {
                 Location = new Point(10, 10),
-                Width = 800,
+                Width = totalWidth,
                 AutoSizeHeight = true,
                 WrapText = true,
                 Parent = buildPanel,
@@ -62,10 +63,10 @@ namespace Manlaan.Mounts.Views
 
             var panelPadding = 20;
 
-            RadialSettingsListPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 800);
+            RadialSettingsListPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), totalWidth);
             BuildRadialSettingsListPanel();
 
-            RadialSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 300), 800);
+            RadialSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 300), totalWidth);
             BuildRadialSettingsDetailPanel(Module.OrderedRadialSettings().First());
         }
 
@@ -273,7 +274,7 @@ namespace Manlaan.Mounts.Views
 
             ThingSettingsView thingSettingsView = new ThingSettingsView(currentRadialSettings)
             {
-                Location = new Point(0, settingRadialRemoveCenterMount_Label.Bottom),
+                Location = new Point(500, 0),
                 Parent = RadialSettingsDetailPanel
             };
         }
