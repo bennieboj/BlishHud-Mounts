@@ -365,6 +365,7 @@ namespace Manlaan.Mounts
                 new ContextualRadialThingSettings(settings, "IsPlayerGlidingOrFalling", 2, _helper.IsPlayerGlidingOrFalling, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList()),
                 new ContextualRadialThingSettings(settings, "IsPlayerUnderWater", 3, _helper.IsPlayerUnderWater, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList()),
                 new ContextualRadialThingSettings(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()),
+                new ContextualRadialThingSettings(settings, "IsPlayerInCombat", 5, _helper.IsPlayerInCombat, false, true, _things.Where(t => t is Skyscale).ToList()),
                 new ContextualRadialThingSettings(settings, "Default", 99, () => true, true, false, thingsForMigration)
             };
 

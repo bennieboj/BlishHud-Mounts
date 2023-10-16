@@ -80,6 +80,11 @@ namespace Manlaan.Mounts
             return zpos > -1.2 && zpos < 0;
         }
 
+        public bool IsPlayerInCombat()
+        {
+            return GameService.Gw2Mumble.PlayerCharacter.IsInCombat;
+        }
+
         public bool IsPlayerMounted()
         {
             return GameService.Gw2Mumble.PlayerCharacter.CurrentMount != Gw2Sharp.Models.MountType.None;

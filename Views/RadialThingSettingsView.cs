@@ -70,7 +70,7 @@ namespace Manlaan.Mounts.Views
             RadialSettingsListPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), totalWidth);
             BuildRadialSettingsListPanel();
 
-            RadialSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 470), totalWidth);
+            RadialSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 500), totalWidth);
             BuildRadialSettingsDetailPanel(Module.ContextualRadialSettings.First());
         }
 

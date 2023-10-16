@@ -66,7 +66,7 @@ namespace Manlaan.Mounts.Views
             BuildIconSettingsListPanel();
 
             currentIconSettings = Module.IconThingSettings.First();
-            IconSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 470), totalWidth);
+            IconSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 500), totalWidth);
             BuildIconSettingsDetailPanel();
         }
 
