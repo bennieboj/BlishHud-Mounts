@@ -97,6 +97,7 @@ In above picture we see all states the player character can be in:
 - gliding, falling (basically flying/in the air)
 - under water
 - on water surface
+- in combat
 - default
 
 These contexts are evaluated according to the evalation order from lowest to highest, first the one with 0, then 1, etc till 99.
