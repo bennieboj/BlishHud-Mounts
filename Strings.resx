@@ -120,6 +120,9 @@
   <data name="Add" xml:space="preserve">
     <value>Add</value>
   </data>
+  <data name="Add_UserDefined_Radial" xml:space="preserve">
+    <value>Add user defined radial</value>
+  </data>
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>
   </data>

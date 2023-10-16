@@ -8,6 +8,7 @@ using Gw2Sharp.WebApi.V2.Models;
 using Manlaan.Mounts.Things;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Mounts.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -187,6 +188,23 @@ namespace Manlaan.Mounts
             Logger.Debug($"{nameof(ClearSomethingStoredForLaterActivation)} {thing?.Name} for character: {characterName}");
             await thing?.DoAction();
             ClearSomethingStoredForLaterActivation(characterName);
+        }
+
+        internal ContextualRadialThingSettings GetApplicableContextualRadialThingSettings() => Module.ContextualRadialSettings.OrderBy(c => c.Order).FirstOrDefault(c => c.IsEnabled.Value && c.IsApplicable());
+
+        internal RadialThingSettings GetTriggeredRadialSettings()
+        {
+            if (!Module._settingDefaultMountBinding.IsNull && Module._settingDefaultMountBinding.Value.IsTriggering)
+            {
+                return GetApplicableContextualRadialThingSettings();
+            }
+
+            var userdefinedList = Module.UserDefinedRadialSettings.Where(s => !s.Keybind.IsNull && s.Keybind.Value.IsTriggering);
+            if (userdefinedList.Count() == 1) {
+                return userdefinedList.Single();
+            }
+
+            return null;
         }
     }
 }

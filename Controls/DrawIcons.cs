@@ -42,11 +42,14 @@ namespace Manlaan.Mounts.Controls
         }
 
         private void DrawCornerIcons()
-        {
-            //dispose all!
-            foreach (var thing in Module._things)
+        {            
+            if (_iconThingSettings.IsDefault)
             {
-                thing.DisposeCornerIcon();
+                //dispose all! but only default should dispose!
+                foreach (var thing in Module._things)
+                {
+                    thing.DisposeCornerIcon();
+                }
             }
 
             if (!_iconThingSettings.ShouldDisplayCornerIcons)

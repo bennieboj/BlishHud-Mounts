@@ -66,7 +66,7 @@ namespace Manlaan.Mounts.Views
             BuildIconSettingsListPanel();
 
             currentIconSettings = Module.IconThingSettings.First();
-            IconSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 300), totalWidth);
+            IconSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 470), totalWidth);
             BuildIconSettingsDetailPanel();
         }
 
@@ -173,7 +173,7 @@ namespace Manlaan.Mounts.Views
         {
             IconSettingsDetailPanel.ClearChildren();
 
-            Label radialSettingstName_Label = new Label()
+            Label radialSettingsName_Label = new Label()
             {
                 Location = new Point(0, 0),
                 Width = labelWidth,
@@ -186,29 +186,29 @@ namespace Manlaan.Mounts.Views
             var curY = 0;
             if (currentIconSettings.IsDefault)
             {
-                Label radialSettingstNameValue_Label = new Label()
+                Label radialSettingsNameValue_Label = new Label()
                 {
-                    Location = new Point(radialSettingstName_Label.Right + 5, 0),
+                    Location = new Point(radialSettingsName_Label.Right + 5, 0),
                     Width = labelWidth,
                     Parent = IconSettingsDetailPanel,
                     Text = $"{currentIconSettings.Name.Value}"
                 };
-                curY = radialSettingstNameValue_Label.Bottom;
+                curY = radialSettingsNameValue_Label.Bottom;
             }
             else
             {
-                TextBox radialSettingstName_TextBox = new TextBox()
+                TextBox radialSettingsName_TextBox = new TextBox()
                 {
-                    Location = new Point(radialSettingstName_Label.Right + 5, 0),
+                    Location = new Point(radialSettingsName_Label.Right + 5, 0),
                     Width = labelWidth,
                     Parent = IconSettingsDetailPanel,
                     Text = $"{currentIconSettings.Name.Value}"
                 };
-                radialSettingstName_TextBox.TextChanged += delegate {
-                    currentIconSettings.Name.Value = radialSettingstName_TextBox.Text;
+                radialSettingsName_TextBox.TextChanged += delegate {
+                    currentIconSettings.Name.Value = radialSettingsName_TextBox.Text;
                     BuildIconSettingsListPanel();
                 };
-                curY = radialSettingstName_TextBox.Bottom;
+                curY = radialSettingsName_TextBox.Bottom;
             }
 
             Label radialSettingsIsEnabled_Label = new Label()
