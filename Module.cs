@@ -36,17 +36,18 @@ namespace Manlaan.Mounts
         #endregion
 
         internal static SettingCollection settingscollection;
+        //things
         internal static Collection<Thing> _things = new Collection<Thing>();
-        internal static List<RadialThingSettings> RadialSettings;
+        //radial settings, contextual and user-defined
+        internal static List<ContextualRadialThingSettings> ContextualRadialSettings;
+        internal static List<UserDefinedRadialThingSettings> UserDefinedRadialSettings;
+        public static SettingEntry<List<int>> _settingUserDefinedRadialIds;
+        //icons
         internal static List<IconThingSettings> IconThingSettings;
-        internal static List<RadialThingSettings> OrderedRadialSettings() => RadialSettings.OrderBy(c => c.Order).ToList();
-        internal static RadialThingSettings GetApplicableRadialSettings() => OrderedRadialSettings().FirstOrDefault(c => c.IsEnabled.Value && c.IsApplicable());
-
-
-        public static string mountsDirectory;
-        private TabbedWindow2 _settingsWindow;
+        public static SettingEntry<List<int>> _settingDrawIconIds;
 
         public static List<ThingImageFile> _thingImageFiles = new List<ThingImageFile>();
+        public static string mountsDirectory;
 
         public static string[] _keybindBehaviours = new string[] { "Default", "Radial" };
 
@@ -71,9 +72,9 @@ namespace Manlaan.Mounts
         public static SettingEntry<bool> _settingDisplayModuleOnLoadingScreen;
         public static SettingEntry<bool> _settingMountAutomaticallyAfterLoadingScreen;
 
-        public static SettingEntry<List<int>> _settingDrawIconIds;
 
 
+        private TabbedWindow2 _settingsWindow;
         public static DebugControl _debug;
         private DrawRadial _radial;
         private ICollection<DrawIcons> _drawIcons = new List<DrawIcons>();
@@ -160,7 +161,7 @@ namespace Manlaan.Mounts
                 SavesPosition = true,
             };
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SettingsTextureName), () => new SettingsView(_textureCache), Strings.Window_GeneralSettingsTab));
-            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.RadialSettingsTextureName), () => new RadialThingSettingsView(), Strings.Window_RadialSettingsTab));
+            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.RadialSettingsTextureName), () => new RadialThingSettingsView(DoKeybindActionAsync), Strings.Window_RadialSettingsTab));
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.IconSettingsTextureName), () => new IconThingSettingsView(), Strings.Window_IconSettingsTab));
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SupportMeTabTextureName), () => new SupportMeView(_textureCache), Strings.Window_SupportMeTab));
         }
@@ -200,7 +201,7 @@ namespace Manlaan.Mounts
         {
             if (settings.ContainsSetting("DefaultFlyingMountChoice"))
             {
-                var flyingRadialSettings = RadialSettings.Single(c => c.Name == "IsPlayerGlidingOrFalling");
+                var flyingRadialSettings = ContextualRadialSettings.Single(c => c.Name == "IsPlayerGlidingOrFalling");
                 var settingDefaultFlyingMountChoice = settings["DefaultFlyingMountChoice"] as SettingEntry<string>;
                 if (settingDefaultFlyingMountChoice.Value != "Disabled" && _things.Count(t => t.Name == settingDefaultFlyingMountChoice.Value) == 1)
                 {
@@ -212,7 +213,7 @@ namespace Manlaan.Mounts
 
             if (settings.ContainsSetting("DefaultWaterMountChoice"))
             {
-                var underwaterRadialSettings = RadialSettings.Single(c => c.Name == "IsPlayerUnderWater");
+                var underwaterRadialSettings = ContextualRadialSettings.Single(c => c.Name == "IsPlayerUnderWater");
                 var settingDefaultWaterMountChoice = settings["DefaultWaterMountChoice"] as SettingEntry<string>;
                 if (settingDefaultWaterMountChoice.Value != "Disabled" && _things.Count(t => t.Name == settingDefaultWaterMountChoice.Value) == 1)
                 {
@@ -223,7 +224,7 @@ namespace Manlaan.Mounts
             }
 
 
-            var defaultRadialSettings = RadialSettings.Single(c => c.Name == "Default");
+            var defaultRadialSettings = ContextualRadialSettings.Single(c => c.Name == "Default");
             if (settings.ContainsSetting("DefaultMountChoice"))
             {
                 var settingDefaultMountChoice = settings["DefaultMountChoice"] as SettingEntry<string>;
@@ -350,20 +351,21 @@ namespace Manlaan.Mounts
             _settingMountRadialIconOpacity.SetRange(0.05f, 1f);
             _settingMountRadialToggleActionCameraKeyBinding = settings.DefineSetting("MountRadialToggleActionCameraKeyBinding", new KeyBinding(Keys.F10), () => Strings.Setting_MountRadialToggleActionCameraKeyBinding, () => "");
             _settingDrawIconIds = settings.DefineSetting("DrawIconIds", new List<int> { 0 });
+            _settingUserDefinedRadialIds = settings.DefineSetting("UserDefinedRadialIds", new List<int> {});
 
             _settingDisplayModuleOnLoadingScreen = settings.DefineSetting("DisplayModuleOnLoadingScreen", false, () => Strings.Setting_DisplayModuleOnLoadingScreen, () => "");
             _settingMountAutomaticallyAfterLoadingScreen = settings.DefineSetting("MountAutomaticallyAfterLoadingScreen", false, () => Strings.Setting_MountAutomaticallyAfterLoadingScreen, () => "");
 
 
 
-            RadialSettings = new List<RadialThingSettings>
+            ContextualRadialSettings = new List<ContextualRadialThingSettings>
             {
-                new RadialThingSettings(settings, "IsPlayerMounted", 0, _helper.IsPlayerMounted, true, true, _things.Where(t => t is UnMount).ToList()),
-                new RadialThingSettings(settings, "IsPlayerInWvwMap", 1, _helper.IsPlayerInWvwMap, true, true, _things.Where(t => t is Warclaw).ToList()),
-                new RadialThingSettings(settings, "IsPlayerGlidingOrFalling", 2, _helper.IsPlayerGlidingOrFalling, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList()),
-                new RadialThingSettings(settings, "IsPlayerUnderWater", 3, _helper.IsPlayerUnderWater, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList()),
-                new RadialThingSettings(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()),
-                new RadialThingSettings(settings, "Default", 99, () => true, true, false, thingsForMigration)
+                new ContextualRadialThingSettings(settings, "IsPlayerMounted", 0, _helper.IsPlayerMounted, true, true, _things.Where(t => t is UnMount).ToList()),
+                new ContextualRadialThingSettings(settings, "IsPlayerInWvwMap", 1, _helper.IsPlayerInWvwMap, true, true, _things.Where(t => t is Warclaw).ToList()),
+                new ContextualRadialThingSettings(settings, "IsPlayerGlidingOrFalling", 2, _helper.IsPlayerGlidingOrFalling, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList()),
+                new ContextualRadialThingSettings(settings, "IsPlayerUnderWater", 3, _helper.IsPlayerUnderWater, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList()),
+                new ContextualRadialThingSettings(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()),
+                new ContextualRadialThingSettings(settings, "Default", 99, () => true, true, false, thingsForMigration)
             };
 
 
@@ -372,6 +374,7 @@ namespace Manlaan.Mounts
                 new IconThingSettings(settings, 0, "Default", thingsForMigration)
             };
             IconThingSettings.AddRange(_settingDrawIconIds.Value.Skip(1).Select(id => new IconThingSettings(settings, id)));
+            UserDefinedRadialSettings = _settingUserDefinedRadialIds.Value.Select(id => new UserDefinedRadialThingSettings(settings, id, DoKeybindActionAsync)).ToList();
 
             if (_settingsLastRunMigrationVersion.Value < 1)
             {
@@ -380,6 +383,8 @@ namespace Manlaan.Mounts
                 MigrateAwayFromMount(settings);
                 _settingsLastRunMigrationVersion.Value = 1;
             }
+
+
 
             foreach (var t in _things)
             {
@@ -399,6 +404,7 @@ namespace Manlaan.Mounts
             _settingMountRadialToggleActionCameraKeyBinding.Value.BindingChanged += UpdateSettings;
             _settingMountRadialIconOpacity.SettingChanged += UpdateSettings;
             _settingDrawIconIds.SettingChanged += UpdateSettings;
+            _settingUserDefinedRadialIds.SettingChanged += UpdateSettings;
         }
 
         public override IView GetSettingsView()
@@ -415,9 +421,10 @@ namespace Manlaan.Mounts
 
         protected override void OnModuleLoaded(EventArgs e)
         {
-            RadialSettings.ForEach(c => _debug.Add($"RadialSettings {c.Order} {c.Name}", () => $"IsApplicable: {c.IsApplicable()}, Center: {c.GetCenterThing()?.Name}, CenterBehavior: {c.CenterThingBehavior.Value.ToString()}, ApplyInstantlyIfSingle: {c.ApplyInstantlyIfSingle.Value}, LastUsed: {c.GetLastUsedThing()?.Name}"));
-            _debug.Add("Applicable RadialSettings Name", () => $"{GetApplicableRadialSettings()?.Name}");
-            _debug.Add("Applicable RadialSettings Names", () => $"{string.Join(", ", GetApplicableRadialSettings()?.AvailableThings.Select(t => t.Name))}");
+            _debug.Add("GetTriggeredRadialSettings Name", () => $"{_helper.GetTriggeredRadialSettings()?.Name}");
+            ContextualRadialSettings.ForEach(c => _debug.Add($"Contextual RadialSettings {c.Order} {c.Name}", () => $"IsApplicable: {c.IsApplicable()}, Center: {c.GetCenterThing()?.Name}, CenterBehavior: {c.CenterThingBehavior.Value}, ApplyInstantlyIfSingle: {c.ApplyInstantlyIfSingle.Value}, LastUsed: {c.GetLastUsedThing()?.Name}"));
+            _debug.Add("Applicable Contextual RadialSettings Name", () => $"{_helper.GetApplicableContextualRadialThingSettings()?.Name}");
+            _debug.Add("Applicable Contextual RadialSettings Things", () => $"{string.Join(", ", _helper.GetApplicableContextualRadialThingSettings()?.AvailableThings.Select(t => t.Name))}");
             _debug.Add("Queued for out of combat", () => $"{_helper.GetQueuedThing()}");
 
             Gw2ApiManager.SubtokenUpdated += async delegate
@@ -485,7 +492,7 @@ namespace Manlaan.Mounts
             //    _drawMouseCursor.Hide();
             //}
 
-            if (_radial.Visible && !_settingDefaultMountBinding.Value.IsTriggering || !shouldShowModule)
+            if (_radial.Visible && !(_settingDefaultMountBinding.Value.IsTriggering || UserDefinedRadialSettings.Any(s => s.Keybind.Value.IsTriggering) ) || !shouldShowModule)
             {
                 _radial.Hide();
             }
@@ -529,6 +536,7 @@ namespace Manlaan.Mounts
             _settingDisplayModuleOnLoadingScreen.SettingChanged -= UpdateSettings;
             _settingMountAutomaticallyAfterLoadingScreen.SettingChanged -= UpdateSettings;
             _settingDrawIconIds.SettingChanged -= UpdateSettings;
+            _settingUserDefinedRadialIds.SettingChanged -= UpdateSettings;
         }
 
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<string> e = null) {
@@ -583,8 +591,8 @@ namespace Manlaan.Mounts
         {
             Logger.Debug($"{nameof(DoKeybindActionAsync)} entered");
 
-            var selectedRadialSettings = GetApplicableRadialSettings();
-            Logger.Debug($"{nameof(DoKeybindActionAsync)} not showing radial applicable settings: {selectedRadialSettings.Name}");
+            var selectedRadialSettings = _helper.GetApplicableContextualRadialThingSettings();
+            Logger.Debug($"{nameof(DoKeybindActionAsync)} radial applicable settings: {selectedRadialSettings.Name}");
             var things = selectedRadialSettings.AvailableThings;
             if (things.Count() == 1 && selectedRadialSettings.ApplyInstantlyIfSingle.Value)
             {

@@ -70,6 +70,15 @@ namespace Mounts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add user defined radial.
+        /// </summary>
+        internal static string Add_UserDefined_Radial {
+            get {
+                return ResourceManager.GetString("Add_UserDefined_Radial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete.
         /// </summary>
         internal static string Delete {

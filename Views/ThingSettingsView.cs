@@ -45,7 +45,7 @@ namespace Manlaan.Mounts.Views
             {
                 Dropdown addThing_Select = new Dropdown()
                 {
-                    Location = new Point(0, 6),
+                    Location = new Point(0, 0),
                     Width = orderWidth,
                     Parent = panel,
                     BasicTooltipText = "Only things that have a keybind in the General Settings tab will show up here."

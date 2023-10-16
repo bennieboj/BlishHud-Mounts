@@ -78,12 +78,18 @@ These radial settings are globally applied and should be self explanatory:
 - Icon opacity
 - Action camera keybinding (used to toggle action camera, radial doesn't function well in action camera)
 
-### Radial Settings per context (2nd tab)
+### Custom Radial Settings (2nd tab)
+Custom radial settings come in two forms:
+- contextual radial settings
+- user-defined radial settings
+
+#### Contextual Radial Settings
+
 Module versions up until v1.3.3 contained hard coded logic for automatic dismounting, default water mount, default flying mount, default WvW mount, etc.
 
 Later versions got rid of this since the logic became too complex to maintain. Now this logic is configurable by the end user in the form of so-called radials settings (or contexts if you will).
 
-![](./readme/radial_settings.png)
+![](./readme/contextual_radial_settings.png)
 
 In above picture we see all states the player character can be in:
 - mounted
@@ -106,26 +112,36 @@ The underwater radial settings/context currently does not support SotO under wat
 
 Per radial settings/context we have the following options:
 
-#### Enabled
+##### Enabled
 The settings/context is ignored when not enabled.
 
-#### Apply instantly if single
+##### Apply instantly if single
 When there is only 1 action configured in a radial/context and this option is checked we do not display the radial, but we perform the action immediately instead.
 Remember the "hard coded logic" we talked about earlier in the section, this is the replacement of this.
 
-#### Default action
+##### Default action
 This action is chosen when
 - you selected "Default" as `module keybind` behaviour
 - dragging the mouse via right click drag (the mouse being hidden conflicts with action cam detection)
 
-#### Center action
+##### Center action
 - Center: Which action is displayed in the middle of the radial.
 - Remove center from radial: remove the center action from the radial ring when selected.
 
-#### List of actions
+##### List of actions
 The list of actions that are used in this radial settings/context.
 
 ❗ If there are actions in the list that do not have a keybind set in the general settings then they will be displayed in red.
+
+#### User-defined Radial Settings
+
+Users are able to define their own radial settings which are not dependent on the context their character is in.
+
+![](./readme/user_defined_radial_settings.png)
+
+This allows for the creation of seperate sets of things/actions displayed in their own radial.
+
+These user-defined radial settings each should have their own unique non-overlapping keybind. (e.g. not use "B" for 1 keybind and Shift+B for the other, for more info see: https://github.com/blish-hud/Blish-HUD/issues/862)
 
 ### Icon Settings (3rd tab)
 Icon settings provide rows of actions that are always on the screen.
