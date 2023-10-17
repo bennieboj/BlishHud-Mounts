@@ -94,6 +94,16 @@ namespace Manlaan.Mounts.Views
                 Text = "Name",
                 HorizontalAlignment = HorizontalAlignment.Left,
             };
+            Label enabledHeader_Label = new Label()
+            {
+                Location = new Point(nameHeader_Label.Right + 5, idHeader_Label.Top),
+                Width = labelWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = IconSettingsListPanel,
+                Text = "Enabled",
+                HorizontalAlignment = HorizontalAlignment.Left,
+            };
 
 
             int curY = nameHeader_Label.Bottom + 6;
@@ -120,10 +130,20 @@ namespace Manlaan.Mounts.Views
                     Text = $"{iconSettings.Name.Value}",
                     HorizontalAlignment = HorizontalAlignment.Left,
                 };
+                Label enabled_Label = new Label()
+                {
+                    Location = new Point(enabledHeader_Label.Left, curY + 6),
+                    Width = labelWidth,
+                    AutoSizeHeight = false,
+                    WrapText = false,
+                    Parent = IconSettingsListPanel,
+                    Text = iconSettings.IsEnabled.Value ? "Yes" : "No",
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                };
                 var editRadialSettingsButton = new StandardButton
                 {
                     Parent = IconSettingsListPanel,
-                    Location = new Point(name_Label.Right, name_Label.Top),
+                    Location = new Point(enabled_Label.Right, name_Label.Top),
                     Text = Strings.Edit
                 };
                 editRadialSettingsButton.Click += (args, sender) => {
@@ -229,6 +249,7 @@ namespace Manlaan.Mounts.Views
             };
             radialSettingsIsEnabled_Checkbox.CheckedChanged += delegate {
                 currentIconSettings.IsEnabled.Value = radialSettingsIsEnabled_Checkbox.Checked;
+                BuildIconSettingsListPanel();
             };
 
             var nextY = radialSettingsIsEnabled_Label.Bottom;

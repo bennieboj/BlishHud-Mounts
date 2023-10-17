@@ -98,6 +98,16 @@ namespace Manlaan.Mounts.Views
                 Text = "Evaluation Order",
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
+            Label enabledHeader_label = new Label()
+            {
+                Location = new Point(orderHeader_label.Right + 5, nameHeader_Label.Top),
+                Width = bindingWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = RadialSettingsListPanel,
+                Text = "Enabled",
+                HorizontalAlignment = HorizontalAlignment.Center,
+            };
 
 
             int curY = nameHeader_Label.Bottom + 6;
@@ -124,7 +134,7 @@ namespace Manlaan.Mounts.Views
                 }
                 Label order_Label = new Label()
                 {
-                    Location = new Point(name_Label.Right + 5, name_Label.Top - 4),
+                    Location = new Point(orderHeader_label.Left, name_Label.Top),
                     Width = labelWidth,
                     AutoSizeHeight = false,
                     WrapText = false,
@@ -132,10 +142,20 @@ namespace Manlaan.Mounts.Views
                     Text = orderText,
                     HorizontalAlignment = HorizontalAlignment.Center,
                 };
+                Label enabled_Label = new Label()
+                {
+                    Location = new Point(enabledHeader_label.Left, name_Label.Top),
+                    Width = labelWidth,
+                    AutoSizeHeight = false,
+                    WrapText = false,
+                    Parent = RadialSettingsListPanel,
+                    Text = radialSettings.IsEnabled.Value ? "Yes" : "No",
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                };
                 var editRadialSettingsButton = new StandardButton
                 {
                     Parent = RadialSettingsListPanel,
-                    Location = new Point(order_Label.Right, order_Label.Top),
+                    Location = new Point(enabled_Label.Right, name_Label.Top),
                     Text = Strings.Edit
                 };
                 editRadialSettingsButton.Click += (args, sender) => {
@@ -348,6 +368,7 @@ namespace Manlaan.Mounts.Views
             };
             radialSettingsIsEnabled_Checkbox.CheckedChanged += delegate {
                 currentRadialSettings.IsEnabled.Value = radialSettingsIsEnabled_Checkbox.Checked;
+                BuildRadialSettingsListPanel();
             };
 
             if (currentRadialSettings is ContextualRadialThingSettings contextualRadialSettingsApplyInstantlyIfSingle)
