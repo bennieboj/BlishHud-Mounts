@@ -340,6 +340,102 @@ namespace Manlaan.Mounts.Views
             combatLaunchMasteryUnlocked_Checkbox.CheckedChanged += delegate {
                 Module._settingCombatLaunchMasteryUnlocked.Value = combatLaunchMasteryUnlocked_Checkbox.Checked;
             };
+
+            Label _settingDebugFlying_StartFlyingUp_Label = new Label()
+            {
+                Location = new Point(0, combatLaunchMasteryUnlocked_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = $"StartFlyingUp ({Module._settingDebugFlying_StartFlyingUp.Value})",
+            };
+            TrackBar _settingDebugFlying_StartFlyingUp_Slider = new TrackBar()
+            {
+                Location = new Point(_settingDebugFlying_StartFlyingUp_Label.Right + 5, _settingDebugFlying_StartFlyingUp_Label.Top),
+                Width = mountsAndRadialInputWidth,
+                MaxValue = 10,
+                MinValue = 0,
+                Value = Module._settingDebugFlying_StartFlyingUp.Value,
+                Parent = defaultMountPanel,
+            };
+            _settingDebugFlying_StartFlyingUp_Slider.ValueChanged += delegate {
+                Module._settingDebugFlying_StartFlyingUp.Value = _settingDebugFlying_StartFlyingUp_Slider.Value;
+                _settingDebugFlying_StartFlyingUp_Label.Text = $"StartFlyingUp ({Module._settingDebugFlying_StartFlyingUp.Value})";
+            };
+
+
+            Label _settingDebugFlying_StopFlyingUp_Label = new Label()
+            {
+                Location = new Point(0, _settingDebugFlying_StartFlyingUp_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = $"StopFlyingUp ({Module._settingDebugFlying_StopFlyingUp.Value})",
+            };
+            TrackBar _settingDebugFlying_StopFlyingUp_Slider = new TrackBar()
+            {
+                Location = new Point(_settingDebugFlying_StopFlyingUp_Label.Right + 5, _settingDebugFlying_StopFlyingUp_Label.Top),
+                Width = mountsAndRadialInputWidth,
+                MaxValue = 10,
+                MinValue = 0,
+                Value = Module._settingDebugFlying_StopFlyingUp.Value,
+                Parent = defaultMountPanel,
+            };
+            _settingDebugFlying_StopFlyingUp_Slider.ValueChanged += delegate {
+                Module._settingDebugFlying_StopFlyingUp.Value = _settingDebugFlying_StopFlyingUp_Slider.Value;
+                _settingDebugFlying_StopFlyingUp_Label.Text = $"StopFlyingUp ({Module._settingDebugFlying_StopFlyingUp.Value})";
+            };
+
+
+
+            Label _settingDebugFlying_StartFlyingDown_Label = new Label()
+            {
+                Location = new Point(0, _settingDebugFlying_StopFlyingUp_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = $"StartFlyingDown ({Module._settingDebugFlying_StartFlyingDown.Value})",
+            };
+            TrackBar _settingDebugFlying_StartFlyingDown_Slider = new TrackBar()
+            {
+                Location = new Point(_settingDebugFlying_StartFlyingDown_Label.Right + 5, _settingDebugFlying_StartFlyingDown_Label.Top),
+                Width = mountsAndRadialInputWidth,
+                MaxValue = 0,
+                MinValue = -10,
+                Value = Module._settingDebugFlying_StartFlyingDown.Value,
+                Parent = defaultMountPanel,
+            };
+            _settingDebugFlying_StartFlyingDown_Slider.ValueChanged += delegate {
+                Module._settingDebugFlying_StartFlyingDown.Value = _settingDebugFlying_StartFlyingDown_Slider.Value;
+                _settingDebugFlying_StartFlyingDown_Label.Text = $"StartFlyingDown ({Module._settingDebugFlying_StartFlyingDown.Value})";
+            };
+
+
+            Label _settingDebugFlying_StopFlyingDown_Label = new Label()
+            {
+                Location = new Point(0, _settingDebugFlying_StartFlyingDown_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = $"StopFlyingDown ({Module._settingDebugFlying_StopFlyingDown.Value})",
+            };
+            TrackBar _settingDebugFlying_StopFlyingDown_Slider = new TrackBar()
+            {
+                Location = new Point(_settingDebugFlying_StopFlyingDown_Label.Right + 5, _settingDebugFlying_StopFlyingDown_Label.Top),
+                Width = mountsAndRadialInputWidth,
+                MaxValue = 0,
+                MinValue = -10,
+                Value = Module._settingDebugFlying_StopFlyingDown.Value,
+                Parent = defaultMountPanel,
+            };
+            _settingDebugFlying_StopFlyingDown_Slider.ValueChanged += delegate {
+                Module._settingDebugFlying_StopFlyingDown.Value = _settingDebugFlying_StopFlyingDown_Slider.Value;
+                _settingDebugFlying_StopFlyingDown_Label.Text = $"StopFlyingDown ({Module._settingDebugFlying_StopFlyingDown.Value})";
+            };
         }
 
         private void BuildRadialPanel(Container radialPanel, int labelWidth, int mountsAndRadialInputWidth)

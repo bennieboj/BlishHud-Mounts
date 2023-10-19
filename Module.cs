@@ -73,6 +73,10 @@ namespace Manlaan.Mounts
         public static SettingEntry<bool> _settingMountAutomaticallyAfterLoadingScreen;
 
 
+        public static SettingEntry<float> _settingDebugFlying_StartFlyingUp;
+        public static SettingEntry<float> _settingDebugFlying_StopFlyingUp;
+        public static SettingEntry<float> _settingDebugFlying_StartFlyingDown;
+        public static SettingEntry<float> _settingDebugFlying_StopFlyingDown;
 
         private TabbedWindow2 _settingsWindow;
         public static DebugControl _debug;
@@ -352,6 +356,12 @@ namespace Manlaan.Mounts
             _settingMountRadialToggleActionCameraKeyBinding = settings.DefineSetting("MountRadialToggleActionCameraKeyBinding", new KeyBinding(Keys.F10), () => Strings.Setting_MountRadialToggleActionCameraKeyBinding, () => "");
             _settingDrawIconIds = settings.DefineSetting("DrawIconIds", new List<int> { 0 });
             _settingUserDefinedRadialIds = settings.DefineSetting("UserDefinedRadialIds", new List<int> {});
+
+
+            _settingDebugFlying_StartFlyingUp = settings.DefineSetting("DebugFlying_StartFlyingUp", 5.0f);
+            _settingDebugFlying_StopFlyingUp = settings.DefineSetting("DebugFlying_StopFlyingUp", 1.0f);
+            _settingDebugFlying_StartFlyingDown = settings.DefineSetting("DebugFlying_StartFlyingDown", -4.0f);
+            _settingDebugFlying_StopFlyingDown = settings.DefineSetting("DebugFlying_StopFlyingDown", 0f);
 
             _settingDisplayModuleOnLoadingScreen = settings.DefineSetting("DisplayModuleOnLoadingScreen", false, () => Strings.Setting_DisplayModuleOnLoadingScreen, () => "");
             _settingMountAutomaticallyAfterLoadingScreen = settings.DefineSetting("MountAutomaticallyAfterLoadingScreen", false, () => Strings.Setting_MountAutomaticallyAfterLoadingScreen, () => "");

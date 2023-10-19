@@ -103,15 +103,15 @@ namespace Manlaan.Mounts
                 return;
             }
 
-            //Module._debug.Add("velocity", () => $"{velocity}");
+            Module._debug.Add("velocity", () => $"{velocity}");
 
             switch (velocity)
             {
-                case double v1 when v1 > 5:
-                case double v2 when v2 < -4:
+                case double v1 when v1 > Module._settingDebugFlying_StartFlyingUp.Value:
+                case double v2 when v2 < Module._settingDebugFlying_StartFlyingDown.Value:
                     _isPlayerGlidingOrFalling = true;
                     break;
-                case double v3 when v3 >= 0 && v3 < 1:
+                case double v3 when v3 >= Module._settingDebugFlying_StopFlyingDown.Value && v3 < Module._settingDebugFlying_StopFlyingUp.Value:
                 _isPlayerGlidingOrFalling = false;
                     break;
             };
