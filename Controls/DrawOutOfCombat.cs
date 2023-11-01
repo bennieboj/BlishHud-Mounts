@@ -77,7 +77,7 @@ namespace Manlaan.Mounts.Controls
 
         protected override CaptureType CapturesInput()
         {
-            return CaptureType.Mouse;
+            return Module._settingDragMountQueueing.Value ? CaptureType.Mouse : CaptureType.None;
         }
 
 
