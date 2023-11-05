@@ -39,7 +39,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           query: |
-            query FindDiscussionID($repositoryOwner: String!, $repositoryName: String!, $discussionTitle: String!) {
+            query FindDiscussionID($query: String!) {
               search (query: $query, type: DISCUSSION) {
                 nodes {
                   id
@@ -48,7 +48,7 @@ jobs:
             }
           variables: |
             {
-              "query": "repo:bennieboj/BlishHud-Mounts"
+              "query": "repo:bennieboj/BlishHud-Mounts Introduction in:title"
             }
         id: find-discussion
 
