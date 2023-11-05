@@ -22,8 +22,8 @@ jobs:
           # echo "readme_content: $readme_content"
           modified_content=$(echo "$readme_content" | sed 's|!\[\](\./|![](https://raw.githubusercontent.com/${{ github.event.repository.owner.name }}/${{ github.event.repository.name }}/main/|g')
           # modified_content=${readme_content//"![](./"/"![](https://raw.githubusercontent.com/${{ github.event.repository.owner.name }}/${{ github.event.repository.name }}/main/"}
-          # echo "modified_content: $modified_content"
-          echo "::set-output name=content::${modified_content}"
+          echo "modified_content: $modified_content"
+          echo "content=${modified_content}" >> "$GITHUB_OUTPUT"
 
       - name: Find pinned discussion Global ID
         id: find-discussion
