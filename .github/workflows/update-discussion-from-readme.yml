@@ -51,7 +51,7 @@ jobs:
           variables: |
             {
               "repositoryOwner": "${{ github.repository_owner }}",
-              "repositoryName": "${{ github.repository }}"
+              "repositoryName": "${{ github.event.repository.name }}"
             }
         id: find-discussion
 
