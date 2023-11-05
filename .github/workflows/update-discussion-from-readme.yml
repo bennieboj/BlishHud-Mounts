@@ -1,0 +1,31 @@
+name: Update Discussion based on readme
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-discussion:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Read and modify readme content
+        id: readme-content
+        run: |
+          readme_content=$(cat README_test.md)
+          modified_content=${readme_content//"![](./"/"![](https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ github.repository }}/main/"}
+          echo "::set-output name=content::${modified_content}"
+          
+      - name: Update Discussion
+        id: update-discussion
+        run: |
+          curl -X PATCH \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d '{"body": "'"${{ steps.readme-content.outputs.content }}"'"}' \
+            "https://api.github.com/repos/${{ github.repository }}/discussions/59"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
