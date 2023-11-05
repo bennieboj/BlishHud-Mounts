@@ -48,10 +48,7 @@ jobs:
             }
           variables: |
             {
-              "repositoryOwner": "${{ github.repository_owner }}",
-              "repositoryName": "${{ github.repository }}",
-              "discussionTitle": "Introduction",
-              "repo": "bennieboj/BlishHud-Mounts"
+              "query": "Introduction in:title repo: bennieboj/BlishHud-Mounts"
             }
         id: find-discussion
 
