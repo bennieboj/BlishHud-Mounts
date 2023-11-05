@@ -19,19 +19,10 @@ jobs:
           #!/bin/bash
           
           readme_content=$(cat README_test.md)
-          echo "readme_content: $readme_content"
+          # echo "readme_content: $readme_content"
           
-          echo "github.repository_owner: ${{ github.repository_owner }}"
-          echo "github.repository: ${{ github.repository }}"
           modified_content=${readme_content//"![](./"/"![](https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ github.repository }}/main/"}
-          echo "modified_content: $modified_content"
-
-          # discussion_id=$(curl -s -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/discussions" | jq -r '.[0].id')
-          # curl -X PATCH \
-          #   -H "Authorization: Bearer $GITHUB_TOKEN" \
-          #   -d '{"body": "'"${{ steps.readme-content.outputs.content }}"'"}' \
-          #   "https://api.github.com/graphql"
-
+          # echo "modified_content: $modified_content"
           echo "::set-output name=content::${modified_content}"
 
       - name: Find pinned discussion Global ID
@@ -58,24 +49,33 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Display Discussion Global ID
-        run: |
-          echo "Discussion Global ID: ${{ fromJson(steps.find-discussion.outputs.data).repository.pinneddiscussions.nodes[0].discussion.id }}"
+      # - name: Display Discussion Global ID
+      #   run: |
+      #     echo "Discussion Global ID: ${{ fromJson(steps.find-discussion.outputs.data).repository.pinneddiscussions.nodes[0].discussion.id }}"
 
 
-      # - name: Create a discussion
-      #   id: create_discussion
-      #   uses: octokit/graphql-action@v2.x
-      #   with:
-      #     title: "Sample Discussion!!!"
-      #     body: "somebody variable"
-      #     query: |
-      #       mutation($title:String!, $body:String!) {
-      #         updateDiscussion(input: {discussionId: "59", title: $title, body: $body}) {
-      #           discussion {
-      #             id
-      #           }
-      #         }
-      #       }
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Update discussion
+        uses: octokit/graphql-action@v2.x
+        with:
+          title: "Introduction"
+          body: "somebody variable"
+          query: |
+            mutation updateDiscussion($discussionid:ID!, $body:String!) {
+              updateDiscussion(
+                input: {
+                  discussionId: $discussionid, 
+                  body: $body 
+                }
+              ) {
+                discussion {
+                  id
+                }
+              }
+            }
+          variables: |
+            {
+              "body": "${{ steps.readme-content.outputs.content }}",
+              "discussionid": "${{ fromJson(steps.find-discussion.outputs.data).repository.pinneddiscussions.nodes[0].discussion.id }}"
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
