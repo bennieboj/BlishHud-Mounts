@@ -109,7 +109,25 @@ The last radial setting/context is the default, this one is always active and is
 
 Which radial settings/context is active is a bit hidden for the end user, but should generally work fine, if you want more information on this enabling [additional debug data will help](#debugging-option-and-logging).
 
+##### Underwater in SotO maps
 The underwater radial settings/context currently does not support SotO under water areas.
+
+##### Unmounting since 1.4.0
+In version 1.3.3 we handled unmounting in the following way:
+
+ - We detect if the player is mounted (this is hard coded).
+ - We dismount using any configured mount.
+
+In version 1.4.0 we handle unmounting in the following way:
+
+ - We configure which mounts you want to see in the radial when using the IsPlayerMounted radial setting. 
+ - If you select multiple things then you will see these in the radial when mounted. 
+ - If you select only 1 thing and select "Apply Instantly if single" then we immediately do the single action.
+ - The mount/dismount keybind is used to also unmount from chairs, etc.
+ - You can dismount using the mount/dismount keybind or any other mount if you don't like setting the mount/dismount keybind.
+- By default the following is migrated: IsPlayerMounted enabled, unmount added. The only thing you need to do is to set the unmount keybind.
+
+**If you want the exact same behaviour in version 1.4.0 as in version 1.3.3: enable IsPlayerMounted and add any mount for which you have configured a keybind.**
 
 Per radial settings/context we have the following options:
 
