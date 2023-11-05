@@ -23,10 +23,13 @@ jobs:
           modified_content=$(echo "$readme_content" | sed 's|!\[\](\./|![](https://raw.githubusercontent.com/${{ github.event.repository.owner.name }}/${{ github.event.repository.name }}/main/|g')
           modified_content=$(echo "$modified_content" | sed 's|\\|\\\\|g')
           modified_content=$(echo "$modified_content" | sed 's|\"|\\"|g')
-          # echo "modified_content: $modified_content"
+          echo testing 111111111111
+          echo "modified_content: $modified_content"
           echo "content<<EOF" >> $GITHUB_OUTPUT
           echo "${modified_content}" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+          echo testing 222222222222
+          echo "modified_content: $modified_content"
 
       - name: Find pinned discussion Global ID
         id: find-discussion
