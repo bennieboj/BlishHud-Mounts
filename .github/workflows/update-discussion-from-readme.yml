@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Modify readme content and update discussion
+      - name: Modify readme content and escape
         id: readme-content
         shell: bash
         run: |
@@ -23,13 +23,9 @@ jobs:
           modified_content=$(echo "$modified_content" | sed 's|\\|\\\\|g')
           modified_content=$(echo "$modified_content" | sed 's|\"|\\"|g')
           modified_content=$(echo "$modified_content" | sed ':a;N;$!ba;s/\n/\\n/g')
-
           echo "content=$modified_content" >> $GITHUB_OUTPUT
-          # echo "content<<EOF" >> $GITHUB_OUTPUT
-          # echo "${modified_content}" >> $GITHUB_OUTPUT
-          # echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Find pinned discussion Global ID
+      - name: Find discussion global ID
         id: find-discussion
         uses: octokit/graphql-action@v2.x
         with:
@@ -79,3 +75,10 @@ jobs:
             }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Call webhook
+        id: readme-content
+        shell: bash
+        run: |
+          #!/bin/bash
+          curl https://ssrd.blishhud.com/api/public/webhook/updatemoduleprofile?id=46f1a0da-85ef-4145-b4c6-02455e769888
