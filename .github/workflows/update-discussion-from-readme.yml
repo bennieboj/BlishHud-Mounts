@@ -34,39 +34,30 @@ jobs:
 
           echo "::set-output name=content::${modified_content}"
 
-      - name: Find Discussion Global ID by Title
-        run: |
-          discussions=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/discussions")
-          echo "discussions $discussions"
-          # discussion_id=$(echo "$discussions" | jq -r '.[] | select(.title == "Introduction").id')
-          # echo "::set-output name=discussion_id::$discussion_id"
+      - name: Find pinned discussion Global ID
+        uses: octokit/graphql-action@v2.x
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          query: |
+            query FindDiscussionIds($repositoryOwner: String!, $repositoryName: String!) {
+              repository(owner:$repositoryOwner, name:$repositoryName) {
+                pinnedDiscussions(first:1) {
+                  nodes {
+                    id
+                  }
+                }
+              }
+            }
+          variables: |
+            {
+              "repositoryOwner": "${{ github.repository_owner }}",
+              "repositoryName": "${{ github.repository }}"
+            }
+        id: find-discussion
 
       - name: Display Discussion Global ID
         run: |
-          echo "Discussion Global ID: ${{ steps.find-discussion.outputs.discussion_id }}"
-
-
-      # - name: Find Discussion Global ID by Title
-      #   uses: octokit/graphql-action@v2.x
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     query: |
-      #       query FindDiscussionID($query: String!) {
-      #         search (query: $query, type: DISCUSSION) {
-      #           nodes {
-      #             id
-      #           }
-      #         }
-      #       }
-      #     variables: |
-      #       {
-      #         "query": "repo:bennieboj/BlishHud-Mounts Introduction in:title"
-      #       }
-      #   id: find-discussion
-
-      # - name: Display Discussion Global ID
-      #   run: |
-      #     echo "Discussion Global ID: ${{ steps.find-discussion.outputs.data.repository.discussions.nodes[0].id }}"
+          echo "Discussion Global ID: ${{ steps.find-discussion.outputs.data.repository.discussions.nodes[0].id }}"
 
       # - name: Create a discussion
       #   id: create_discussion
