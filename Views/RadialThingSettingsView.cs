@@ -45,7 +45,7 @@ namespace Manlaan.Mounts.Views
             Label labelExplanation = new Label()
             {
                 Location = new Point(10, 10),
-                Width = totalWidth,
+                Width = 800,
                 AutoSizeHeight = true,
                 WrapText = true,
                 Parent = buildPanel,
@@ -71,7 +71,7 @@ namespace Manlaan.Mounts.Views
             BuildRadialSettingsListPanel();
 
             RadialSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 500), totalWidth);
-            BuildRadialSettingsDetailPanel(Module.ContextualRadialSettings.First());
+            BuildRadialSettingsDetailPanel(Module.ContextualRadialSettings.Single(settings => settings.IsDefault));
         }
 
         private void BuildRadialSettingsListPanel()

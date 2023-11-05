@@ -326,7 +326,7 @@ namespace Manlaan.Mounts
                 new Tonic(settings, _helper)
             };
             _things = new Collection<Thing>(orderedThings);
-            var thingsForMigration = orderedThings.Where(t => t.IsAvailable).ToList();
+            var thingsForMigration = orderedThings.ToList();
 
             _settingsLastRunMigrationVersion = settings.DefineSetting("LastRunMigrationVersion", 0);
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
@@ -481,6 +481,10 @@ namespace Manlaan.Mounts
             if (_things.Any(m => m.QueuedTimestamp != null))
             {
                 _drawOutOfCombat?.ShowSpinner();
+            }
+            else
+            {
+                _drawOutOfCombat?.HideSpinner();
             }
 
             //if (GameService.Input.Mouse.CameraDragging && _radial.Visible && !GameService.Input.Mouse.CursorIsVisible)
@@ -638,7 +642,6 @@ namespace Manlaan.Mounts
                 {
                     thing.QueuedTimestamp = null;
                 }
-                _drawOutOfCombat?.HideSpinner();
             }
         }
     }

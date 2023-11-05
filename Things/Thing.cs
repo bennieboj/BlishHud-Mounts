@@ -4,6 +4,7 @@ using Blish_HUD.Input;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Mounts;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -72,11 +73,11 @@ namespace Manlaan.Mounts.Things
 
             LastUsedTimestamp = DateTime.UtcNow;
 
-            await Helper.TriggerKeybind(KeybindingSetting);
-        }
+            foreach (var thing in Module._things)
+            {
+                thing.QueuedTimestamp = null;
+            }
 
-        public async Task DoReverseAction()
-        {
             await Helper.TriggerKeybind(KeybindingSetting);
         }
 
