@@ -35,7 +35,7 @@ jobs:
           echo "::set-output name=content::${modified_content}"
 
       - name: Find Discussion Global ID by Title
-        uses: octokit/graphql-action@v2
+        uses: octokit/graphql-action@v2.x
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           query: |
