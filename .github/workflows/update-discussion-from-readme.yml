@@ -40,7 +40,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           query: |
             query FindDiscussionID($repositoryOwner: String!, $repositoryName: String!, $discussionTitle: String!) {
-              search (first: 1, title: $discussionTitle, repo:$repo) {
+              search (query: $query, type: DISCUSSION) {
                 nodes {
                   id
                 }
