@@ -60,7 +60,7 @@ jobs:
         run: |
           echo "Discussion Global ID: ${{ toJSON(steps.find-discussion.outputs.data) }}"
           echo "Discussion Global ID: ${{ toJSON(steps.find-discussion.outputs.data) }}.repository.pinneddiscussions.nodes[0].id"
-          echo "Discussion Global ID: ${{ toJSON(steps.find-discussion.outputs.data).repository.pinneddiscussions.nodes[0].id }}"
+          echo "Discussion Global ID: ${{ fromJson(steps.find-discussion.outputs.data).repository.pinneddiscussions.nodes[0].id }}"
           echo "Discussion Global ID: ${{ steps.find-discussion.outputs.data.repository.pinneddiscussions.nodes[0].id }}"
       # https://github.com/octokit/graphql-action#input-variables   input variables are converted to lowercase
 
