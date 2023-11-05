@@ -26,13 +26,13 @@ jobs:
           modified_content=${readme_content//"![](./"/"![](https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ github.repository }}/main/"}
           echo "modified_content: $modified_content"
 
-          echo "::set-output name=content::${modified_content}"
-
           # discussion_id=$(curl -s -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/discussions" | jq -r '.[0].id')
           # curl -X PATCH \
           #   -H "Authorization: Bearer $GITHUB_TOKEN" \
           #   -d '{"body": "'"${{ steps.readme-content.outputs.content }}"'"}' \
           #   "https://api.github.com/graphql"
+
+          echo "::set-output name=content::${modified_content}"
 
       # - name: Get discussion Id
       #   id: get_discussion_id
@@ -55,11 +55,11 @@ jobs:
         id: create_discussion
         uses: octokit/graphql-action@v2.x
         with:
-          body: |-
-            ${{ steps.readme-content.outputs.content }}
+          title: "Sample Discussion!!!"
+          body: "somebody variable"
           query: |
             mutation($title:String!, $body:String!) {
-              updateDiscussion(input: {discussionId: "59", title: "some testing title", body: "somebody"}) {
+              updateDiscussion(input: {discussionId: "59", title: $title, body: $body}) {
                 discussion {
                   id
                 }
