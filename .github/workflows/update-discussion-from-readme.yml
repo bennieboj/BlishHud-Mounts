@@ -59,7 +59,7 @@ jobs:
             ${{ steps.readme-content.outputs.content }}
           query: |
             mutation($title:String!, $body:String!) {
-              updateDiscussion(input: {discussionId: "59", title: "some testing title", body: $body}) {
+              updateDiscussion(input: {discussionId: "59", title: "some testing title", body: "somebody"}) {
                 discussion {
                   id
                 }
