@@ -40,11 +40,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           query: |
             query FindDiscussionID($repositoryOwner: String!, $repositoryName: String!, $discussionTitle: String!) {
-              repository(owner: $repositoryOwner, name: $repositoryName) {
-                search (first: 1, title: $discussionTitle) {
-                  nodes {
-                    id
-                  }
+              search (first: 1, title: $discussionTitle, repo:$repo) {
+                nodes {
+                  id
                 }
               }
             }
@@ -52,7 +50,8 @@ jobs:
             {
               "repositoryOwner": "${{ github.repository_owner }}",
               "repositoryName": "${{ github.repository }}",
-              "discussionTitle": "Introduction"
+              "discussionTitle": "Introduction",
+              "repo": "bennieboj/BlishHud-Mounts"
             }
         id: find-discussion
 
