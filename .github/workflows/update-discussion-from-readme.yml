@@ -39,8 +39,8 @@ jobs:
         uses: octokit/graphql-action@v2.x
         with:
           query: |
-            query FindDiscussionIds($repositoryOwner: String!, $repositoryName: String!) {
-              repository(owner:$repositoryOwner, name:$repositoryName) {
+            query FindDiscussionIds($owner: String!, $repo: String!) {
+              repository(owner:$owner, name:$repo) {
                 pinnedDiscussions(first:1) {
                   nodes {
                     id
@@ -50,15 +50,16 @@ jobs:
             }
           variables: |
             {
-              "repositoryOwner": "${{ github.repository_owner }}",
-              "repositoryName": "${{ github.event.repository.name }}"
+              "owner": "${{ github.event.repository.owner.name }}",
+              "repo": "${{ github.event.repository.name }}"
             }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Display Discussion Global ID
         run: |
-          echo "Discussion Global ID: ${{ steps.find-discussion.outputs.data.repository.pinneddiscussions.nodes[0].id }}"
+          echo "Discussion Global ID: ${{ toJSON(steps.find-discussion.outputs.data) }}"
+          echo "Discussion Global ID: ${{ steps.find-discussion.outputs.data }}.repository.pinneddiscussions.nodes[0].id"
       # https://github.com/octokit/graphql-action#input-variables   input variables are converted to lowercase
 
 
