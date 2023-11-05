@@ -41,7 +41,7 @@ jobs:
           query: |
             query FindDiscussionID($repositoryOwner: String!, $repositoryName: String!, $discussionTitle: String!) {
               repository(owner: $repositoryOwner, name: $repositoryName) {
-                discussions(first: 1, query: $discussionTitle) {
+                search (first: 1, title: $discussionTitle) {
                   nodes {
                     id
                   }
