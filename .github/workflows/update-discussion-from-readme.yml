@@ -34,36 +34,45 @@ jobs:
 
           echo "::set-output name=content::${modified_content}"
 
-      # - name: Get discussion Id
-      #   id: get_discussion_id
+      - name: Find Discussion Global ID by Title
+        uses: octokit/graphql-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          query: |
+            query FindDiscussionID($repositoryOwner: String!, $repositoryName: String!, $discussionTitle: String!) {
+              repository(owner: $repositoryOwner, name: $repositoryName) {
+                discussions(first: 1, query: $discussionTitle) {
+                  nodes {
+                    id
+                  }
+                }
+              }
+            }
+          variables: |
+            {
+              "repositoryOwner": "${{ github.repository_owner }}",
+              "repositoryName": "${{ github.repository }}",
+              "discussionTitle": "Introduction"
+            }
+        id: find-discussion
+
+      - name: Display Discussion Global ID
+        run: |
+          echo "Discussion Global ID: ${{ steps.find-discussion.outputs.data.repository.discussions.nodes[0].id }}"
+
+      # - name: Create a discussion
+      #   id: create_discussion
       #   uses: octokit/graphql-action@v2.x
       #   with:
-      #     body: |-
-      #       ${{ steps.readme-content.outputs.content }}
+      #     title: "Sample Discussion!!!"
+      #     body: "somebody variable"
       #     query: |
-      #       query FindIssueID {
-      #         repository(owner:"${{ github.repository_owner }}", name:"${{ github.repository }}") {
-      #           issue(number:59) {
+      #       mutation($title:String!, $body:String!) {
+      #         updateDiscussion(input: {discussionId: "59", title: $title, body: $body}) {
+      #           discussion {
       #             id
       #           }
       #         }
       #       }
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create a discussion
-        id: create_discussion
-        uses: octokit/graphql-action@v2.x
-        with:
-          title: "Sample Discussion!!!"
-          body: "somebody variable"
-          query: |
-            mutation($title:String!, $body:String!) {
-              updateDiscussion(input: {discussionId: "59", title: $title, body: $body}) {
-                discussion {
-                  id
-                }
-              }
-            }
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
