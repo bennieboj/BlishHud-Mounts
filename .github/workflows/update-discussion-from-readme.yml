@@ -19,17 +19,14 @@ jobs:
           #!/bin/bash
           
           readme_content=$(cat README.md)
-          # echo "readme_content: $readme_content"
           modified_content=$(echo "$readme_content" | sed 's|!\[\](\./|![](https://raw.githubusercontent.com/${{ github.event.repository.owner.name }}/${{ github.event.repository.name }}/main/|g')
           modified_content=$(echo "$modified_content" | sed 's|\\|\\\\|g')
           modified_content=$(echo "$modified_content" | sed 's|\"|\\"|g')
-          echo testing 111111111111
-          echo "modified_content: $modified_content"
+          modified_content=$(echo "$modified_content" | sed ':a;N;$!ba;s/\n/\\n/g')
+
           echo "content<<EOF" >> $GITHUB_OUTPUT
           echo "${modified_content}" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-          echo testing 222222222222
-          echo "modified_content: $modified_content"
 
       - name: Find pinned discussion Global ID
         id: find-discussion
@@ -54,10 +51,6 @@ jobs:
             }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # - name: Display Discussion Global ID
-      #   run: |
-      #     echo "Discussion Global ID: ${{ fromJson(steps.find-discussion.outputs.data).repository.pinneddiscussions.nodes[0].discussion.id }}"
 
 
       - name: Update discussion
