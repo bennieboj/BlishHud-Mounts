@@ -11,16 +11,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
+
       - name: Read and modify readme content
         id: readme-content
+        shell: bash
         run: |
           readme_content=$(cat README_test.md)
+          echo "content: $readme_content"
+          echo "repository_owner: ${{ github.repository_owner }}"
           modified_content=${readme_content//"![](./"/"![](https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ github.repository }}/main/"}
+          echo "content: $modified_content"
           echo "::set-output name=content::${modified_content}"
           
       - name: Update Discussion
         id: update-discussion
+        shell: bash
         run: |
           curl -X PATCH \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
