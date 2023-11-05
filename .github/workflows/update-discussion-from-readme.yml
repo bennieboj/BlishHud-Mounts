@@ -48,7 +48,7 @@ jobs:
             }
           variables: |
             {
-              "query": "Introduction in:title repo: bennieboj/BlishHud-Mounts"
+              "query": "repo:bennieboj/BlishHud-Mounts"
             }
         id: find-discussion
 
