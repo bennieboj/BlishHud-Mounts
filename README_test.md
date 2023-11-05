@@ -1,1 +1,0 @@
-![](./readme/initial_setup_result.png)
