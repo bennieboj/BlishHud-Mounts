@@ -24,7 +24,7 @@ jobs:
           modified_content=$(echo "$modified_content" | sed 's|\"|\\"|g')
           modified_content=$(echo "$modified_content" | sed ':a;N;$!ba;s/\n/\\n/g')
 
-          echo "secret-content=$modified_content" >> "$GITHUB_OUTPUT"
+          echo "content=$modified_content" >> $GITHUB_OUTPUT
           # echo "content<<EOF" >> $GITHUB_OUTPUT
           # echo "${modified_content}" >> $GITHUB_OUTPUT
           # echo "EOF" >> $GITHUB_OUTPUT
