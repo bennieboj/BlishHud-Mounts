@@ -1,5 +1,3 @@
-aaaa
-
 Adds mounts, mastery skills and novelty icons in the form of radial, icon rows and corner icons.
 
 Custom icons, out of combat queueing and automatically loading after map change (mounts only).
@@ -95,11 +93,11 @@ Later versions got rid of this since the logic became too complex to maintain. N
 
 In above picture we see all states the player character can be in:
 - mounted
+- in combat
 - in WvW map
 - gliding, falling (basically flying/in the air)
 - under water
 - on water surface
-- in combat
 - default
 
 These contexts are evaluated according to the evalation order from lowest to highest, first the one with 0, then 1, etc till 99.
