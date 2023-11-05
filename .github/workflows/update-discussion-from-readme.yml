@@ -58,7 +58,7 @@ jobs:
 
       - name: Display Discussion Global ID
         run: |
-          echo "Discussion Global ID: ${{ fromJSON(steps.find-discussion.outputs.data) }}"
+          echo "Discussion Global ID: ${{ steps.find-discussion.outputs.data.repository.pinnedDiscussions.nodes[0].id }}"
 
       # - name: Create a discussion
       #   id: create_discussion
