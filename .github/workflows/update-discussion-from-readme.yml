@@ -35,6 +35,7 @@ jobs:
           echo "::set-output name=content::${modified_content}"
 
       - name: Find pinned discussion Global ID
+        id: find-discussion
         uses: octokit/graphql-action@v2.x
         with:
           query: |
@@ -52,11 +53,12 @@ jobs:
               "repositoryOwner": "${{ github.repository_owner }}",
               "repositoryName": "${{ github.event.repository.name }}"
             }
-        id: find-discussion
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Display Discussion Global ID
         run: |
-          echo "Discussion Global ID: ${{ steps.find-discussion.outputs.data.repository.discussions.nodes[0].id }}"
+          echo "Discussion Global ID: ${{ fromJSON(steps.find-discussion.outputs.data) }}"
 
       # - name: Create a discussion
       #   id: create_discussion
