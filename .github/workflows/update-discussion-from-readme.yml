@@ -37,7 +37,6 @@ jobs:
       - name: Find pinned discussion Global ID
         uses: octokit/graphql-action@v2.x
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           query: |
             query FindDiscussionIds($repositoryOwner: String!, $repositoryName: String!) {
               repository(owner:$repositoryOwner, name:$repositoryName) {
