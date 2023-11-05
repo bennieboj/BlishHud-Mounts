@@ -177,7 +177,7 @@ The list of actions that are used in this icon settings.
 ❗ If there are actions in the list that do not have a keybind set in the general settings then they will be displayed in red.
 
 
-## Debugging option and logging
+## Debugging option, logging and reporting issues
 Before reproducing an issue, please do the following steps:
 - make a screenshot of the relevant module settings and in game settings
 - turn on "debug logs" and "additional debug data" in BlishHUD (Settings > Overlay settings > "enable debug logging" & "show additional debug data").
@@ -185,12 +185,12 @@ Before reproducing an issue, please do the following steps:
 You'll see extra logging and extra debug output on the screen like so:
   ![](./readme/debug_info_result.png)
 
-
 Then reproduce the issue in as little steps as possible.
+- If possible make a video of the reproduction.
 
-Add the latest log file and screenshots with the problem description. Logs can be found at:
-Documents\Guild Wars 2\addons\blishhud\logs (or a similar folder inside your Settings folder when running in portable mode).
-
+Report the issue on [github](https://github.com/bennieboj/BlishHud-Mounts/issues) or post on our [discord](https://discord.gg/jZ37WfsKxR):
+- Add the latest log file, screenshots and all other files together with the problem description. Logs can be found at:
+- Documents\Guild Wars 2\addons\blishhud\logs (or a similar folder inside your Settings folder when running in portable mode).
 
 ## FAQ
 
