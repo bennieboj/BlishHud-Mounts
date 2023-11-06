@@ -60,7 +60,8 @@ Settings related to out of combat queueing:
   - Combat Launch mastery unlocked
 
 The following actions are usable in-game when in combat:
-- [Skyscale](https://wiki.guildwars2.com/wiki/Skyscale_(skill)) or [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)) when the  [Combat Launch Mastery](https://wiki.guildwars2.com/wiki/Combat_Launch) is unlocked
+- For both [Skyscale](https://wiki.guildwars2.com/wiki/Skyscale_(skill)) and [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)) when the  [Combat Launch Mastery](https://wiki.guildwars2.com/wiki/Combat_Launch) is unlocked.
+  - The game launches you in the air for both these skills when you're in combat, see "Mechanics": [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)).
 - Unmount
 
 ##### Combat Launch
