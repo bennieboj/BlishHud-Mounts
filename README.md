@@ -23,6 +23,7 @@ The keybinds in the module need to match the ones in you in-game settings:
 1. **Match the keybinds to the game settings** and configure the `module keybind` (purple)
   ![](./readme/keybinds.png)
   The game and the module might display different values for the keybinds due to your keyboard layout, especially for QWERTY vs AZERTY etc.
+  - Each keybind should have their own unique non-overlapping key. (e.g. not use "B" for 1 keybind and B/Ctrl+B/Alt+B/Shift+B for the other, for more info on overlapping see: blish-hud/Blish-HUD#862)
 1. When you are just standing on the ground, not in water, etc you should see this result when you hold down the keybind.
   ![](./readme/initial_setup_result.png)
 
@@ -163,7 +164,7 @@ Users are able to define their own radial settings which are not dependent on th
 
 This allows for the creation of seperate sets of things/actions displayed in their own radial.
 
-These user-defined radial settings each should have their own unique non-overlapping keybind. (e.g. not use "B" for 1 keybind and Shift+B for the other, for more info see: https://github.com/blish-hud/Blish-HUD/issues/862)
+These user-defined radial settings each should have their own unique non-overlapping keybind. (e.g. not use "B" for 1 keybind and B/Ctrl+B/Alt+B/Shift+B for the other, for more info on overlapping see: https://github.com/blish-hud/Blish-HUD/issues/862)
 
 ### Icon Settings (3rd tab)
 Icon settings provide rows of actions that are always on the screen.
