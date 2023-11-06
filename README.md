@@ -221,7 +221,8 @@ A: I don't expect anything in return, but if you want you can:
 - donate via https://ko-fi.com/bennieboj
 
 ### Q: Can I configure mouse buttons for keybinds?
-A: No, this is a limitation of BlishHUD atm, see [this issue](https://github.com/blish-hud/Blish-HUD/issues/611) for more information.
+A: Not directly, this is a limitation of BlishHUD atm, see [this issue](https://github.com/blish-hud/Blish-HUD/issues/611) for more information.
+The best way of using mouse buttons is to map the mouse buttons to keyboard keys (e.g.: PageDown) and then use these keyboard keys in-game.
 
 
 ## Releases
