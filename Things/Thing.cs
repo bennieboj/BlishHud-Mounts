@@ -72,15 +72,6 @@ namespace Manlaan.Mounts.Things
             }
 
             LastUsedTimestamp = DateTime.UtcNow;
-
-            if (IsUsableInCombat())
-            {
-                foreach (var thing in Module._things)
-                {
-                    thing.QueuedTimestamp = null;
-                }
-            }
-
             await Helper.TriggerKeybind(KeybindingSetting);
         }
 

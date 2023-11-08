@@ -635,9 +635,12 @@ namespace Manlaan.Mounts
         {
             if (!e.Value)
             {
-                var thingInCombat = _helper.GetQueuedThing();
-                Logger.Debug($"{nameof(HandleCombatChangeAsync)} Applied queued for out of combat: {thingInCombat?.Name}");
-                await (thingInCombat?.DoAction() ?? Task.CompletedTask);
+                if (_helper.IsPlayerMounted())
+                {
+                    var thingInCombat = _helper.GetQueuedThing();
+                    Logger.Debug($"{nameof(HandleCombatChangeAsync)} Applied queued for out of combat: {thingInCombat?.Name}");
+                    await (thingInCombat?.DoAction() ?? Task.CompletedTask);
+                }
                 foreach (var thing in _things)
                 {
                     thing.QueuedTimestamp = null;
