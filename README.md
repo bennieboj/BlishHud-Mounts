@@ -23,6 +23,7 @@ The keybinds in the module need to match the ones in you in-game settings:
 1. **Match the keybinds to the game settings** and configure the `module keybind` (purple)
   ![](./readme/keybinds.png)
   The game and the module might display different values for the keybinds due to your keyboard layout, especially for QWERTY vs AZERTY etc.
+  - Each keybind should have their own unique non-overlapping key. (e.g. not use "B" for 1 keybind and B/Ctrl+B/Alt+B/Shift+B for the other, for more info on overlapping see: blish-hud/Blish-HUD#862)
 1. When you are just standing on the ground, not in water, etc you should see this result when you hold down the keybind.
   ![](./readme/initial_setup_result.png)
 
@@ -59,7 +60,9 @@ Settings related to out of combat queueing:
   - Combat Launch mastery unlocked
 
 The following actions are usable in-game when in combat:
-- [Skyscale](https://wiki.guildwars2.com/wiki/Skyscale_(skill)) or [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)) when the  [Combat Launch Mastery](https://wiki.guildwars2.com/wiki/Combat_Launch) is unlocked
+- For both [Skyscale](https://wiki.guildwars2.com/wiki/Skyscale_(skill)) and [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)) when the  [Combat Launch Mastery](https://wiki.guildwars2.com/wiki/Combat_Launch) is unlocked.
+  - The game launches you in the air for both these skills when you're in combat, see "Mechanics": [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)).
+  - If you don't want to use this combat launch mastery for skyscale you can disable the "Combat Launch mastery unlocked" setting. 
 - Unmount
 
 ##### Combat Launch
@@ -103,7 +106,7 @@ In above picture we see all states the player character can be in:
 These contexts are evaluated according to the evalation order from lowest to highest, first the one with 0, then 1, etc till 99.
 This is done because there might be overlap in these states e.g.: a player can both be underwater and mounted.
 Only 1 radial/context can be active at the same time.
-Being mounted takes precedence in-game so we need to take of that first.
+Being mounted takes precedence in-game so we need to take care of that first.
 
 The last radial setting/context is the default, this one is always active and is used as a fallback.
 
@@ -163,7 +166,7 @@ Users are able to define their own radial settings which are not dependent on th
 
 This allows for the creation of seperate sets of things/actions displayed in their own radial.
 
-These user-defined radial settings each should have their own unique non-overlapping keybind. (e.g. not use "B" for 1 keybind and Shift+B for the other, for more info see: https://github.com/blish-hud/Blish-HUD/issues/862)
+These user-defined radial settings each should have their own unique non-overlapping keybind. (e.g. not use "B" for 1 keybind and B/Ctrl+B/Alt+B/Shift+B for the other, for more info on overlapping see: https://github.com/blish-hud/Blish-HUD/issues/862)
 
 ### Icon Settings (3rd tab)
 Icon settings provide rows of actions that are always on the screen.
@@ -221,7 +224,9 @@ A: I don't expect anything in return, but if you want you can:
 - donate via https://ko-fi.com/bennieboj
 
 ### Q: Can I configure mouse buttons for keybinds?
-A: No, this is a limitation of BlishHUD atm, see [this issue](https://github.com/blish-hud/Blish-HUD/issues/611) for more information.
+A: Not directly, but read on:
+- This is a limitation of BlishHUD atm, see [this issue](https://github.com/blish-hud/Blish-HUD/issues/611) for more information.
+- The best way of using mouse buttons is to map the mouse buttons to keyboard keys (e.g.: PageDown) and then use these keyboard keys in-game. The mapping most likely needs to be done in the software of your mouse. This has the added advantage that it works for all use cases since not all mouse buttons are even detected by your OS/GW2 by default (typically mouse 6 and up are not detected).
 
 
 ## Releases
