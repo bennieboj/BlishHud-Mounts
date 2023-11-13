@@ -137,7 +137,7 @@ If you want similar same behaviour in version 1.4.0 as in version 1.3.3:
  - this has certain disadvantages:
    - when in combat the action will be queued.
    - if you selected "last used" for the center mount, this will work across contexts.
-- seriously: just figure and the dismount key..
+- seriously: **just set the keybind for the dismount action and use the dismount action in the IsPlayerMounted context.**
 
 Per radial settings/context we have the following options:
 
