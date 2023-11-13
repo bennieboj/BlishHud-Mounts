@@ -127,17 +127,9 @@ In version 1.4.0 we handle unmounting in the following way:
  - If you select multiple things then you will see these in the radial when mounted. 
  - If you select only 1 thing and select "Apply Instantly if single" then we immediately do the single action.
  - The mount/dismount keybind is used to also unmount from chairs, etc.
- - You can dismount using the mount/dismount keybind or any other mount if you don't like setting the mount/dismount keybind.
-- By default the following is migrated: IsPlayerMounted enabled, unmount added. The only thing you need to do is to set the unmount keybind.
+ - You can dismount using the mount/dismount action.
+- By default the following is migrated: IsPlayerMounted enabled, unmount added. The only thing you need to do is to set the dismount keybind.
 
-If you want similar same behaviour in version 1.4.0 as in version 1.3.3:
- - enable IsPlayerMounted
- - check "Apply Instantly if single"
- - add 1 single mount for which you have configured a keybind.
- - this has certain disadvantages:
-   - when in combat the action will be queued.
-   - if you selected "last used" for the center mount, this will work across contexts.
-- seriously: **just set the keybind for the dismount action and use the dismount action in the IsPlayerMounted context.**
 
 Per radial settings/context we have the following options:
 
