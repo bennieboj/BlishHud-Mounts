@@ -27,12 +27,25 @@ namespace Manlaan.Mounts
         private bool _isPlayerGlidingOrFalling = false;
         private Gw2ApiManager Gw2ApiManager;
         private bool _isCombatLaunchUnlocked;
+        private DateTime lastTimeSpacePressed = DateTime.MinValue;
+        private KeyBinding spaceKeybind = new KeyBinding(Keys.Space);
 
         public Helper(Gw2ApiManager gw2ApiManager)
         {
             Gw2ApiManager = gw2ApiManager;
 
+            spaceKeybind.Enabled = true;
+            spaceKeybind.Activated += delegate
+            {
+                lastTimeSpacePressed = DateTime.UtcNow;
+            };
+
             Module._debug.Add("StoreThingForLaterActivation", () => $"{string.Join(", ", StoredThingForLater.Select(x => x.Key + "=" + x.Value.Name).ToArray())}");
+        }
+
+        private bool IsSpacePressedRecently()
+        {
+            return DateTime.UtcNow.Subtract(lastTimeSpacePressed).TotalMilliseconds < 5000;
         }
 
         public bool IsCombatLaunchUnlocked()
@@ -103,18 +116,15 @@ namespace Manlaan.Mounts
                 return;
             }
 
-            //Module._debug.Add("velocity", () => $"{velocity}");
+            //Module._debug.Add("velocity", () => $"{velocity.ToString("N2")}");
+            //Module._debug.Add("SpacePressed", () => $"{IsSpacePressedRecently()}.");
 
-            switch (velocity)
-            {
-                case double v1 when v1 > 5:
-                case double v2 when v2 < -4:
-                    _isPlayerGlidingOrFalling = true;
-                    break;
-                case double v3 when v3 >= 0 && v3 < 1:
+            if (velocity > 10 || velocity < -10)
+                _isPlayerGlidingOrFalling = true;
+            else if(IsSpacePressedRecently() && velocity < -2)
+                _isPlayerGlidingOrFalling = true;
+            else if (velocity >= 0 && velocity < 1)
                 _isPlayerGlidingOrFalling = false;
-                    break;
-            };
 
             _lastZPosition = currentZPosition;
             _lastUpdateSeconds = currentUpdateSeconds;
