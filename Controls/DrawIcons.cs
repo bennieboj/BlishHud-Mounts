@@ -59,7 +59,7 @@ namespace Manlaan.Mounts.Controls
 
             foreach (var thing in _iconThingSettings.AvailableThings)
             {
-                thing.CreateCornerIcon(_textureCache.GetMountImgFile(thing));
+                thing.CreateCornerIcon(_textureCache.GetThingImgFile(thing));
             }
         }
 
@@ -76,7 +76,7 @@ namespace Manlaan.Mounts.Controls
             var things = _iconThingSettings.AvailableThings;
             foreach (var thing in things)
             {
-                Texture2D img = _textureCache.GetMountImgFile(thing);
+                Texture2D img = _textureCache.GetThingImgFile(thing);
                 Image _btnMount = new Image
                 {
                     Parent = this,

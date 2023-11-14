@@ -334,11 +334,11 @@ namespace Manlaan.Mounts.Views
             {
                 Size = new Point(labelWidth, 20),
                 Parent = RadialSettingsDetailPanel,
-                Checked = currentRadialSettings.RemoveCenterMount.Value,
+                Checked = currentRadialSettings.RemoveCenterThing.Value,
                 Location = new Point(settingRadialRemoveCenterMount_Label.Right + 5, settingRadialRemoveCenterMount_Label.Top - 1),
             };
             settingRadialRemoveCenterMount_Checkbox.CheckedChanged += delegate {
-                currentRadialSettings.RemoveCenterMount.Value = settingRadialRemoveCenterMount_Checkbox.Checked;
+                currentRadialSettings.RemoveCenterThing.Value = settingRadialRemoveCenterMount_Checkbox.Checked;
             };
 
             Label radialSettingsIsEnabled_Label = new Label()

@@ -16,7 +16,7 @@ namespace Manlaan.Mounts
 
 
         public static readonly string MouseTextureName = "255329.png";
-        public static readonly string MountLogoTextureName = "514394-grey-plus-plus100.png";
+        public static readonly string ModuleLogoTextureName = "514394-grey-plus-plus100.png";
         public static readonly string TabBackgroundTextureName = "156006-big.png";
         public static readonly string SettingsTextureName = "155052.png";
         public static readonly string RadialSettingsTextureName = "1130623-32.png";
@@ -40,7 +40,7 @@ namespace Manlaan.Mounts
                 PreCacheTexture(mountImageFile.Name, PremultiplyTexture);
             }
             PreCacheTexture(MouseTextureName, getTextureFromRef);
-            PreCacheTexture(MountLogoTextureName, getTextureFromRef);
+            PreCacheTexture(ModuleLogoTextureName, getTextureFromRef);
             PreCacheTexture(TabBackgroundTextureName, getTextureFromRef);
             PreCacheTexture(SettingsTextureName, getTextureFromRef);
             PreCacheTexture(RadialSettingsTextureName, getTextureFromRef);
@@ -56,7 +56,7 @@ namespace Manlaan.Mounts
 
             try
             {
-                var filePath = Path.Combine(Module.mountsDirectory, textureName);
+                var filePath = Path.Combine(Module.thingsDirectory, textureName);
                 using (FileStream titleStream = File.OpenRead(filePath))
                 using (var gdc = GameService.Graphics.LendGraphicsDeviceContext())
                 {
@@ -90,7 +90,7 @@ namespace Manlaan.Mounts
             return GetTexture(filename);
         }
 
-        public Texture2D GetMountImgFile(Thing thing)
+        public Texture2D GetThingImgFile(Thing thing)
         {
             return GetTexture(thing.ImageFileNameSetting.Value);
         }

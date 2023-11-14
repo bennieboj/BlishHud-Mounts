@@ -109,11 +109,11 @@ namespace Manlaan.Mounts.Controls
             var thingToPutInCenter = applicableRadialSettings.GetCenterThing();
             if (thingToPutInCenter != null && thingToPutInCenter.IsAvailable)
             {
-                if (applicableRadialSettings.RemoveCenterMount.Value)
+                if (applicableRadialSettings.RemoveCenterThing.Value)
                 {
                     things.Remove(thingToPutInCenter);
                 }
-                var texture = _textureCache.GetMountImgFile(thingToPutInCenter);
+                var texture = _textureCache.GetThingImgFile(thingToPutInCenter);
                 int loc = radius;
                 RadialThings.Add(new RadialThing { Texture = texture, Thing = thingToPutInCenter, ImageX = loc, ImageY = loc, Default = true });
             }
@@ -133,7 +133,7 @@ namespace Manlaan.Mounts.Controls
             {
                 var angleMid = currentAngle + partAngleStep / 2;
                 var angleEnd = currentAngle + partAngleStep;
-                var texture = _textureCache.GetMountImgFile(thing);
+                var texture = _textureCache.GetThingImgFile(thing);
 
                 int x = (int)Math.Round(radius + radius * Math.Cos(angleMid));
                 int y = (int)Math.Round(radius + radius * Math.Sin(angleMid));

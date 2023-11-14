@@ -12,7 +12,7 @@ namespace Manlaan.Mounts
     {
         public SettingEntry<bool> IsEnabled;
         public SettingEntry<CenterBehavior> CenterThingBehavior;
-        public SettingEntry<bool> RemoveCenterMount;
+        public SettingEntry<bool> RemoveCenterThing;
         public SettingEntry<string> DefaultThingChoice;
 
         public event EventHandler<SettingsUpdatedEvent> RadialSettingsUpdated;
@@ -25,7 +25,7 @@ namespace Manlaan.Mounts
             IsEnabled = settingCollection.DefineSetting($"{settingsPrefix}IsEnabled", defaultIsEnabled);
 
             CenterThingBehavior = settingCollection.DefineSetting($"{settingsPrefix}CenterThingBehavior", CenterBehavior.None);
-            RemoveCenterMount = settingCollection.DefineSetting($"{settingsPrefix}RemoveCenterThingFromRadial", true);
+            RemoveCenterThing = settingCollection.DefineSetting($"{settingsPrefix}RemoveCenterThingFromRadial", true);
             DefaultThingChoice = settingCollection.DefineSetting($"{settingsPrefix}DefaultMountChoice", "Disabled");
 
             ThingsSetting.SettingChanged += ThingsSetting_SettingChanged;

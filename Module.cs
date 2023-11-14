@@ -47,7 +47,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<List<int>> _settingDrawIconIds;
 
         public static List<ThingImageFile> _thingImageFiles = new List<ThingImageFile>();
-        public static string mountsDirectory;
+        public static string thingsDirectory;
 
         public static string[] _keybindBehaviours = new string[] { "Default", "Radial" };
 
@@ -83,8 +83,8 @@ namespace Manlaan.Mounts
         private Helper _helper;
         private TextureCache _textureCache;
 
-        private bool _lastIsMountSwitchable = false;
-        private int _lastInUseMountsCount = 0;
+        private bool _lastIsThingSwitchable = false;
+        private int _lastInUseThingsCount = 0;
 
 
         [ImportingConstructor]
@@ -136,16 +136,16 @@ namespace Manlaan.Mounts
                 "skyscaleleap.png",
                 "unmount.png"
             };
-            mountsDirectory = DirectoriesManager.GetFullDirectoryPath("mounts");
-            mountsFilesInRef.ForEach(f => ExtractFile(f, mountsDirectory));
-            _thingImageFiles = Directory.GetFiles(mountsDirectory, ".")
+            thingsDirectory = DirectoriesManager.GetFullDirectoryPath("mounts");
+            mountsFilesInRef.ForEach(f => ExtractFile(f, thingsDirectory));
+            _thingImageFiles = Directory.GetFiles(thingsDirectory, ".")
                 .Where(file => file.ToLower().Contains(".png"))
-                .Select(file => new ThingImageFile() { Name = file.Substring(mountsDirectory.Length + 1) }).ToList();
+                .Select(file => new ThingImageFile() { Name = file.Substring(thingsDirectory.Length + 1) }).ToList();
             _textureCache = new TextureCache(ContentsManager);
 
             GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += async (sender, e) => await HandleCombatChangeAsync(sender, e);
 
-            var mountsIcon = _textureCache.GetImgFile(TextureCache.MountLogoTextureName);
+            var mountsIcon = _textureCache.GetImgFile(TextureCache.ModuleLogoTextureName);
 
             _settingsWindow = new TabbedWindow2(
                                     _textureCache.GetImgFile(TextureCache.TabBackgroundTextureName),
@@ -237,7 +237,7 @@ namespace Manlaan.Mounts
             {
                 var settingMountRadialRemoveCenterMount = settings["MountRadialRemoveCenterMount"] as SettingEntry<bool>;
 
-                defaultRadialSettings.RemoveCenterMount.Value = settingMountRadialRemoveCenterMount.Value;
+                defaultRadialSettings.RemoveCenterThing.Value = settingMountRadialRemoveCenterMount.Value;
             }
 
             if (settings.ContainsSetting("MountRadialCenterMountBehavior"))
@@ -443,30 +443,30 @@ namespace Manlaan.Mounts
         {
             _helper.UpdatePlayerGlidingOrFalling(gameTime);
 
-            var isMountSwitchable = CanThingBeActivated();
-            var moduleHidden = _lastIsMountSwitchable && !isMountSwitchable;
-            var moduleShown = !_lastIsMountSwitchable && isMountSwitchable;
+            var isThingSwitchable = CanThingBeActivated();
+            var moduleHidden = _lastIsThingSwitchable && !isThingSwitchable;
+            var moduleShown = !_lastIsThingSwitchable && isThingSwitchable;
             var currentCharacterName = GameService.Gw2Mumble.PlayerCharacter.Name;
-            var inUseMountsCount = _things.Count(m => m.IsInUse());
+            var inUseThingsCount = _things.Count(m => m.IsInUse());
 
-            if (inUseMountsCount == 0 && _lastInUseMountsCount > 0 && moduleHidden == false && moduleShown == false)
+            if (inUseThingsCount == 0 && _lastInUseThingsCount > 0 && moduleHidden == false && moduleShown == false)
             {
                 _helper.ClearSomethingStoredForLaterActivation(currentCharacterName);
             }
 
-            if (moduleHidden && inUseMountsCount == 1 && _settingMountAutomaticallyAfterLoadingScreen.Value && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
+            if (moduleHidden && inUseThingsCount == 1 && _settingMountAutomaticallyAfterLoadingScreen.Value && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
             {
                 _helper.StoreThingForLaterActivation(_things.Single(m => m.IsInUse()), currentCharacterName, "ModuleHidden");
             }
-            if (moduleShown && inUseMountsCount == 0 && _helper.IsSomethingStoredForLaterActivation(currentCharacterName) && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
+            if (moduleShown && inUseThingsCount == 0 && _helper.IsSomethingStoredForLaterActivation(currentCharacterName) && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 _helper.DoThingActionForLaterActivation(currentCharacterName);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 
-            _lastInUseMountsCount = inUseMountsCount;
-            _lastIsMountSwitchable = isMountSwitchable;
+            _lastInUseThingsCount = inUseThingsCount;
+            _lastIsThingSwitchable = isThingSwitchable;
 
             bool shouldShowModule = ShouldShowModule();
             if (shouldShowModule)
