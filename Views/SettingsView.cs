@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Mounts;
+using System;
 
 namespace Manlaan.Mounts.Views
 {
@@ -16,7 +17,9 @@ namespace Manlaan.Mounts.Views
 
         private Texture2D anetTexture { get; }
 
-        private Panel ManualPanel { get; set; }
+        private List<KeybindingAssigner> KeybindingAssigners = new List<KeybindingAssigner>();
+        private KeybindingAssigner settingDefaultMount_Keybind;
+        Label labelExplanation;
 
         public SettingsView(TextureCache textureCache)
         {
@@ -41,7 +44,7 @@ namespace Manlaan.Mounts.Views
             int bindingWidth              = 170;
             int mountsAndRadialInputWidth = 125;
 
-            Label labelExplanation = new Label()
+            labelExplanation = new Label()
             {
                 Location = new Point(10, 10),
                 Width = 800,
@@ -50,9 +53,9 @@ namespace Manlaan.Mounts.Views
                 Parent = buildPanel,
                 TextColor = Color.Red,
                 Font = GameService.Content.DefaultFont18,
-                Text = "For this module to work you need to fill in your in-game keybindings in the settings below.\nNo keybind means the action is DISABLED. For more info, see the documentation.".Replace(" ", "  "),
                 HorizontalAlignment = HorizontalAlignment.Left
             };
+            UpdateLabelText("");
 
             var documentationButton = new StandardButton
             {
@@ -74,9 +77,17 @@ namespace Manlaan.Mounts.Views
 
             Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + 20, 500));
             BuildRadialPanel(radialPanel, labelWidth2, mountsAndRadialInputWidth);
+
+            ValidateKeybindOverlaps();
         }
 
-
+        private void UpdateLabelText(string addendum)
+        {
+            var mystring = "For this module to work you need to fill in your in-game keybindings in the settings below.\nNo keybind means the action is DISABLED. For more info, see the documentation.";
+            if (!string.IsNullOrWhiteSpace(addendum))
+                mystring = string.Concat(mystring, $"\n{addendum}");
+            labelExplanation.Text = mystring.Replace(" ", "  ");
+        }
 
         private void BuildMountsPanel(Panel mountsPanel, int labelWidth, int bindingWidth, int orderWidth)
         {
@@ -146,8 +157,10 @@ namespace Manlaan.Mounts.Views
                     Parent = mountsPanel,
                     Location = new Point(settingMount_Label.Right + 5, settingMount_Label.Top - 1),
                 };
+                KeybindingAssigners.Add(settingMount_Keybind);
                 settingMount_Keybind.BindingChanged += delegate {
                     thing.KeybindingSetting.Value = settingMount_Keybind.KeyBinding;
+                    ValidateKeybindOverlaps();
                 };
 
                 Dropdown settingMountImageFile_Select = new Dropdown()
@@ -172,6 +185,29 @@ namespace Manlaan.Mounts.Views
             }
         }
 
+        private void ValidateKeybindOverlaps()
+        {
+            var kbaIssues = KeybindingAssigners.Where(k => settingDefaultMount_Keybind.KeyBinding.PrimaryKey.Equals(k.KeyBinding.PrimaryKey));
+            if (kbaIssues.Any())
+            {
+                foreach (var kbaIssue in kbaIssues)
+                {
+                    kbaIssue.BackgroundColor = Color.Red;
+                }
+                settingDefaultMount_Keybind.BackgroundColor = Color.Red;
+                UpdateLabelText("Validation failed: overlapping keybinds are not supported!");
+            }
+            else
+            {
+                foreach (var kba in KeybindingAssigners)
+                {
+                    kba.BackgroundColor = Color.Transparent;
+                }
+                settingDefaultMount_Keybind.BackgroundColor = Color.Transparent;
+                UpdateLabelText("");
+            }
+        }
+
         private void BuildDefaultMountPanel(Panel defaultMountPanel, int labelWidth2, int mountsAndRadialInputWidth)
         {
             Label settingDefaultMountKeybind_Label = new Label()
@@ -183,12 +219,15 @@ namespace Manlaan.Mounts.Views
                 Parent = defaultMountPanel,
                 Text = "Key binding: ",
             };
-            KeybindingAssigner settingDefaultMount_Keybind = new KeybindingAssigner(Module._settingDefaultMountBinding.Value)
+            settingDefaultMount_Keybind = new KeybindingAssigner(Module._settingDefaultMountBinding.Value)
             {
                 NameWidth = 0,
                 Size = new Point(mountsAndRadialInputWidth, 20),
                 Parent = defaultMountPanel,
                 Location = new Point(settingDefaultMountKeybind_Label.Right + 4, settingDefaultMountKeybind_Label.Top - 1),
+            };
+            settingDefaultMount_Keybind.BindingChanged += delegate {
+                ValidateKeybindOverlaps();
             };
             Label settingKeybindBehaviour_Label = new Label()
             {
