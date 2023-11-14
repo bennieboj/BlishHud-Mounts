@@ -426,7 +426,7 @@ namespace Manlaan.Mounts
             ContextualRadialSettings.ForEach(c => _debug.Add($"Contextual RadialSettings {c.Order} {c.Name}", () => $"IsApplicable: {c.IsApplicable()}, Center: {c.GetCenterThing()?.Name}, CenterBehavior: {c.CenterThingBehavior.Value}, ApplyInstantlyIfSingle: {c.ApplyInstantlyIfSingle.Value}, LastUsed: {c.GetLastUsedThing()?.Name}"));
             _debug.Add("Applicable Contextual RadialSettings Name", () => $"{_helper.GetApplicableContextualRadialThingSettings()?.Name}");
             _debug.Add("Applicable Contextual RadialSettings Things", () => $"{string.Join(", ", _helper.GetApplicableContextualRadialThingSettings()?.AvailableThings.Select(t => t.Name))}");
-            _debug.Add("Queued for out of combat", () => $"{_helper.GetQueuedThing().Name}");
+            _debug.Add("Queued for out of combat", () => $"{_helper.GetQueuedThing()?.Name}");
 
             Gw2ApiManager.SubtokenUpdated += async delegate
             {
