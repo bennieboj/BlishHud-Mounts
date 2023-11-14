@@ -8,8 +8,6 @@ using Mounts;
 using System;
 using Mounts.Settings;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Collections;
 
 namespace Manlaan.Mounts.Views
 {
@@ -24,10 +22,12 @@ namespace Manlaan.Mounts.Views
 
         private RadialThingSettings currentRadialSettings;
         private readonly Func<Task> _keybindCallback;
+        private readonly Helper _helper;
 
-        public RadialThingSettingsView(Func<Task> keybindCallback)
+        public RadialThingSettingsView(Func<Task> keybindCallback, Helper helper)
         {
             _keybindCallback = keybindCallback;
+            _helper = helper;
         }
         private Panel CreateDefaultPanel(Container buildPanel, Point location, int width)
         {
@@ -71,7 +71,14 @@ namespace Manlaan.Mounts.Views
             BuildRadialSettingsListPanel();
 
             RadialSettingsDetailPanel = CreateDefaultPanel(buildPanel, new Point(10, 500), totalWidth);
-            BuildRadialSettingsDetailPanel(Module.ContextualRadialSettings.Single(settings => settings.IsDefault));
+
+            var settingsToDisplayOnOpen = (RadialThingSettings)Module.ContextualRadialSettings.Single(settings => settings.IsDefault);
+            var triggeredRadialSettings = _helper.GetTriggeredRadialSettings();
+            if (triggeredRadialSettings != null)
+            {
+                settingsToDisplayOnOpen = triggeredRadialSettings;
+            }
+            BuildRadialSettingsDetailPanel(settingsToDisplayOnOpen);
         }
 
         private void BuildRadialSettingsListPanel()

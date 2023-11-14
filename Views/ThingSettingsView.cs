@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using System.Linq;
 using Microsoft.Xna.Framework.Graphics;
 using Mounts;
+using Manlaan.Mounts.Things;
+using System.Reflection;
 
 namespace Manlaan.Mounts.Views
 {
@@ -63,6 +65,19 @@ namespace Manlaan.Mounts.Views
                     BuildThingSettingsPanel();
                 };
                 curY = addThing_Select.Bottom;
+            }
+
+            if (!CurrentThingSettings.Things.Any())
+            {
+                Label thingInSettings_Label = new Label()
+                {
+                    Location = new Point(0, curY),
+                    AutoSizeWidth = true,
+                    AutoSizeHeight = false,
+                    Parent = panel,
+                    TextColor = Color.Red,
+                    Text = "You need to configure something or this context is pointless.",
+                };
             }
 
             foreach (var thingItemAndIndex in CurrentThingSettings.Things.Select((value, i) => new { i, value }))

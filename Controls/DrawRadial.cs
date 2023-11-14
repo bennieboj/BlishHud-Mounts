@@ -62,8 +62,7 @@ namespace Manlaan.Mounts.Controls
                 Location = new Point(0, 0),
                 Size = new Point(800,500),
                 Font = GameService.Content.DefaultFont32,
-                TextColor = Color.Red,
-                Text = "NOTHING CONFIGURED, GO TO SETTINGS: "
+                TextColor = Color.Red
             };
             _settingsButton = new StandardButton
             {
@@ -96,6 +95,7 @@ namespace Manlaan.Mounts.Controls
             var things = applicableRadialSettings.AvailableThings.ToList();
             if (!things.Any())
             {
+                _noThingsLabel.Text = $"NOTHING CONFIGURED, GO TO {applicableRadialSettings.Name} SETTINGS: ";
                 _noThingsLabel.Show();
                 _settingsButton.Show();
                 return;
