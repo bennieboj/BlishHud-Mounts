@@ -44,7 +44,8 @@ namespace Manlaan.Mounts.Controls
             _spinner = new LoadingSpinner
             {
                 Parent = this,
-                Visible = Module._settingDragMountQueueing.Value
+                Visible = false,
+                BasicTooltipText = "Out of combat queuing"
             };
 
             if (Module._settingDragMountQueueing.Value)
@@ -55,6 +56,7 @@ namespace Manlaan.Mounts.Controls
                     Location = new Point(0, 0),
                     Size = new Point(_spinner.Width / 2, _spinner.Width / 2),
                     BackgroundColor = Color.White,
+                    BasicTooltipText = "Drag out of combat queuing",
                     ZIndex = 10,
                 };
                 dragBox.LeftMouseButtonPressed += delegate

@@ -478,7 +478,7 @@ namespace Manlaan.Mounts
                 foreach (var drawIcons in _drawIcons) drawIcons.Hide();
             }
 
-            if (_things.Any(m => m.QueuedTimestamp != null))
+            if (_things.Any(m => m.QueuedTimestamp != null) || Module._settingDragMountQueueing.Value)
             {
                 _drawOutOfCombat?.ShowSpinner();
             }

@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework;
 using Mounts.Settings;
 using System;
 using System.Linq;
+using Manlaan.Mounts.Things;
+using System.Net.NetworkInformation;
 
 namespace Manlaan.Mounts.Controls
 {
@@ -134,7 +136,7 @@ namespace Manlaan.Mounts.Controls
 
         protected override CaptureType CapturesInput()
         {
-            return CaptureType.Mouse;
+            return _iconThingSettings.IsEnabled.Value ? CaptureType.Mouse : CaptureType.None;
         }
 
 
