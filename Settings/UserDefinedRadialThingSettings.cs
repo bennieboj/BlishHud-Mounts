@@ -33,6 +33,7 @@ namespace Mounts.Settings
         {
             settingCollection.UndefineSetting($"RadialThingSettings{Id}Name");
             settingCollection.UndefineSetting($"RadialThingSettings{Id}Keybind");
+            Keybind.Value.Enabled = false;
             base.DeleteFromSettings(settingCollection);
         }
     }

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Mounts;
 using Manlaan.Mounts.Things;
 using System.Reflection;
+using Blish_HUD;
 
 namespace Manlaan.Mounts.Views
 {
@@ -76,6 +77,7 @@ namespace Manlaan.Mounts.Views
                     AutoSizeHeight = false,
                     Parent = panel,
                     TextColor = Color.Red,
+                    Font = GameService.Content.DefaultFont18,
                     Text = "You need to configure something or this context is pointless.",
                 };
             }

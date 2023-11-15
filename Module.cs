@@ -363,10 +363,10 @@ namespace Manlaan.Mounts
             {
                 new ContextualRadialThingSettings(settings, "IsPlayerMounted", 0, _helper.IsPlayerMounted, true, true, _things.Where(t => t is UnMount).ToList()),
                 new ContextualRadialThingSettings(settings, "IsPlayerInWvwMap", 1, _helper.IsPlayerInWvwMap, true, true, _things.Where(t => t is Warclaw).ToList()),
-                new ContextualRadialThingSettings(settings, "IsPlayerInCombat", 2, _helper.IsPlayerInCombat, false, true, _things.Where(t => t is Skyscale).ToList()),
-                new ContextualRadialThingSettings(settings, "IsPlayerGlidingOrFalling", 3, _helper.IsPlayerGlidingOrFalling, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList()),
-                new ContextualRadialThingSettings(settings, "IsPlayerUnderWater", 4, _helper.IsPlayerUnderWater, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList()),
-                new ContextualRadialThingSettings(settings, "IsPlayerOnWaterSurface", 5, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()),
+                new ContextualRadialThingSettings(settings, "IsPlayerInCombat", 2, _helper.IsPlayerInCombat, false, true, _things.Where(t => t is Skyscale).ToList()),                
+                new ContextualRadialThingSettings(settings, "IsPlayerUnderWater", 3, _helper.IsPlayerUnderWater, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList()),
+                new ContextualRadialThingSettings(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()),
+                new ContextualRadialThingSettings(settings, "IsPlayerGlidingOrFalling", 5, _helper.IsPlayerGlidingOrFalling, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList()),
                 new ContextualRadialThingSettings(settings, "Default", 99, () => true, true, false, thingsForMigration)
             };
 

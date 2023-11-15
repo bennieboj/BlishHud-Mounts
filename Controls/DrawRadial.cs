@@ -32,7 +32,7 @@ namespace Manlaan.Mounts.Controls
 
         public EventHandler OnSettingsButtonClicked { get; internal set; }
         private StandardButton _settingsButton;
-        private Label _noThingsLabel;
+        private Label _errorLabel;
 
         private List<RadialThing> RadialThings = new List<RadialThing>();
 
@@ -57,7 +57,7 @@ namespace Manlaan.Mounts.Controls
             Shown += async (sender, e) => await HandleShown(sender, e);
             Hidden += async (sender, e) => await HandleHidden(sender, e);
 
-            _noThingsLabel = new Label {
+            _errorLabel = new Label {
                 Parent = this,
                 Location = new Point(0, 0),
                 Size = new Point(800,500),
@@ -95,14 +95,14 @@ namespace Manlaan.Mounts.Controls
             var things = applicableRadialSettings.AvailableThings.ToList();
             if (!things.Any())
             {
-                _noThingsLabel.Text = $"NOTHING CONFIGURED, GO TO {applicableRadialSettings.Name} SETTINGS: ";
-                _noThingsLabel.Show();
+                _errorLabel.Text = $"No actions configured in the {applicableRadialSettings.Name} context \n(or no keybinds specified for these actions)\nClick button to go to the relevant settings: ";
+                _errorLabel.Show();
                 _settingsButton.Show();
                 return;
             }
             else
             {
-                _noThingsLabel.Hide();
+                _errorLabel.Hide();
                 _settingsButton.Hide();
             }
 
