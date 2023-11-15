@@ -27,25 +27,13 @@ namespace Manlaan.Mounts
         private bool _isPlayerGlidingOrFalling = false;
         private Gw2ApiManager Gw2ApiManager;
         private bool _isCombatLaunchUnlocked;
-        private DateTime lastTimeSpacePressed = DateTime.MinValue;
-        private KeyBinding spaceKeybind = new KeyBinding(Keys.Space);
+        private DateTime lastTimeJumped = DateTime.MinValue;        
 
         public Helper(Gw2ApiManager gw2ApiManager)
         {
             Gw2ApiManager = gw2ApiManager;
 
-            spaceKeybind.Enabled = true;
-            spaceKeybind.Activated += delegate
-            {
-                lastTimeSpacePressed = DateTime.UtcNow;
-            };
-
             Module._debug.Add("StoreThingForLaterActivation", () => $"{string.Join(", ", StoredThingForLater.Select(x => x.Key + "=" + x.Value.Name).ToArray())}");
-        }
-
-        private bool IsSpacePressedRecently()
-        {
-            return DateTime.UtcNow.Subtract(lastTimeSpacePressed).TotalMilliseconds < 5000;
         }
 
         public bool IsCombatLaunchUnlocked()
@@ -62,11 +50,6 @@ namespace Manlaan.Mounts
 
             var masteries = await Gw2ApiManager.Gw2ApiClient.V2.Masteries.AllAsync();
             _isCombatLaunchUnlocked = masteries.Any(m => m.Name == "Combat Launch");
-        }
-
-        public bool IsPlayerGlidingOrFalling()
-        {
-            return _isPlayerGlidingOrFalling;
         }
 
         public bool IsPlayerInWvwMap()
@@ -103,6 +86,17 @@ namespace Manlaan.Mounts
             return GameService.Gw2Mumble.PlayerCharacter.CurrentMount != Gw2Sharp.Models.MountType.None;
         }
 
+        public bool IsPlayerGlidingOrFalling()
+        {
+            return _isPlayerGlidingOrFalling;
+        }
+
+        public void UpdateLastJumped() => lastTimeJumped = DateTime.UtcNow;
+        private bool DidPlayerJumpRecently()
+        {
+            return DateTime.UtcNow.Subtract(lastTimeJumped).TotalMilliseconds < 5000;
+        }
+
         public void UpdatePlayerGlidingOrFalling(GameTime gameTime)
         {
             var currentZPosition = GameService.Gw2Mumble.PlayerCharacter.Position.Z;
@@ -121,7 +115,7 @@ namespace Manlaan.Mounts
 
             if (velocity > 10 || velocity < -10)
                 _isPlayerGlidingOrFalling = true;
-            else if(IsSpacePressedRecently() && velocity < -2)
+            else if(DidPlayerJumpRecently() && velocity < -2)
                 _isPlayerGlidingOrFalling = true;
             else if (velocity >= 0 && velocity < 1)
                 _isPlayerGlidingOrFalling = false;

@@ -69,14 +69,14 @@ namespace Manlaan.Mounts.Views
 
             var panelPadding = 20;
 
-            Panel mountsPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 600);
-            BuildMountsPanel(mountsPanel, labelWidth, bindingWidth, orderWidth);
+            Panel thingsPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 600);
+            BuildThingsPanel(thingsPanel, labelWidth, bindingWidth, orderWidth);
 
-            Panel defaultMountPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + 20, labelExplanation.Bottom + panelPadding));
-            BuildDefaultMountPanel(defaultMountPanel, labelWidth2, mountsAndRadialInputWidth);
+            Panel generalSettingsPanel = CreateDefaultPanel(buildPanel, new Point(thingsPanel.Right + 20, labelExplanation.Bottom + panelPadding));
+            BuildGeneralSettingsPanel(generalSettingsPanel, labelWidth2, mountsAndRadialInputWidth);
 
-            Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(mountsPanel.Right + 20, 500));
-            BuildRadialPanel(radialPanel, labelWidth2, mountsAndRadialInputWidth);
+            Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(thingsPanel.Right + 20, 500));
+            BuildRadialSettingsPanel(radialPanel, labelWidth2, mountsAndRadialInputWidth);
 
             ValidateKeybindOverlaps();
         }
@@ -89,7 +89,7 @@ namespace Manlaan.Mounts.Views
             labelExplanation.Text = mystring.Replace(" ", "  ");
         }
 
-        private void BuildMountsPanel(Panel mountsPanel, int labelWidth, int bindingWidth, int orderWidth)
+        private void BuildThingsPanel(Panel mountsPanel, int labelWidth, int bindingWidth, int orderWidth)
         {
             var anetImage = new Image
             {
@@ -208,7 +208,7 @@ namespace Manlaan.Mounts.Views
             }
         }
 
-        private void BuildDefaultMountPanel(Panel defaultMountPanel, int labelWidth2, int mountsAndRadialInputWidth)
+        private void BuildGeneralSettingsPanel(Panel defaultMountPanel, int labelWidth2, int mountsAndRadialInputWidth)
         {
             Label settingDefaultMountKeybind_Label = new Label()
             {
@@ -255,9 +255,34 @@ namespace Manlaan.Mounts.Views
                 Module._settingKeybindBehaviour.Value = settingKeybindBehaviour_Select.SelectedItem;
             };
 
-            Label settingDisplayModuleOnLoadingScreen_Label = new Label()
+            Label settingJumpbinding_Label = new Label()
             {
                 Location = new Point(0, settingKeybindBehaviour_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "In-game Jump key binding: ",
+                BasicTooltipText = "Used to detect gliding better for the IsPlayerGlidingOrFalling radial context."
+            };
+            new Image
+            {
+                Parent = defaultMountPanel,
+                Size = new Point(16, 16),
+                Location = new Point(settingJumpbinding_Label.Right - 80, settingJumpbinding_Label.Bottom - 16),
+                Texture = anetTexture,
+            };
+            settingDefaultMount_Keybind = new KeybindingAssigner(Module._settingJumpBinding.Value)
+            {
+                NameWidth = 0,
+                Size = new Point(mountsAndRadialInputWidth, 20),
+                Parent = defaultMountPanel,
+                Location = new Point(settingJumpbinding_Label.Right + 4, settingJumpbinding_Label.Top - 1),
+            };
+
+            Label settingDisplayModuleOnLoadingScreen_Label = new Label()
+            {
+                Location = new Point(0, settingJumpbinding_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -381,7 +406,7 @@ namespace Manlaan.Mounts.Views
             };
         }
 
-        private void BuildRadialPanel(Container radialPanel, int labelWidth, int mountsAndRadialInputWidth)
+        private void BuildRadialSettingsPanel(Container radialPanel, int labelWidth, int mountsAndRadialInputWidth)
         {
             Label settingMountRadialSettingsMount_Label = new Label()
             {

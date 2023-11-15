@@ -313,6 +313,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = RadialSettingsDetailPanel,
                 Text = "Center: ",
+                BasicTooltipText = "Which action is displayed in the middle of the radial."
             };
             Dropdown settingRadialCenterMountBehavior_Select = new Dropdown()
             {
@@ -336,6 +337,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = RadialSettingsDetailPanel,
                 Text = "Remove center from radial: ",
+                BasicTooltipText = "Removes the center action from the radial ring when selected."
             };
             Checkbox settingRadialRemoveCenterMount_Checkbox = new Checkbox()
             {
@@ -387,7 +389,8 @@ namespace Manlaan.Mounts.Views
                     AutoSizeHeight = false,
                     WrapText = false,
                     Parent = RadialSettingsDetailPanel,
-                    Text = "Apply instantly if single"
+                    Text = "Apply instantly if single",
+                    BasicTooltipText = "When there is only 1 action configured in a radial context and this option is checked we do not display the radial, but we perform the action immediately instead."
                 };
                 Checkbox radialSettingsApplyInstantlyIfSingle_Checkbox = new Checkbox()
                 {

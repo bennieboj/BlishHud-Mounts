@@ -43,6 +43,11 @@ On the right you'll see a list of settings:
   - `radial` (see [radial-settings](#radial-settings)
   - `default` always use the same action.
 
+#### The jump keybind
+- Used to detect if the player is gliding in [the IsPlayerGlidingOrFalling radial context](#gliding-and-falling-detection).
+  - This must match the in-game keybind as described in [keybinds](#keybinds)
+
+
 #### Display the module on the loading screen
 Either display or not display the module on the loading screen.
 
@@ -79,7 +84,9 @@ These radial settings are globally applied and should be self explanatory:
 - Start angle of the first thing/action in the list
 - Icon size
 - Icon opacity
-- Action camera keybinding (used to toggle action camera, radial doesn't function well in action camera)
+- Action camera keybinding
+  - Used to toggle action camera, radial doesn't function well in action camera
+  - This must match the in-game keybind as described in [keybinds](#keybinds)
 
 ### Custom Radial Settings (2nd tab)
 Custom radial settings come in two forms:
@@ -113,7 +120,17 @@ The last radial setting/context is the default, this one is always active and is
 Which radial settings/context is active is a bit hidden for the end user, but should generally work fine, if you want more information on this enabling [additional debug data will help](#debugging-option-and-logging).
 
 ##### Underwater in SotO maps
-The underwater radial settings/context currently does not support SotO under water areas.
+Normally all water is at the same level (z = 0).
+The underwater radial settings/context currently does not support SotO under water areas (some of these are above above z = 0).
+
+##### Gliding and falling detection
+Gliding and falling is detected by looking at the z values of the player character and calculating the velocity of that movement.
+Gliding only happens downwards and flying can happen both up and downwards (e.g. being catapulted by dismounting, jumping into the air).
+
+Initially there was only 1 threshold for both gliding and falling, but this caused false positives when walking up and down sloped surfaces.
+
+Since version 1.4.2 the threshold for falling has been increased to avoid false positives.
+The threshold for gliding has lowered for better detection and an extra input (based on [the jump keybind](#the-jump-keybind)) has been added to avoid triggering when walking on sloped surfaces.
 
 ##### Unmounting since 1.4.0
 In version 1.3.3 we handled unmounting in the following way:
@@ -137,7 +154,7 @@ Per radial settings/context we have the following options:
 The settings/context is ignored when not enabled.
 
 ##### Apply instantly if single
-When there is only 1 action configured in a radial/context and this option is checked we do not display the radial, but we perform the action immediately instead.
+When there is only 1 action configured in a radial context and this option is checked we do not display the radial, but we perform the action immediately instead.
 Remember the "hard coded logic" we talked about earlier in the section, this is the replacement of this.
 
 ##### Default action
@@ -147,7 +164,7 @@ This action is chosen when
 
 ##### Center action
 - Center: Which action is displayed in the middle of the radial.
-- Remove center from radial: remove the center action from the radial ring when selected.
+- Remove center from radial: removes the center action from the radial ring when selected.
 
 ##### List of actions
 The list of actions that are used in this radial settings/context.

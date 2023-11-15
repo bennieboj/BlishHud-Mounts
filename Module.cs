@@ -68,9 +68,9 @@ namespace Manlaan.Mounts
         public static SettingEntry<float> _settingMountRadialIconSizeModifier;
         public static SettingEntry<float> _settingMountRadialIconOpacity;
         public static SettingEntry<KeyBinding> _settingMountRadialToggleActionCameraKeyBinding;
-
         public static SettingEntry<bool> _settingDisplayModuleOnLoadingScreen;
         public static SettingEntry<bool> _settingMountAutomaticallyAfterLoadingScreen;
+        public static SettingEntry<KeyBinding> _settingJumpBinding;
 
 
 
@@ -352,10 +352,11 @@ namespace Manlaan.Mounts
             _settingMountRadialToggleActionCameraKeyBinding = settings.DefineSetting("MountRadialToggleActionCameraKeyBinding", new KeyBinding(Keys.F10), () => Strings.Setting_MountRadialToggleActionCameraKeyBinding, () => "");
             _settingDrawIconIds = settings.DefineSetting("DrawIconIds", new List<int> { 0 });
             _settingUserDefinedRadialIds = settings.DefineSetting("UserDefinedRadialIds", new List<int> {});
-
             _settingDisplayModuleOnLoadingScreen = settings.DefineSetting("DisplayModuleOnLoadingScreen", false, () => Strings.Setting_DisplayModuleOnLoadingScreen, () => "");
             _settingMountAutomaticallyAfterLoadingScreen = settings.DefineSetting("MountAutomaticallyAfterLoadingScreen", false, () => Strings.Setting_MountAutomaticallyAfterLoadingScreen, () => "");
-
+            _settingJumpBinding = settings.DefineSetting("JumpKeybinding", new KeyBinding(Keys.Space));
+            _settingJumpBinding.Value.Enabled = true;
+            _settingJumpBinding.Value.Activated += delegate { _helper.UpdateLastJumped(); };
 
 
             ContextualRadialSettings = new List<ContextualRadialThingSettings>
