@@ -66,6 +66,7 @@ Settings related to out of combat queueing:
 
 The following actions are usable in-game when in combat:
 - For both [Skyscale](https://wiki.guildwars2.com/wiki/Skyscale_(skill)) and [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)) when the  [Combat Launch Mastery](https://wiki.guildwars2.com/wiki/Combat_Launch) is unlocked.
+  - It is not possible to read in-game cooldowns via mumble, so the module does not know when the [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)) skill is available.
   - The game launches you in the air for both these skills when you're in combat, see "Mechanics": [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)).
   - If you don't want to use this combat launch mastery for skyscale you can disable the "Combat Launch mastery unlocked" setting. 
 - Unmount
@@ -248,7 +249,11 @@ GitHub releases are out of date.
 Recent releases moved to in-Blish-HUD repository: https://blishhud.com/docs/user/installing-modules.
 
 ## Credits
+Code:
 - [Manlaan](https://github.com/manlaan) for the original implementation with only icons and mounts.
+
+Art resources (see resources/user-provided folder):
 - Ghost for the original transparant mount art for Raptor, Springer, Skimmer, Jackal, Griffon, Roller Beetle, Skyscale and Warclaw (taken from https://github.com/Friendly0Fire/GW2Radial/blob/master/readme.md with FriendlyFire's permission.)
 - Vixen for the transparant mount art for Siege Turtle.
-- maanlichtje for the new transparant mount art, both colored and white with and without outline (see resources folder).
+- maanlichtje for the transparant mount art, both colored and white with and without outline.
+- dingus179 for the transparant mastery icons

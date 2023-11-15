@@ -134,7 +134,18 @@ namespace Manlaan.Mounts
                 "tonic.png",
                 "scanforrift.png",
                 "skyscaleleap.png",
-                "unmount.png"
+                "unmount.png",
+                "unmount-trans.png",
+                "fishing-trans.png",
+                "fishing-trans-color.png",
+                "jadebotwaypoint-trans.png",
+                "jadebotwaypoint-trans-color.png",
+                "scanforrift-trans.png",
+                "scanforrift-trans-color.png",
+                "skiff-trans.png",
+                "skiff-trans-color.png",
+                "skyscaleleap-trans.png",
+                "skyscaleleap-trans-color.png"
             };
             thingsDirectory = DirectoriesManager.GetFullDirectoryPath("mounts");
             mountsFilesInRef.ForEach(f => ExtractFile(f, thingsDirectory));
