@@ -145,7 +145,17 @@ namespace Manlaan.Mounts
                 "skiff-trans.png",
                 "skiff-trans-color.png",
                 "skyscaleleap-trans.png",
-                "skyscaleleap-trans-color.png"
+                "skyscaleleap-trans-color.png",
+                "tonic-paint.png",
+                "tonic-white.png",
+                "toy-paint.png",
+                "toy-white.png",
+                "chair-paint.png",
+                "chair-whiite.png",
+                "held-paint.png",
+                "held-white.png",
+                "music-paint.png",
+                "music-white.png"
             };
             thingsDirectory = DirectoriesManager.GetFullDirectoryPath("mounts");
             mountsFilesInRef.ForEach(f => ExtractFile(f, thingsDirectory));

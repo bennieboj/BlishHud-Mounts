@@ -256,4 +256,4 @@ Art resources (see resources/user-provided folder):
 - Ghost for the original transparant mount art for Raptor, Springer, Skimmer, Jackal, Griffon, Roller Beetle, Skyscale and Warclaw (taken from https://github.com/Friendly0Fire/GW2Radial/blob/master/readme.md with FriendlyFire's permission.)
 - Vixen for the transparant mount art for Siege Turtle.
 - maanlichtje for the transparant mount art, both colored and white with and without outline.
-- dingus179 for the transparant mastery icons
+- dingus179 for the transparant mastery and novelty icons
