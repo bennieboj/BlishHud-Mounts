@@ -1,6 +1,6 @@
 {
   "name": "Mounts & More",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -36,7 +36,8 @@
 
 /*
     "changelog": {
-        "1.4.3": "2023-11-??: Added transparent mastery and novelty icons provided by dingus179",
+        "1.4.4": "2023-11-20: Fix out of combat queuing.",
+        "1.4.3": "2023-11-17: Added transparent mastery and novelty icons provided by dingus179",
         "1.4.2": "2023-11-15: Changed flying thresholds + fixed a crash + fixed mouse input being captured by icons when not enabled + clarified radial misconfiguration + added validation for overlapping keybinds in settings + switch IsPlayerGlidingOrFalling and IsPlayerUnderWater order + prevented user-defined keybinds to stay activated after deletion",
         "1.4.1": "2023-11-05: Put all mounts in by default (new users). + Display default settings in the settings screens by default. + Prevent still activating previously queued mount when already mounted skyscale in combat via combat mastery.",
         "1.4.0": "2023-11-03: public release",
