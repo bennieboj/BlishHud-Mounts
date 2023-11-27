@@ -257,3 +257,4 @@ Art resources (see resources/user-provided folder):
 - Vixen for the transparant mount art for Siege Turtle.
 - maanlichtje for the transparant mount art, both colored and white with and without outline.
 - dingus179 for the transparant mastery and novelty icons
+- rodentmastermind for making the transparant icons more consistent
