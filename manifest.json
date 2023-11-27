@@ -36,6 +36,7 @@
 
 /*
     "changelog": {
+        "1.4.5": "2023-11-27: Fix prevent user defined radial settings keybinds also triggering contextual radial settings + add icons by rodentmastermind",
         "1.4.4": "2023-11-20: Fix out of combat queuing.",
         "1.4.3": "2023-11-17: Added transparent mastery and novelty icons provided by dingus179",
         "1.4.2": "2023-11-15: Changed flying thresholds + fixed a crash + fixed mouse input being captured by icons when not enabled + clarified radial misconfiguration + added validation for overlapping keybinds in settings + switch IsPlayerGlidingOrFalling and IsPlayerUnderWater order + prevented user-defined keybinds to stay activated after deletion",
