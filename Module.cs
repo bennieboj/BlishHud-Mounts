@@ -352,7 +352,7 @@ namespace Manlaan.Mounts
             _settingsLastRunMigrationVersion = settings.DefineSetting("LastRunMigrationVersion", 0);
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
             _settingDefaultMountBinding.Value.Enabled = true;
-            _settingDefaultMountBinding.Value.Activated += async delegate { await DoKeybindActionAsync(); };
+            _settingDefaultMountBinding.Value.Activated += async delegate { await DoKeybindActionAsync(KeybindTriggerType.Module); };
             _settingDefaultMountBinding.Value.BindingChanged += UpdateSettings;
             _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "Radial");
             _settingKeybindBehaviour = settings.DefineSetting("KeybindBehaviour", "Radial");
@@ -614,9 +614,15 @@ namespace Manlaan.Mounts
             };
         }
 
-        private async Task DoKeybindActionAsync()
+        private async Task DoKeybindActionAsync(KeybindTriggerType caller)
         {
             Logger.Debug($"{nameof(DoKeybindActionAsync)} entered");
+
+            if(caller == KeybindTriggerType.UserDefined)
+            {
+                ShowRadial(caller);
+                return;
+            }
 
             var selectedRadialSettings = _helper.GetApplicableContextualRadialThingSettings();
             Logger.Debug($"{nameof(DoKeybindActionAsync)} radial applicable settings: {selectedRadialSettings.Name}");
@@ -643,14 +649,20 @@ namespace Manlaan.Mounts
                     Logger.Debug($"{nameof(DoKeybindActionAsync)} KeybindBehaviour default");
                     break;
                 case "Radial":
-                    if (ShouldShowModule())
-                    {
-                        _radial?.Show();
-                        Logger.Debug($"{nameof(DoKeybindActionAsync)} KeybindBehaviour radial");
-                    }
+                    ShowRadial(caller);
                     break;
             }
             return;
+        }
+
+        private void ShowRadial(KeybindTriggerType caller)
+        {
+
+            if (ShouldShowModule())
+            {
+                _radial?.Show();
+                Logger.Debug($"{nameof(DoKeybindActionAsync)} KeybindBehaviour radial, caller {caller}");
+            }
         }
         
         private async Task HandleCombatChangeAsync(object sender, ValueEventArgs<bool> e)

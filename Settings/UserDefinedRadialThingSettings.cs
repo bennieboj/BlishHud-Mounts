@@ -12,13 +12,13 @@ namespace Mounts.Settings
     internal class UserDefinedRadialThingSettings : RadialThingSettings
     {
         public int Id { get; }
-        public Func<Task> _callback { get; }
+        public Func<KeybindTriggerType, Task> _callback { get; }
         public override string Name { get => NameSetting.Value; }
 
         public SettingEntry<string> NameSetting;
         public SettingEntry<KeyBinding> Keybind;
 
-        public UserDefinedRadialThingSettings(SettingCollection settingCollection, int id, Func<Task> callback)
+        public UserDefinedRadialThingSettings(SettingCollection settingCollection, int id, Func<KeybindTriggerType, Task> callback)
             : base(settingCollection, $"RadialThingSettings{id}", true, new List<Thing>())
         {
             Id = id;
@@ -26,7 +26,7 @@ namespace Mounts.Settings
             NameSetting = settingCollection.DefineSetting($"RadialThingSettings{Id}Name", "");
             Keybind = settingCollection.DefineSetting($"RadialThingSettings{Id}Keybind", new KeyBinding(Keys.None));
             Keybind.Value.Enabled = true;
-            Keybind.Value.Activated += async delegate { await _callback.Invoke(); };
+            Keybind.Value.Activated += async delegate { await _callback.Invoke(KeybindTriggerType.UserDefined); };
         }
 
         public override void DeleteFromSettings(SettingCollection settingCollection)
