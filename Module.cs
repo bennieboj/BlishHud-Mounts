@@ -155,7 +155,27 @@ namespace Manlaan.Mounts
                 "held-paint.png",
                 "held-white.png",
                 "music-paint.png",
-                "music-white.png"
+                "music-white.png",
+                "skimmer-remix.png",
+                "skyscaleleap-remix.png",
+                "skyscale-remix.png",
+                "springer-remix.png",
+                "tonic-remix.png",
+                "toy-remix.png",
+                "turtle-remix.png",
+                "unmount-remix.png",
+                "warclaw-remix.png",
+                "chair-remix.png",
+                "fishing-remix.png",
+                "griffon-remix.png",
+                "held-remix.png",
+                "jackal-remix.png",
+                "jadebotwaypoint-remix.png",
+                "music-remix.png",
+                "raptor-remix.png",
+                "roller-remix.png",
+                "scanforrift-remix.png",
+                "skiff-remix.png"
             };
             thingsDirectory = DirectoriesManager.GetFullDirectoryPath("mounts");
             mountsFilesInRef.ForEach(f => ExtractFile(f, thingsDirectory));
