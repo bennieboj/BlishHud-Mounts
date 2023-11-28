@@ -1,6 +1,6 @@
 {
   "name": "Mounts & More",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -36,6 +36,7 @@
 
 /*
     "changelog": {
+        "1.4.6": "2023-11-28: Set mouse position relative to game window.",
         "1.4.5": "2023-11-27: Fix prevent user defined radial settings keybinds also triggering contextual radial settings + add icons by rodentmastermind",
         "1.4.4": "2023-11-20: Fix out of combat queuing.",
         "1.4.3": "2023-11-17: Added transparent mastery and novelty icons provided by dingus179",
