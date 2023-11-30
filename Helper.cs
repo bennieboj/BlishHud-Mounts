@@ -105,7 +105,7 @@ namespace Manlaan.Mounts
             var zPositionDiff = currentZPosition - _lastZPosition;
             var velocity = zPositionDiff / secondsDiff;
 
-            if (secondsDiff < 0.015)
+            if (secondsDiff < 0.1f)
             {
                 return;
             }
