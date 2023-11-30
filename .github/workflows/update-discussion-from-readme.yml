@@ -1,5 +1,8 @@
 name: Update Discussion based on readme
 
+# workflows requires the following permissions in github: repo, workflow
+# use token as password in git: https://github.com/settings/tokens
+
 on:
   push:
     branches:
