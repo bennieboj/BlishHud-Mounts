@@ -272,7 +272,7 @@ namespace Manlaan.Mounts.Views
                 Location = new Point(settingJumpbinding_Label.Right - 80, settingJumpbinding_Label.Bottom - 16),
                 Texture = anetTexture,
             };
-            settingDefaultMount_Keybind = new KeybindingAssigner(Module._settingJumpBinding.Value)
+            var settingJump_Keybind = new KeybindingAssigner(Module._settingJumpBinding.Value)
             {
                 NameWidth = 0,
                 Size = new Point(mountsAndRadialInputWidth, 20),
