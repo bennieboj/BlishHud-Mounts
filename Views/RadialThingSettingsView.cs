@@ -414,7 +414,7 @@ namespace Manlaan.Mounts.Views
                     WrapText = false,
                     Parent = RadialSettingsDetailPanel,
                     Text = "Unconditionally Do Action",
-                    BasicTooltipText = "Used to disable out of combat queuing, LastUsed and \"mount automatically\". Only useful when the user has configured a mount action (e.g.: Raptor) instead of the dismount action to dismount in the IsPlayerMounted contextual radial settings."
+                    BasicTooltipText = "Used to disable \"out of combat queuing\", \"LastUsed\" and \"mount automatically\" functionality. Only useful when the user has configured a mount action (e.g.: Raptor) instead of the dismount action to dismount in the IsPlayerMounted contextual radial settings."
                 };
                 Checkbox radialSettingsUnconditionallyDoAction_Checkbox = new Checkbox()
                 {

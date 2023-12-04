@@ -40,7 +40,7 @@ On the right you'll see a list of settings:
 #### The `module keybind`
 - The keybind itself
 - `module keybind` behaviour
-  - `radial` (see [radial-settings](#radial-settings)
+  - `radial` (see [radial-settings](#radial-settings-2nd-tab))
   - `default` always use the same action.
 
 #### The jump keybind
@@ -51,7 +51,7 @@ On the right you'll see a list of settings:
 #### Display the module on the loading screen
 Either display or not display the module on the loading screen.
 
-#### Mount automatically on the same mount when using a loading screen.
+#### Mount automatically after loading screen
 StoreThingForLaterActivation: keeps track of which character is mounted on which mount and re-applies this afterwards. Only applicable on mounts, since for other things we cannot determine if it's in use via the API.
 
 
@@ -175,7 +175,7 @@ When there is only 1 action configured in a radial context and this option is ch
 Remember the "hard coded logic" we talked about earlier in the section, this is the replacement of this.
 
 ##### Unconditionally Do Action
-Used to disable out of combat queuing, LastUsed and "mount automatically after loading screen".
+Used to disable [out of combat queuing](#out-of-combat-queuing), [LastUsed](#center-action) and [mount automatically after loading screen](#mount-automatically-after-loading-screen).
 Only useful when the user has configured a mount action (e.g.: Raptor) instead of the dismount action to dismount in the IsPlayerMounted contextual radial settings.
 
 #### User-defined Radial Settings
