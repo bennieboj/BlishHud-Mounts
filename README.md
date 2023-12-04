@@ -167,7 +167,7 @@ In version 1.4.0 we handle unmounting in the following way:
  - By default from versions 1.4.0 till 1.4.7 the following is migrated: IsPlayerMounted enabled, unmount added. The only thing you need to do is to set the dismount keybind.
  - If you don't want to use the dismount action in the IsPlayerMounted radial settings, please replace it with a mount (e.g.: raptor) and enable [Unconditionally Do Action](#unconditionally-do-action)).
    - By default from versions 1.4.8 onwards the following is migrated: IsPlayerMounted enabled, Raptor added and "Unconditionally Do Action" set to true for IsPlayerMounted. No keybind additions are required. This puts this functionality more in line with how it was in 1.3.3.
-
+ 
 Per radial settings/context we have the following options:
 
 ##### Apply instantly if single
