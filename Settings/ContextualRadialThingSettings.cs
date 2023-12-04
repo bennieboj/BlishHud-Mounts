@@ -13,18 +13,20 @@ namespace Mounts.Settings
         public readonly int Order;
         public readonly Func<bool> IsApplicable;
         public SettingEntry<bool> ApplyInstantlyIfSingle;
+        public SettingEntry<bool> UnconditionallyDoAction;
 
         public bool IsDefault => Order == 99;
 
         public override string Name { get => _name; }
 
-        public ContextualRadialThingSettings(SettingCollection settingCollection, string name, int order, Func<bool> isApplicable, bool defaultIsEnabled, bool defaultApplyInstantlyIfSingle, IList<Thing> defaultThings)
+        public ContextualRadialThingSettings(SettingCollection settingCollection, string name, int order, Func<bool> isApplicable, bool defaultIsEnabled, bool defaultApplyInstantlyIfSingle, bool defaultUnconditionallyDoAction, IList<Thing> defaultThings)
             : base(settingCollection, $"RadialThingSettings{name}", defaultIsEnabled, defaultThings)
         {
             _name = name;
             Order = order;
             IsApplicable = isApplicable;
             ApplyInstantlyIfSingle = settingCollection.DefineSetting($"RadialThingSettings{_name}ApplyInstantlyIfSingle", defaultApplyInstantlyIfSingle);
+            UnconditionallyDoAction = settingCollection.DefineSetting($"RadialThingSettings{_name}UnconditionallyDoAction", defaultUnconditionallyDoAction);
 
             ThingsSetting.SettingChanged += ThingsSetting_SettingChanged;
         }

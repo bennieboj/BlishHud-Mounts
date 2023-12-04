@@ -402,13 +402,13 @@ namespace Manlaan.Mounts
 
             ContextualRadialSettings = new List<ContextualRadialThingSettings>
             {
-                new ContextualRadialThingSettings(settings, "IsPlayerMounted", 0, _helper.IsPlayerMounted, true, true, _things.Where(t => t is UnMount).ToList()),
-                new ContextualRadialThingSettings(settings, "IsPlayerInWvwMap", 1, _helper.IsPlayerInWvwMap, true, true, _things.Where(t => t is Warclaw).ToList()),
-                new ContextualRadialThingSettings(settings, "IsPlayerInCombat", 2, _helper.IsPlayerInCombat, false, true, _things.Where(t => t is Skyscale).ToList()),                
-                new ContextualRadialThingSettings(settings, "IsPlayerUnderWater", 3, _helper.IsPlayerUnderWater, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList()),
-                new ContextualRadialThingSettings(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, _things.Where(t => t is Skiff).ToList()),
-                new ContextualRadialThingSettings(settings, "IsPlayerGlidingOrFalling", 5, _helper.IsPlayerGlidingOrFalling, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList()),
-                new ContextualRadialThingSettings(settings, "Default", 99, () => true, true, false, thingsForMigration)
+                new ContextualRadialThingSettings(settings, "IsPlayerMounted", 0, _helper.IsPlayerMounted, true, true, true, _things.Where(t => t is Raptor).ToList()),
+                new ContextualRadialThingSettings(settings, "IsPlayerInWvwMap", 1, _helper.IsPlayerInWvwMap, true, true, false, _things.Where(t => t is Warclaw).ToList()),
+                new ContextualRadialThingSettings(settings, "IsPlayerInCombat", 2, _helper.IsPlayerInCombat, false, true, false, _things.Where(t => t is Skyscale).ToList()),                
+                new ContextualRadialThingSettings(settings, "IsPlayerUnderWater", 3, _helper.IsPlayerUnderWater, false, false, false, _things.Where(t => t is Skimmer || t is SiegeTurtle).ToList()),
+                new ContextualRadialThingSettings(settings, "IsPlayerOnWaterSurface", 4, _helper.IsPlayerOnWaterSurface, false, true, false, _things.Where(t => t is Skiff).ToList()),
+                new ContextualRadialThingSettings(settings, "IsPlayerGlidingOrFalling", 5, _helper.IsPlayerGlidingOrFalling, false, false, false, _things.Where(t => t is Griffon || t is Skyscale).ToList()),
+                new ContextualRadialThingSettings(settings, "Default", 99, () => true, true, false, false, thingsForMigration)
             };
 
 
@@ -649,7 +649,7 @@ namespace Manlaan.Mounts
             var things = selectedRadialSettings.AvailableThings;
             if (things.Count() == 1 && selectedRadialSettings.ApplyInstantlyIfSingle.Value)
             {
-                await things.FirstOrDefault()?.DoAction();
+                await things.FirstOrDefault()?.DoAction(selectedRadialSettings.UnconditionallyDoAction.Value);
                 Logger.Debug($"{nameof(DoKeybindActionAsync)} not showing radial selected thing: {selectedRadialSettings.Things.First().Name}");
                 return;
             }
@@ -657,7 +657,7 @@ namespace Manlaan.Mounts
             var defaultThing = selectedRadialSettings.GetDefaultThing();
             if (defaultThing != null && GameService.Input.Mouse.CameraDragging)
             {
-                await (defaultThing?.DoAction() ?? Task.CompletedTask);
+                await (defaultThing?.DoAction(false) ?? Task.CompletedTask);
                 Logger.Debug($"{nameof(DoKeybindActionAsync)} CameraDragging default");
                 return;
             }
@@ -665,7 +665,7 @@ namespace Manlaan.Mounts
             switch (_settingKeybindBehaviour.Value)
             {
                 case "Default":
-                    await (defaultThing?.DoAction() ?? Task.CompletedTask);
+                    await (defaultThing?.DoAction(false) ?? Task.CompletedTask);
                     Logger.Debug($"{nameof(DoKeybindActionAsync)} KeybindBehaviour default");
                     break;
                 case "Radial":
@@ -694,7 +694,7 @@ namespace Manlaan.Mounts
                 {
                     var thingInCombat = _helper.GetQueuedThing();
                     Logger.Debug($"{nameof(HandleCombatChangeAsync)} Applied queued for out of combat: {thingInCombat?.Name}");
-                    await (thingInCombat?.DoAction() ?? Task.CompletedTask);
+                    await (thingInCombat?.DoAction(false) ?? Task.CompletedTask);
                 }
                 else
                 {

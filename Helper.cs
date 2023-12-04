@@ -195,7 +195,7 @@ namespace Manlaan.Mounts
         {
             var thing = StoredThingForLater[characterName];
             Logger.Debug($"{nameof(ClearSomethingStoredForLaterActivation)} {thing?.Name} for character: {characterName}");
-            await thing?.DoAction();
+            await thing?.DoAction(false);
             ClearSomethingStoredForLaterActivation(characterName);
         }
 

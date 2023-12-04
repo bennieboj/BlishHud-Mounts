@@ -48,7 +48,7 @@ namespace Manlaan.Mounts.Things
                 HoverIcon = img,
                 Priority = 10
             };
-            CornerIcon.Click += async delegate { await DoAction(); };
+            CornerIcon.Click += async delegate { await DoAction(false); };
         }
 
         public void DisposeCornerIcon()
@@ -56,8 +56,14 @@ namespace Manlaan.Mounts.Things
             CornerIcon?.Dispose();
         }
 
-        public async Task DoAction()
+        public async Task DoAction(bool unconditionallyDoAction)
         {
+            if (unconditionallyDoAction)
+            {
+                await Helper.TriggerKeybind(KeybindingSetting);
+                return;
+            }
+
             if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat && Module._settingEnableMountQueueing.Value && !IsUsableInCombat())
             {
                 Logger.Debug($"{nameof(DoAction)} Set queued for out of combat: {Name}");

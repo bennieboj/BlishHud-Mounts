@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using Mounts;
+using Mounts.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +38,7 @@ namespace Manlaan.Mounts.Controls
         private List<RadialThing> RadialThings = new List<RadialThing>();
 
         private RadialThing SelectedMount => RadialThings.SingleOrDefault(m => m.Selected);
+        private RadialThingSettings SelectedSettings = null;
 
         public override int ZIndex { get => base.ZIndex; set => base.ZIndex = value; }
         public bool IsActionCamToggledOnMount { get; private set; }
@@ -91,6 +93,8 @@ namespace Manlaan.Mounts.Controls
             {
                 return;
             }
+
+            SelectedSettings = applicableRadialSettings;
 
             var things = applicableRadialSettings.AvailableThings.ToList();
             if (!things.Any())
@@ -231,7 +235,14 @@ namespace Manlaan.Mounts.Controls
 
         public async Task TriggerSelectedMountAsync()
         {
-            await (SelectedMount?.Thing.DoAction() ?? Task.CompletedTask);
+            var unconditionallyDoAction = false;
+            if (SelectedSettings!= null && SelectedSettings is ContextualRadialThingSettings)
+            {
+                unconditionallyDoAction = ((ContextualRadialThingSettings)SelectedSettings).UnconditionallyDoAction.Value;
+            }
+
+            await (SelectedMount?.Thing.DoAction(unconditionallyDoAction) ?? Task.CompletedTask);
+            SelectedSettings = null;
         }
 
 

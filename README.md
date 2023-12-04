@@ -52,7 +52,7 @@ On the right you'll see a list of settings:
 Either display or not display the module on the loading screen.
 
 #### Mount automatically on the same mount when using a loading screen.
-Keep track of which character is mounted on which mount and re-apply this afterwards. Only applicable on mounts, since for other things we cannot determine if it's in use via the API.
+StoreThingForLaterActivation: keeps track of which character is mounted on which mount and re-applies this afterwards. Only applicable on mounts, since for other things we cannot determine if it's in use via the API.
 
 
 #### Out of Combat queuing
@@ -89,13 +89,31 @@ These radial settings are globally applied and should be self explanatory:
   - Used to toggle action camera, radial doesn't function well in action camera
   - This must match the in-game keybind as described in [keybinds](#keybinds)
 
-### Custom Radial Settings (2nd tab)
+### Radial Settings (2nd tab)
 Custom radial settings come in two forms:
 - contextual radial settings
 - user-defined radial settings
 
-#### Contextual Radial Settings
+Some settings are common for both contextual- and user-defined radial settings:
 
+#### Enabled
+The settings/context is ignored when not enabled.
+
+#### Default action
+This action is chosen when
+- you selected "Default" as `module keybind` behaviour
+- dragging the mouse via right click drag (the mouse being hidden conflicts with action cam detection)
+
+#### Center action
+- Center: Which action is displayed in the middle of the radial, either Default (see 1 item higher) or LastUsed.
+- Remove center from radial: removes the center action from the radial ring when selected.
+
+#### List of actions
+The list of actions that are used in this radial settings/context.
+
+❗ If there are actions in the list that do not have a keybind set in the general settings then they will be displayed in red.
+
+#### Contextual Radial Settings
 Module versions up until v1.3.3 contained hard coded logic for automatic dismounting, default water mount, default flying mount, default WvW mount, etc.
 
 Later versions got rid of this since the logic became too complex to maintain. Now this logic is configurable by the end user in the form of so-called radials settings (or contexts if you will).
@@ -137,7 +155,7 @@ The threshold for gliding has lowered for better detection and an extra input (b
 In version 1.3.3 we handled unmounting in the following way:
 
  - We detect if the player is mounted (this is hard coded).
- - We dismount using any configured mount.
+ - We dismount using the action of the active mount.
 
 In version 1.4.0 we handle unmounting in the following way:
 
@@ -146,31 +164,19 @@ In version 1.4.0 we handle unmounting in the following way:
  - If you select only 1 thing and select "Apply Instantly if single" then we immediately do the single action.
  - The mount/dismount keybind is used to also unmount from chairs, etc.
  - You can dismount using the mount/dismount action.
-- By default the following is migrated: IsPlayerMounted enabled, unmount added. The only thing you need to do is to set the dismount keybind.
-
+ - By default from versions 1.4.0 till 1.4.7 the following is migrated: IsPlayerMounted enabled, unmount added. The only thing you need to do is to set the dismount keybind.
+ - If you don't want to use the dismount action in the IsPlayerMounted radial settings, please replace it with a mount (e.g.: raptor) and enable [Unconditionally Do Action](#unconditionally-do-action)).
+   - By default from versions 1.4.8 onwards the following is migrated: IsPlayerMounted enabled, Raptor added and "Unconditionally Do Action" set to true for IsPlayerMounted. No keybind additions are required. This puts this functionality more in line with how it was in 1.3.3.
 
 Per radial settings/context we have the following options:
-
-##### Enabled
-The settings/context is ignored when not enabled.
 
 ##### Apply instantly if single
 When there is only 1 action configured in a radial context and this option is checked we do not display the radial, but we perform the action immediately instead.
 Remember the "hard coded logic" we talked about earlier in the section, this is the replacement of this.
 
-##### Default action
-This action is chosen when
-- you selected "Default" as `module keybind` behaviour
-- dragging the mouse via right click drag (the mouse being hidden conflicts with action cam detection)
-
-##### Center action
-- Center: Which action is displayed in the middle of the radial.
-- Remove center from radial: removes the center action from the radial ring when selected.
-
-##### List of actions
-The list of actions that are used in this radial settings/context.
-
-❗ If there are actions in the list that do not have a keybind set in the general settings then they will be displayed in red.
+##### Unconditionally Do Action
+Used to disable out of combat queuing, LastUsed and "mount automatically after loading screen".
+Only useful when the user has configured a mount action (e.g.: Raptor) instead of the dismount action to dismount in the IsPlayerMounted contextual radial settings.
 
 #### User-defined Radial Settings
 

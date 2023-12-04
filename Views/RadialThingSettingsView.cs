@@ -380,7 +380,7 @@ namespace Manlaan.Mounts.Views
                 BuildRadialSettingsListPanel();
             };
 
-            if (currentRadialSettings is ContextualRadialThingSettings contextualRadialSettingsApplyInstantlyIfSingle)
+            if (currentRadialSettings is ContextualRadialThingSettings contextualRadialSettingsAtBottom)
             {
                 Label radialSettingsApplyInstantlyIfSingle_Label = new Label()
                 {
@@ -396,15 +396,35 @@ namespace Manlaan.Mounts.Views
                 {
                     Size = new Point(20, 20),
                     Parent = RadialSettingsDetailPanel,
-                    Checked = contextualRadialSettingsApplyInstantlyIfSingle.ApplyInstantlyIfSingle.Value,
+                    Checked = contextualRadialSettingsAtBottom.ApplyInstantlyIfSingle.Value,
                     Location = new Point(radialSettingsApplyInstantlyIfSingle_Label.Right + 5, radialSettingsApplyInstantlyIfSingle_Label.Top - 1),
                 };
                 radialSettingsApplyInstantlyIfSingle_Checkbox.CheckedChanged += delegate {
-                    contextualRadialSettingsApplyInstantlyIfSingle.ApplyInstantlyIfSingle.Value = radialSettingsApplyInstantlyIfSingle_Checkbox.Checked;
+                    contextualRadialSettingsAtBottom.ApplyInstantlyIfSingle.Value = radialSettingsApplyInstantlyIfSingle_Checkbox.Checked;
                 };
-                contextualRadialSettingsApplyInstantlyIfSingle.ApplyInstantlyIfSingle.SettingChanged += delegate
+                contextualRadialSettingsAtBottom.ApplyInstantlyIfSingle.SettingChanged += delegate
                 {
                     BuildRadialSettingsDetailPanel();
+                };
+                Label radialSettingsUnconditionallyDoAction_Label = new Label()
+                {
+                    Location = new Point(0, radialSettingsApplyInstantlyIfSingle_Label.Bottom + 6),
+                    Width = labelWidth,
+                    AutoSizeHeight = false,
+                    WrapText = false,
+                    Parent = RadialSettingsDetailPanel,
+                    Text = "Unconditionally Do Action",
+                    BasicTooltipText = "Used to disable out of combat queuing, LastUsed and \"mount automatically\". Only useful when the user has configured a mount action (e.g.: Raptor) instead of the dismount action to dismount in the IsPlayerMounted contextual radial settings."
+                };
+                Checkbox radialSettingsUnconditionallyDoAction_Checkbox = new Checkbox()
+                {
+                    Size = new Point(20, 20),
+                    Parent = RadialSettingsDetailPanel,
+                    Checked = contextualRadialSettingsAtBottom.UnconditionallyDoAction.Value,
+                    Location = new Point(radialSettingsUnconditionallyDoAction_Label.Right + 5, radialSettingsUnconditionallyDoAction_Label.Top - 1),
+                };
+                radialSettingsUnconditionallyDoAction_Checkbox.CheckedChanged += delegate {
+                    contextualRadialSettingsAtBottom.UnconditionallyDoAction.Value = radialSettingsUnconditionallyDoAction_Checkbox.Checked;
                 };
             }
 
