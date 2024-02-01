@@ -1,6 +1,6 @@
 {
   "name": "Mounts & More",
-  "version": "1.4.8",
+  "version": "1.4.9-beta1",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -36,6 +36,7 @@
 
 /*
     "changelog": {
+        "1.4.9-beta1": "2024-02-01: Adapt flying parameters.",
         "1.4.8": "2023-12-05: Added an option to the contextual radial context so users who don't want to configure the dismount key can use any mount they want in IsPlayerMounted. For more info, please check the documentation.",
         "1.4.7": "2023-11-30: Fix flying detection flickering regardless of fps.",
         "1.4.6": "2023-11-28: Set mouse position relative to game window.",

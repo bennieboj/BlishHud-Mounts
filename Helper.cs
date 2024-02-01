@@ -103,25 +103,58 @@ namespace Manlaan.Mounts
             var currentUpdateSeconds = gameTime.TotalGameTime.TotalSeconds;
             var secondsDiff = currentUpdateSeconds - _lastUpdateSeconds;
             var zPositionDiff = currentZPosition - _lastZPosition;
+
+            bool shouldUpdate = false;
+            if (false)
+            {
+                shouldUpdate = OldStuff(zPositionDiff, secondsDiff);
+            }
+            else
+            {
+                shouldUpdate = NewStuff(zPositionDiff, secondsDiff);
+            }
+
+            if (shouldUpdate)
+            {
+                _lastZPosition = currentZPosition;
+                _lastUpdateSeconds = currentUpdateSeconds;
+            }
+        }
+
+        private bool NewStuff(float zPositionDiff, double secondsDiff)
+        {
             var velocity = zPositionDiff / secondsDiff;
 
             if (secondsDiff < 0.1f)
             {
-                return;
+                return false;
             }
 
             //Module._debug.Add("velocity", () => $"{velocity.ToString("N2")}");
-            //Module._debug.Add("SpacePressed", () => $"{IsSpacePressedRecently()}.");
+            //Module._debug.Add("DidPlayerJumpRecently", () => $"{DidPlayerJumpRecently()}.");
 
             if (velocity > 10 || velocity < -10)
                 _isPlayerGlidingOrFalling = true;
-            else if(DidPlayerJumpRecently() && velocity < -2)
+            else if (DidPlayerJumpRecently() && velocity < -2)
                 _isPlayerGlidingOrFalling = true;
-            else if (velocity >= 0 && velocity < 1)
+            else
                 _isPlayerGlidingOrFalling = false;
 
-            _lastZPosition = currentZPosition;
-            _lastUpdateSeconds = currentUpdateSeconds;
+            return true;
+        }
+
+        private bool OldStuff(float zPositionDiff, double secondsDiff)
+        {
+            if (zPositionDiff < -0.0001 && secondsDiff != 0)
+            {
+                var velocity = zPositionDiff / secondsDiff;
+                _isPlayerGlidingOrFalling = velocity < -2.5;
+            }
+            else
+            {
+                _isPlayerGlidingOrFalling = false;
+            }
+            return true;
         }
 
         public static async Task TriggerKeybind(SettingEntry<KeyBinding> keybindingSetting)
