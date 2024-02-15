@@ -91,7 +91,13 @@ namespace Manlaan.Mounts
             return _isPlayerGlidingOrFalling;
         }
 
-        public void UpdateLastJumped() => lastTimeJumped = DateTime.UtcNow;
+        public void UpdateLastJumped()
+        {
+            if (!IsPlayerMounted())
+            {
+                lastTimeJumped = DateTime.UtcNow;
+            }
+        }
         private bool DidPlayerJumpRecently()
         {
             return DateTime.UtcNow.Subtract(lastTimeJumped).TotalMilliseconds < 5000;
@@ -131,7 +137,7 @@ namespace Manlaan.Mounts
             }
 
             //Module._debug.Add("velocity", () => $"{velocity.ToString("N2")}");
-            //Module._debug.Add("DidPlayerJumpRecently", () => $"{DidPlayerJumpRecently()}.");
+            Module._debug.Add("DidPlayerJumpRecently", () => $"{DidPlayerJumpRecently()}.");
 
             if (velocity > 10 || velocity < -10)
                 _isPlayerGlidingOrFalling = true;
