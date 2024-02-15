@@ -46,6 +46,7 @@ On the right you'll see a list of settings:
 #### The jump keybind
 - Used to detect if the player is gliding in [the IsPlayerGlidingOrFalling radial context](#gliding-and-falling-detection).
   - This must match the in-game keybind as described in [keybinds](#keybinds)
+  - Not taken into account when using this key whilst on a mount.
 
 
 #### Display the module on the loading screen
