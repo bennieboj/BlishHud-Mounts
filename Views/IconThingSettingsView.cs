@@ -262,7 +262,7 @@ namespace Manlaan.Mounts.Views
                     AutoSizeHeight = false,
                     WrapText = false,
                     Parent = IconSettingsDetailPanel,
-                    Text = "Enable corner iccons: "
+                    Text = "Enable corner icons: "
                 };
                 Checkbox radialSettingsDisplayCornerIcons_Checkbox = new Checkbox()
                 {
