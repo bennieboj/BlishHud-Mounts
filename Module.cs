@@ -51,6 +51,7 @@ namespace Manlaan.Mounts
 
         public static string[] _keybindBehaviours = new string[] { "Default", "Radial" };
 
+        private bool previousTriggeringState = false;
 
         public static SettingEntry<int> _settingsLastRunMigrationVersion;
 
@@ -175,7 +176,16 @@ namespace Manlaan.Mounts
                 "raptor-remix.png",
                 "roller-remix.png",
                 "scanforrift-remix.png",
-                "skiff-remix.png"
+                "skiff-remix.png",
+                "griffon_natural",
+                "jackal_natural",
+                "raptor_natural",
+                "roller_natural",
+                "skimmer_natural",
+                "skyscale_natural",
+                "springer_natural",
+                "turtle_natural",
+                "warclaw_natural"
             };
             thingsDirectory = DirectoriesManager.GetFullDirectoryPath("mounts");
             mountsFilesInRef.ForEach(f => ExtractFile(f, thingsDirectory));
@@ -372,7 +382,7 @@ namespace Manlaan.Mounts
             _settingsLastRunMigrationVersion = settings.DefineSetting("LastRunMigrationVersion", 0);
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
             _settingDefaultMountBinding.Value.Enabled = true;
-            _settingDefaultMountBinding.Value.Activated += async delegate { await DoKeybindActionAsync(KeybindTriggerType.Module); };
+            //_settingDefaultMountBinding.Value.Activated += async delegate { await DoKeybindActionAsync(KeybindTriggerType.Module); };
             _settingDefaultMountBinding.Value.BindingChanged += UpdateSettings;
             _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "Radial");
             _settingKeybindBehaviour = settings.DefineSetting("KeybindBehaviour", "Radial");
@@ -484,6 +494,24 @@ namespace Manlaan.Mounts
         protected override void Update(GameTime gameTime)
         {
             _helper.UpdatePlayerGlidingOrFalling(gameTime);
+
+            //todo: make for all UserDefinedRadialSettings keybinds!! (concurrent dictionary or something
+            //todo: change into timestamp, calculate diff
+            //todo: make setting to determine threshold
+            //todo: add settings + migration + UI
+            //todo: add documentation
+            var currentTriggeringState = _settingDefaultMountBinding.Value.IsTriggering;
+            if(!previousTriggeringState && currentTriggeringState)
+            {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                DoKeybindActionAsync(KeybindTriggerType.Module);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            }
+            else if(previousTriggeringState && !currentTriggeringState)
+            {
+
+            }
+            previousTriggeringState = currentTriggeringState;
 
             var isThingSwitchable = CanThingBeActivated();
             var moduleHidden = _lastIsThingSwitchable && !isThingSwitchable;
