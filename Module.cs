@@ -177,15 +177,15 @@ namespace Manlaan.Mounts
                 "roller-remix.png",
                 "scanforrift-remix.png",
                 "skiff-remix.png",
-                "griffon_natural",
-                "jackal_natural",
-                "raptor_natural",
-                "roller_natural",
-                "skimmer_natural",
-                "skyscale_natural",
-                "springer_natural",
-                "turtle_natural",
-                "warclaw_natural"
+                "griffon_natural.png",
+                "jackal_natural.png",
+                "raptor_natural.png",
+                "roller_natural.png",
+                "skimmer_natural.png",
+                "skyscale_natural.png",
+                "springer_natural.png",
+                "turtle_natural.png",
+                "warclaw_natural.png"
             };
             thingsDirectory = DirectoriesManager.GetFullDirectoryPath("mounts");
             mountsFilesInRef.ForEach(f => ExtractFile(f, thingsDirectory));
