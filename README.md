@@ -175,6 +175,21 @@ Per radial settings/context we have the following options:
 When there is only 1 action configured in a radial context and this option is checked we do not display the radial, but we perform the action immediately instead.
 Remember the "hard coded logic" we talked about earlier in the section, this is the replacement of this.
 
+❗ In version 1.5.0 this property is renamed to [Apply instantly on hold](#apply-instantly-on-hold). The functionality is the same, it's just a rename and migration of the property.
+
+##### Apply instantly on hold
+Version 1.5.0 of the module introduces the concept of tapping the module keybind vs holding it.
+This allows the user to instantly trigger two potential actions per contextual radial settings, one for "hold" and one for "tap".
+
+The threshold to differentiate between a "tap" and is currently hardcoded at half a second.
+
+This setting is about the "hold" part.
+
+##### Apply instantly on tap
+For context, see [Apply instantly on hold](#apply-instantly-on-hold).
+This setting is about the "tap" part.
+
+
 ##### Unconditionally Do Action
 Used to disable [out of combat queuing](#out-of-combat-queuing), [LastUsed](#center-action) and [mount automatically after loading screen](#mount-automatically-after-loading-screen).
 Only useful when the user has configured a mount action (e.g.: Raptor) instead of the dismount action to dismount in the IsPlayerMounted contextual radial settings.

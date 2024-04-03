@@ -1,4 +1,5 @@
 ﻿using Blish_HUD;
+using Blish_HUD.Input;
 using Blish_HUD.Settings;
 using Manlaan.Mounts.Things;
 using Mounts.Settings;
@@ -64,5 +65,8 @@ namespace Manlaan.Mounts
         {
             return Things.Where(m => m.LastUsedTimestamp != null).OrderByDescending(m => m.LastUsedTimestamp).FirstOrDefault();
         }
+
+        public abstract SettingEntry<KeyBinding> GetKeybind();
+        public abstract bool GetIsApplicable();
     }
 }

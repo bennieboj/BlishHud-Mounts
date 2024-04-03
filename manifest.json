@@ -1,6 +1,6 @@
 {
   "name": "Mounts & More",
-  "version": "1.4.10",
+  "version": "1.5.0-beta1",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -36,7 +36,7 @@
 
 /*
     "changelog": {
-        "1.5.0-beta1": "2024-03-20: Added natural mounts by maanlichtje. Replace ApplyInstantlyWhenSingle option with ApplyInstantlyWhenSingleTap and ApplyInstantlyWhenSingleHold.",
+        "1.5.0-beta1": "2024-03-20: Added natural mounts by maanlichtje. Replace ApplyInstantlyWhenSingle option with ApplyInstantlyOnTap and ApplyInstantlyOnHold.",
         "1.4.10": "2024-02-15: prevent mount movement ability via jump key to trigger gliding detection for 5 seconds.",
         "1.4.9": "2024-02-13: public release 1.4.9",
         "1.4.9-beta1": "2024-02-01: Adapt flying parameters.",

@@ -1,4 +1,5 @@
 ﻿using Blish_HUD;
+using Blish_HUD.Input;
 using Blish_HUD.Settings;
 using Manlaan.Mounts;
 using Manlaan.Mounts.Things;
@@ -13,6 +14,8 @@ namespace Mounts.Settings
         public readonly int Order;
         public readonly Func<bool> IsApplicable;
         public SettingEntry<bool> ApplyInstantlyIfSingle;
+        public SettingEntry<string> ApplyInstantlyOnTap;
+        public SettingEntry<string> ApplyInstantlyOnHold;
         public SettingEntry<bool> UnconditionallyDoAction;
 
         public bool IsDefault => Order == 99;
@@ -26,14 +29,24 @@ namespace Mounts.Settings
             Order = order;
             IsApplicable = isApplicable;
             ApplyInstantlyIfSingle = settingCollection.DefineSetting($"RadialThingSettings{_name}ApplyInstantlyIfSingle", defaultApplyInstantlyIfSingle);
+            ApplyInstantlyOnTap = settingCollection.DefineSetting($"RadialThingSettings{_name}ApplyInstantlyOnTap", "Disabled");
+            ApplyInstantlyOnHold = settingCollection.DefineSetting($"RadialThingSettings{_name}ApplyInstantlyOnHold", "Disabled");
             UnconditionallyDoAction = settingCollection.DefineSetting($"RadialThingSettings{_name}UnconditionallyDoAction", defaultUnconditionallyDoAction);
-
-            ThingsSetting.SettingChanged += ThingsSetting_SettingChanged;
         }
 
-        private void ThingsSetting_SettingChanged(object sender, ValueChangedEventArgs<IList<string>> e)
+        public override SettingEntry<KeyBinding> GetKeybind()
         {
-            ApplyInstantlyIfSingle.Value = ThingsSetting.Value.Count == 1;
+            return Module._settingDefaultMountBinding;
+        }
+
+        public override bool GetIsApplicable()
+        {
+            return IsApplicable();
+        }
+
+        public bool IsTapAndHoldBothApplicable()
+        {
+            return ThingsSetting.Value.Count == 2 && ApplyInstantlyOnHold.Value != "Disabled" && ApplyInstantlyOnTap.Value != "Disabled";
         }
     }
 }

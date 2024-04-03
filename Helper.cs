@@ -240,16 +240,19 @@ namespace Manlaan.Mounts
 
         internal ContextualRadialThingSettings GetApplicableContextualRadialThingSettings() => Module.ContextualRadialSettings.OrderBy(c => c.Order).FirstOrDefault(c => c.IsEnabled.Value && c.IsApplicable());
 
+        internal IEnumerable<RadialThingSettings> GetAllGenericRadialThingSettings()
+        {
+            var contextualRadialSettingsCasted = Module.ContextualRadialSettings.ConvertAll(x => (RadialThingSettings)x);
+            var userDefinedRadialSettingsCasted = Module.UserDefinedRadialSettings.ConvertAll(x => (RadialThingSettings)x);
+            return contextualRadialSettingsCasted.Concat(userDefinedRadialSettingsCasted);
+        }
+
         internal RadialThingSettings GetTriggeredRadialSettings()
         {
-            if (!Module._settingDefaultMountBinding.IsNull && Module._settingDefaultMountBinding.Value.IsTriggering)
-            {
-                return GetApplicableContextualRadialThingSettings();
-            }
+            var list = GetAllGenericRadialThingSettings().Where(s => s.GetKeybind().Value.IsTriggering && s.GetIsApplicable());
 
-            var userdefinedList = Module.UserDefinedRadialSettings.Where(s => !s.Keybind.IsNull && s.Keybind.Value.IsTriggering);
-            if (userdefinedList.Count() == 1) {
-                return userdefinedList.Single();
+            if (list.Count() == 1) {
+                return list.Single();
             }
 
             return null;
