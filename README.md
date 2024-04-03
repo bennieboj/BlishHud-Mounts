@@ -180,7 +180,7 @@ Remember the "hard coded logic" we talked about earlier in the section, this is 
 ##### Apply instantly on hold
 Version 1.5.0 of the module introduces the concept of tapping the module keybind vs holding it.
 This allows the user to instantly trigger two potential actions per contextual radial settings, one for "hold" and one for "tap".
-Both tap and hold are only evaluated when the module keybind are released.
+Both tap and hold are only evaluated when the module keybind is released.
 
 The threshold to differentiate between a "tap" and is currently hardcoded at half a second.
 
