@@ -12,6 +12,7 @@ using Mounts.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Manlaan.Mounts
@@ -22,6 +23,8 @@ namespace Manlaan.Mounts
 
         private Dictionary<string, Thing> StoredThingForLater = new Dictionary<string, Thing>();
 
+        private readonly Dictionary<(Keys, ModifierKeys), SemaphoreSlim> _semaphores;
+
         private float _lastZPosition = 0.0f;
         private double _lastUpdateSeconds = 0.0f;
         private bool _isPlayerGlidingOrFalling = false;
@@ -31,6 +34,7 @@ namespace Manlaan.Mounts
 
         public Helper(Gw2ApiManager gw2ApiManager)
         {
+            _semaphores = new Dictionary<(Keys, ModifierKeys), SemaphoreSlim>();
             Gw2ApiManager = gw2ApiManager;
 
             Module._debug.Add("StoreThingForLaterActivation", () => $"{string.Join(", ", StoredThingForLater.Select(x => x.Key + "=" + x.Value.Name).ToArray())}");
@@ -163,33 +167,58 @@ namespace Manlaan.Mounts
             return true;
         }
 
-        public static async Task TriggerKeybind(SettingEntry<KeyBinding> keybindingSetting)
+        private SemaphoreSlim GetOrCreateSemaphore(KeyBinding keyBinding)
         {
-            Logger.Debug("TriggerKeybind entered");
-            if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
+            lock (_semaphores)
             {
-                Logger.Debug($"TriggerKeybind press modifiers {keybindingSetting.Value.ModifierKeys}");
-                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
-                    Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.MENU, false);
-                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
-                    Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.CONTROL, false);
-                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
-                    Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.SHIFT, false);
+                if (!_semaphores.TryGetValue((keyBinding.PrimaryKey, keyBinding.ModifierKeys), out var semaphore))
+                {
+                    semaphore = new SemaphoreSlim(1, 1);
+                    _semaphores[(keyBinding.PrimaryKey, keyBinding.ModifierKeys)] = semaphore;
+                }
+
+                return semaphore;
             }
-            Logger.Debug($"TriggerKeybind press PrimaryKey {keybindingSetting.Value.PrimaryKey}");
-            Blish_HUD.Controls.Intern.Keyboard.Press(ToVirtualKey(keybindingSetting.Value.PrimaryKey), false);
-            await Task.Delay(50);
-            Logger.Debug($"TriggerKeybind release PrimaryKey {keybindingSetting.Value.PrimaryKey}");
-            Blish_HUD.Controls.Intern.Keyboard.Release(ToVirtualKey(keybindingSetting.Value.PrimaryKey), false);
-            if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
+        }
+
+        public async Task TriggerKeybind(SettingEntry<KeyBinding> keybindingSetting)
+        {
+            var semaphore = GetOrCreateSemaphore(keybindingSetting.Value);
+
+            await semaphore.WaitAsync();
+
+            try
             {
-                Logger.Debug($"TriggerKeybind release modifiers {keybindingSetting.Value.ModifierKeys}");
-                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
-                    Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.SHIFT, false);
-                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
-                    Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.CONTROL, false);
-                if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
-                    Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.MENU, false);
+                Logger.Debug("TriggerKeybind entered");
+                if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
+                {
+                    Logger.Debug($"TriggerKeybind press modifiers {keybindingSetting.Value.ModifierKeys}");
+                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
+                        Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.MENU, false);
+                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
+                        Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.CONTROL, false);
+                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
+                        Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.SHIFT, false);
+                }
+                Logger.Debug($"TriggerKeybind press PrimaryKey {keybindingSetting.Value.PrimaryKey}");
+                Blish_HUD.Controls.Intern.Keyboard.Press(ToVirtualKey(keybindingSetting.Value.PrimaryKey), false);
+                await Task.Delay(50);
+                Logger.Debug($"TriggerKeybind release PrimaryKey {keybindingSetting.Value.PrimaryKey}");
+                Blish_HUD.Controls.Intern.Keyboard.Release(ToVirtualKey(keybindingSetting.Value.PrimaryKey), false);
+                if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
+                {
+                    Logger.Debug($"TriggerKeybind release modifiers {keybindingSetting.Value.ModifierKeys}");
+                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
+                        Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.SHIFT, false);
+                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
+                        Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.CONTROL, false);
+                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
+                        Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.MENU, false);
+                }
+            }
+            finally
+            {
+                semaphore.Release();
             }
         }
 
