@@ -71,6 +71,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<bool> _settingDisplayModuleOnLoadingScreen;
         public static SettingEntry<bool> _settingMountAutomaticallyAfterLoadingScreen;
         public static SettingEntry<KeyBinding> _settingJumpBinding;
+        public static SettingEntry<float> _settingFallingOrGlidingUpdateFrequency;
 
 
 
@@ -372,6 +373,7 @@ namespace Manlaan.Mounts
             _settingsLastRunMigrationVersion = settings.DefineSetting("LastRunMigrationVersion", 0);
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
             _settingDefaultMountBinding.Value.Enabled = true;
+            _settingDefaultMountBinding.Value.BlockSequenceFromGw2 = true;
             _settingDefaultMountBinding.Value.Activated += async delegate { await DoKeybindActionAsync(KeybindTriggerType.Module); };
             _settingDefaultMountBinding.Value.BindingChanged += UpdateSettings;
             _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "Radial");
@@ -398,6 +400,7 @@ namespace Manlaan.Mounts
             _settingJumpBinding = settings.DefineSetting("JumpKeybinding", new KeyBinding(Keys.Space));
             _settingJumpBinding.Value.Enabled = true;
             _settingJumpBinding.Value.Activated += delegate { _helper.UpdateLastJumped(); };
+            _settingFallingOrGlidingUpdateFrequency = settings.DefineSetting("FallingOrGlidingUpdateFrequency", 0.1f);
 
 
             ContextualRadialSettings = new List<ContextualRadialThingSettings>

@@ -135,7 +135,7 @@ namespace Manlaan.Mounts
         {
             var velocity = zPositionDiff / secondsDiff;
 
-            if (secondsDiff < 0.1f)
+            if (secondsDiff < Module._settingFallingOrGlidingUpdateFrequency.Value)
             {
                 return false;
             }

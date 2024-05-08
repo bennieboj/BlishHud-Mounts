@@ -280,9 +280,36 @@ namespace Manlaan.Mounts.Views
                 Location = new Point(settingJumpbinding_Label.Right + 4, settingJumpbinding_Label.Top - 1),
             };
 
-            Label settingDisplayModuleOnLoadingScreen_Label = new Label()
+            Label settingFallingOrGlidingUpdateFrequency_Label = new Label()
             {
                 Location = new Point(0, settingJumpbinding_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Falling or gliding update frequency:",
+                BasicTooltipText = "Lower: faster reaction (might cause flickering). Higher: vice versa. Default 0.1."
+            };
+            TrackBar settingFallingOrGlidingUpdateFrequency_Slider = new TrackBar()
+            {
+                Location = new Point(settingFallingOrGlidingUpdateFrequency_Label.Right + 5, settingFallingOrGlidingUpdateFrequency_Label.Top),
+                Width = mountsAndRadialInputWidth,
+                MaxValue = 1.0f,
+                SmallStep = true,
+                MinValue = 0.0f,
+                Value = Module._settingFallingOrGlidingUpdateFrequency.Value,
+                Parent = defaultMountPanel,
+                BasicTooltipText = $"{Module._settingFallingOrGlidingUpdateFrequency.Value}"
+            };
+            settingFallingOrGlidingUpdateFrequency_Slider.ValueChanged += delegate { 
+                Module._settingFallingOrGlidingUpdateFrequency.Value = settingFallingOrGlidingUpdateFrequency_Slider.Value;
+                settingFallingOrGlidingUpdateFrequency_Slider.BasicTooltipText = $"{Module._settingFallingOrGlidingUpdateFrequency.Value}";
+            };
+
+
+            Label settingDisplayModuleOnLoadingScreen_Label = new Label()
+            {
+                Location = new Point(0, settingFallingOrGlidingUpdateFrequency_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,

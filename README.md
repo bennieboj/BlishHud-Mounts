@@ -39,6 +39,7 @@ On the right you'll see a list of settings:
 
 #### The `module keybind`
 - The keybind itself
+  - Not sent to Gw2.
 - `module keybind` behaviour
   - `radial` (see [radial-settings](#radial-settings-2nd-tab))
   - `default` always use the same action.
@@ -48,6 +49,11 @@ On the right you'll see a list of settings:
   - This must match the in-game keybind as described in [keybinds](#keybinds)
   - Not taken into account when using this key whilst on a mount.
 
+#### Falling or gliding update frequency
+- Used to smoothen the input coming from mumble for [the IsPlayerGlidingOrFalling radial context](#gliding-and-falling-detection).
+  - Default 0.1.
+  - Lower: faster reaction, but might cause flickering depending on framerate etc.
+  - Higher: less flickering, but slower change of state (to and from IsPlayerGlidingOrFalling).
 
 #### Display the module on the loading screen
 Either display or not display the module on the loading screen.
@@ -186,6 +192,8 @@ Users are able to define their own radial settings which are not dependent on th
 ![](./readme/user_defined_radial_settings.png)
 
 This allows for the creation of seperate sets of things/actions displayed in their own radial.
+
+These keybinds are not sent to Gw2.
 
 These user-defined radial settings each should have their own unique non-overlapping keybind. (e.g. not use "B" for 1 keybind and B/Ctrl+B/Alt+B/Shift+B for the other, for more info on overlapping see: https://github.com/blish-hud/Blish-HUD/issues/862)
 
