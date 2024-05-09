@@ -27,6 +27,7 @@ namespace Mounts.Settings
             Keybind = settingCollection.DefineSetting($"RadialThingSettings{Id}Keybind", new KeyBinding(Keys.None));
             Keybind.Value.Enabled = true;
             Keybind.Value.Activated += async delegate { await _callback.Invoke(KeybindTriggerType.UserDefined); };
+            Keybind.Value.BlockSequenceFromGw2 = true;
         }
 
         public override void DeleteFromSettings(SettingCollection settingCollection)

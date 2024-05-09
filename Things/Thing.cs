@@ -60,7 +60,7 @@ namespace Manlaan.Mounts.Things
         {
             if (unconditionallyDoAction)
             {
-                await Helper.TriggerKeybind(KeybindingSetting);
+                await _helper.TriggerKeybind(KeybindingSetting);
                 return;
             }
 
@@ -78,7 +78,7 @@ namespace Manlaan.Mounts.Things
             }
 
             LastUsedTimestamp = DateTime.UtcNow;
-            await Helper.TriggerKeybind(KeybindingSetting);
+            await _helper.TriggerKeybind(KeybindingSetting);
         }
 
         public virtual bool IsInUse()
