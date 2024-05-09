@@ -1,6 +1,6 @@
 {
   "name": "Mounts & More",
-  "version": "1.5.0-beta1",
+  "version": "1.5.0-beta2",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -36,6 +36,7 @@
 
 /*
     "changelog": {
+        "1.5.0-beta2": "2024-05-09: Added ApplyInstantlyOnTap.",
         "1.4.11-beta2": "2024-05-08: Allow FallingOrGlidingUpdateFrequency to be defined + block module keybind and user defined keybinds from going to GW2.",
         "1.4.11-beta1": "2024-05-07: Fix handle shown and handle hidden being called in parallel, causing action cam to be out of sync.",
         "1.5.0-beta1": "2024-03-20: Added natural mounts by maanlichtje. Replace ApplyInstantlyWhenSingle option with ApplyInstantlyOnTap and ApplyInstantlyOnHold.",

@@ -382,41 +382,42 @@ namespace Manlaan.Mounts.Views
 
             if (currentRadialSettings is ContextualRadialThingSettings contextualRadialSettingsAtBottom)
             {
-                //Label radialSettingsApplyInstantlyIfSingle_Label = new Label()
-                //{
-                //    Location = new Point(0, radialSettingsIsEnabled_Label.Bottom + 6),
-                //    Width = labelWidth,
-                //    AutoSizeHeight = false,
-                //    WrapText = false,
-                //    Parent = RadialSettingsDetailPanel,
-                //    Text = "Apply instantly if single",
-                //    BasicTooltipText = "When there is only 1 action configured in a radial context and this option is checked we do not display the radial, but we perform the action immediately instead."
-                //};
-                //Checkbox radialSettingsApplyInstantlyIfSingle_Checkbox = new Checkbox()
-                //{
-                //    Size = new Point(20, 20),
-                //    Parent = RadialSettingsDetailPanel,
-                //    Checked = contextualRadialSettingsAtBottom.ApplyInstantlyIfSingle.Value,
-                //    Location = new Point(radialSettingsApplyInstantlyIfSingle_Label.Right + 5, radialSettingsApplyInstantlyIfSingle_Label.Top - 1),
-                //};
-                //radialSettingsApplyInstantlyIfSingle_Checkbox.CheckedChanged += delegate {
-                //    contextualRadialSettingsAtBottom.ApplyInstantlyIfSingle.Value = radialSettingsApplyInstantlyIfSingle_Checkbox.Checked;
-                //};
-                //contextualRadialSettingsAtBottom.ApplyInstantlyIfSingle.SettingChanged += delegate
-                //{
-                //    BuildRadialSettingsDetailPanel();
-                //};
-
-
-                Label settingApplyInstantlyOnTap_Label = new Label()
+                Label radialSettingsApplyInstantlyIfSingle_Label = new Label()
                 {
                     Location = new Point(0, radialSettingsIsEnabled_Label.Bottom + 6),
                     Width = labelWidth,
                     AutoSizeHeight = false,
                     WrapText = false,
                     Parent = RadialSettingsDetailPanel,
+                    Text = "Apply instantly if single",
+                    BasicTooltipText = "When there is only 1 action configured in a radial context and this option is checked we do not display the radial, but we perform the action immediately instead."
+                };
+                Checkbox radialSettingsApplyInstantlyIfSingle_Checkbox = new Checkbox()
+                {
+                    Size = new Point(20, 20),
+                    Parent = RadialSettingsDetailPanel,
+                    Checked = contextualRadialSettingsAtBottom.ApplyInstantlyIfSingle.Value,
+                    Location = new Point(radialSettingsApplyInstantlyIfSingle_Label.Right + 5, radialSettingsApplyInstantlyIfSingle_Label.Top - 1),
+                };
+                radialSettingsApplyInstantlyIfSingle_Checkbox.CheckedChanged += delegate
+                {
+                    contextualRadialSettingsAtBottom.ApplyInstantlyIfSingle.Value = radialSettingsApplyInstantlyIfSingle_Checkbox.Checked;
+                };
+                contextualRadialSettingsAtBottom.ApplyInstantlyIfSingle.SettingChanged += delegate
+                {
+                    BuildRadialSettingsDetailPanel();
+                };
+
+
+                Label settingApplyInstantlyOnTap_Label = new Label()
+                {
+                    Location = new Point(0, radialSettingsApplyInstantlyIfSingle_Label.Bottom + 6),
+                    Width = labelWidth,
+                    AutoSizeHeight = false,
+                    WrapText = false,
+                    Parent = RadialSettingsDetailPanel,
                     Text = "Apply instantly on tap: ",
-                    BasicTooltipText = "When there are at most 2 actions configured in a radial context and the module keybind is tapped we do not display the radial, but we perform this action immediately instead."
+                    BasicTooltipText = "The configured action will be hidden from the radial. When the module keybind is tapped we do not display the radial, but we perform this action immediately instead."
                 };
                 Dropdown settingApplyInstantlyOnTap_Select = new Dropdown()
                 {
@@ -438,39 +439,11 @@ namespace Manlaan.Mounts.Views
 
 
 
-                Label settingApplyInstantlyOnHold_Label = new Label()
-                {
-                    Location = new Point(0, settingApplyInstantlyOnTap_Label.Bottom + 6),
-                    Width = labelWidth,
-                    AutoSizeHeight = false,
-                    WrapText = false,
-                    Parent = RadialSettingsDetailPanel,
-                    Text = "Apply instantly on hold: ",
-                    BasicTooltipText = "When there are at most 2 actions configured in a radial context and the module keybind is held down we do not display the radial, but we perform this action immediately instead."
-                };
-                Dropdown settingApplyInstantlyOnHold_Select = new Dropdown()
-                {
-                    Location = new Point(settingApplyInstantlyOnHold_Label.Right + 5, settingApplyInstantlyOnHold_Label.Top - 4),
-                    Width = labelWidth,
-                    Parent = RadialSettingsDetailPanel,
-                };
-                settingApplyInstantlyOnHold_Select.Items.Add("Disabled");
-                var thingNamesApplyInstantlyOnHold = contextualRadialSettingsAtBottom.Things.Select(m => m.Name);
-                foreach (string i in thingNamesApplyInstantlyOnHold)
-                {
-                    settingApplyInstantlyOnHold_Select.Items.Add(i.ToString());
-                }
-                settingApplyInstantlyOnHold_Select.SelectedItem = thingNames.Any(m => m == contextualRadialSettingsAtBottom.ApplyInstantlyOnHold.Value) ? contextualRadialSettingsAtBottom.ApplyInstantlyOnHold.Value : "Disabled";
-                settingApplyInstantlyOnHold_Select.ValueChanged += delegate {
-                    contextualRadialSettingsAtBottom.ApplyInstantlyOnHold.Value = settingApplyInstantlyOnHold_Select.SelectedItem;
-                };
-
-
 
 
                 Label radialSettingsUnconditionallyDoAction_Label = new Label()
                 {
-                    Location = new Point(0, settingApplyInstantlyOnHold_Label.Bottom + 6),
+                    Location = new Point(0, settingApplyInstantlyOnTap_Label.Bottom + 6),
                     Width = labelWidth,
                     AutoSizeHeight = false,
                     WrapText = false,

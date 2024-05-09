@@ -5,6 +5,7 @@ using Manlaan.Mounts;
 using Manlaan.Mounts.Things;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Mounts.Settings
 {
@@ -15,7 +16,6 @@ namespace Mounts.Settings
         public readonly Func<bool> IsApplicable;
         public SettingEntry<bool> ApplyInstantlyIfSingle;
         public SettingEntry<string> ApplyInstantlyOnTap;
-        public SettingEntry<string> ApplyInstantlyOnHold;
         public SettingEntry<bool> UnconditionallyDoAction;
 
         public bool IsDefault => Order == 99;
@@ -30,8 +30,8 @@ namespace Mounts.Settings
             IsApplicable = isApplicable;
             ApplyInstantlyIfSingle = settingCollection.DefineSetting($"RadialThingSettings{_name}ApplyInstantlyIfSingle", defaultApplyInstantlyIfSingle);
             ApplyInstantlyOnTap = settingCollection.DefineSetting($"RadialThingSettings{_name}ApplyInstantlyOnTap", "Disabled");
-            ApplyInstantlyOnHold = settingCollection.DefineSetting($"RadialThingSettings{_name}ApplyInstantlyOnHold", "Disabled");
             UnconditionallyDoAction = settingCollection.DefineSetting($"RadialThingSettings{_name}UnconditionallyDoAction", defaultUnconditionallyDoAction);
+            ThingsSetting.SettingChanged += ThingsSetting_SettingChanged;
         }
 
         public override SettingEntry<KeyBinding> GetKeybind()
@@ -44,9 +44,19 @@ namespace Mounts.Settings
             return IsApplicable();
         }
 
-        public bool IsTapAndHoldBothApplicable()
+        public bool IsTapApplicable()
         {
-            return ThingsSetting.Value.Count == 2 && ApplyInstantlyOnHold.Value != "Disabled" && ApplyInstantlyOnTap.Value != "Disabled";
+            return ApplyInstantlyOnTap.Value != "Disabled";
+        }
+
+        private void ThingsSetting_SettingChanged(object sender, ValueChangedEventArgs<IList<string>> e)
+        {
+            ApplyInstantlyIfSingle.Value = ThingsSetting.Value.Count == 1;
+        }
+
+        internal Thing GetApplyInstantlyOnTapThing()
+        {
+            return Things.SingleOrDefault(m => m.Name == ApplyInstantlyOnTap.Value);
         }
     }
 }
