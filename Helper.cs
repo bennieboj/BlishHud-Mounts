@@ -114,17 +114,7 @@ namespace Manlaan.Mounts
             var secondsDiff = currentUpdateSeconds - _lastUpdateSeconds;
             var zPositionDiff = currentZPosition - _lastZPosition;
 
-            bool shouldUpdate = false;
-            if (false)
-            {
-                shouldUpdate = OldStuff(zPositionDiff, secondsDiff);
-            }
-            else
-            {
-                shouldUpdate = NewStuff(zPositionDiff, secondsDiff);
-            }
-
-            if (shouldUpdate)
+            if (NewStuff(zPositionDiff, secondsDiff))
             {
                 _lastZPosition = currentZPosition;
                 _lastUpdateSeconds = currentUpdateSeconds;
@@ -150,20 +140,6 @@ namespace Manlaan.Mounts
             else
                 _isPlayerGlidingOrFalling = false;
 
-            return true;
-        }
-
-        private bool OldStuff(float zPositionDiff, double secondsDiff)
-        {
-            if (zPositionDiff < -0.0001 && secondsDiff != 0)
-            {
-                var velocity = zPositionDiff / secondsDiff;
-                _isPlayerGlidingOrFalling = velocity < -2.5;
-            }
-            else
-            {
-                _isPlayerGlidingOrFalling = false;
-            }
             return true;
         }
 

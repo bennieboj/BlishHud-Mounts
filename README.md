@@ -39,7 +39,7 @@ On the right you'll see a list of settings:
 
 #### The `module keybind`
 - The keybind itself
-  - Not sent to Gw2.
+  - Sending to GW2 is [configurable](#block-sequence-from-gw2).
 - `module keybind` behaviour
   - `radial` (see [radial-settings](#radial-settings-2nd-tab))
   - `default` always use the same action.
@@ -57,6 +57,9 @@ On the right you'll see a list of settings:
 
 #### Display the module on the loading screen
 Either display or not display the module on the loading screen.
+
+#### Block sequence from GW2
+When checked, the sequence is not sent to GW2 otherwise it is sent to GW2.
 
 #### Mount automatically after loading screen
 StoreThingForLaterActivation: keeps track of which character is mounted on which mount and re-applies this afterwards. Only applicable on mounts, since for other things we cannot determine if it's in use via the API.
@@ -193,7 +196,7 @@ Users are able to define their own radial settings which are not dependent on th
 
 This allows for the creation of seperate sets of things/actions displayed in their own radial.
 
-These keybinds are not sent to Gw2.
+Sending to GW2 is [configurable](#block-sequence-from-gw2).
 
 These user-defined radial settings each should have their own unique non-overlapping keybind. (e.g. not use "B" for 1 keybind and B/Ctrl+B/Alt+B/Shift+B for the other, for more info on overlapping see: https://github.com/blish-hud/Blish-HUD/issues/862)
 

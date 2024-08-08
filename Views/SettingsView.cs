@@ -327,9 +327,32 @@ namespace Manlaan.Mounts.Views
                 Module._settingDisplayModuleOnLoadingScreen.Value = settingDisplayModuleOnLoadingScreen_Checkbox.Checked;
             };
 
-            Label settingMountAutomaticallyAfterLoadingScreen_Label = new Label()
+
+            Label settingBlockSequenceFromGw2_Label = new Label()
             {
                 Location = new Point(0, settingDisplayModuleOnLoadingScreen_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Block sequence from GW2:"
+            };
+            Checkbox settingBlockSequenceFromGw2_Checkbox = new Checkbox()
+            {
+                Size = new Point(labelWidth2, 20),
+                Parent = defaultMountPanel,
+                Checked = Module._settingBlockSequenceFromGw2.Value,
+                Location = new Point(settingBlockSequenceFromGw2_Label.Right + 5, settingBlockSequenceFromGw2_Label.Top - 1),
+            };
+            settingBlockSequenceFromGw2_Checkbox.CheckedChanged += delegate {
+                Module._settingBlockSequenceFromGw2.Value = settingBlockSequenceFromGw2_Checkbox.Checked;
+                Module.UserDefinedRadialSettings.ForEach(u => u.Keybind.Value.BlockSequenceFromGw2 = settingBlockSequenceFromGw2_Checkbox.Checked);
+                Module._settingDefaultMountBinding.Value.BlockSequenceFromGw2 = settingBlockSequenceFromGw2_Checkbox.Checked;
+            };
+
+            Label settingMountAutomaticallyAfterLoadingScreen_Label = new Label()
+            {
+                Location = new Point(0, settingBlockSequenceFromGw2_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,

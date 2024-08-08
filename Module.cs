@@ -55,6 +55,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<int> _settingsLastRunMigrationVersion;
 
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
+        public static SettingEntry<bool> _settingBlockSequenceFromGw2;
         public static SettingEntry<bool> _settingDisplayMountQueueing;
         public static SettingEntry<bool> _settingEnableMountQueueing;
         public static SettingEntry<Point> _settingDisplayMountQueueingLocation;
@@ -371,9 +372,10 @@ namespace Manlaan.Mounts
             var thingsForMigration = orderedThings.ToList();
 
             _settingsLastRunMigrationVersion = settings.DefineSetting("LastRunMigrationVersion", 0);
+            _settingBlockSequenceFromGw2 = settings.DefineSetting("BlockSequenceFromGw2", false);
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
             _settingDefaultMountBinding.Value.Enabled = true;
-            _settingDefaultMountBinding.Value.BlockSequenceFromGw2 = true;
+            _settingDefaultMountBinding.Value.BlockSequenceFromGw2 = _settingBlockSequenceFromGw2.Value;
             _settingDefaultMountBinding.Value.Activated += async delegate { await DoKeybindActionAsync(KeybindTriggerType.Module); };
             _settingDefaultMountBinding.Value.BindingChanged += UpdateSettings;
             _settingDefaultMountBehaviour = settings.DefineSetting("DefaultMountBehaviour", "Radial");
