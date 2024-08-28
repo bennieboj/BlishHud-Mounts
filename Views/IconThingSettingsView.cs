@@ -12,7 +12,7 @@ namespace Manlaan.Mounts.Views
 {
     class IconThingSettingsView : View
     {
-        private int totalWidth = 1000;
+        private int totalWidth = 2500;
         private int labelWidth = 170;
 
         private Panel IconSettingsListPanel;

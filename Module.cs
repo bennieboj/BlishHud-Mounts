@@ -177,7 +177,10 @@ namespace Manlaan.Mounts
                 "raptor-remix.png",
                 "roller-remix.png",
                 "scanforrift-remix.png",
-                "skiff-remix.png"
+                "skiff-remix.png",
+                "summonconjureddoorway.png",
+                "summonconjureddoorway-trans.png",
+                "summonconjureddoorway-trans-color.png"
             };
             thingsDirectory = DirectoriesManager.GetFullDirectoryPath("mounts");
             mountsFilesInRef.ForEach(f => ExtractFile(f, thingsDirectory));
@@ -362,6 +365,7 @@ namespace Manlaan.Mounts
                 new JadeBotWaypoint(settings, _helper),
                 new ScanForRift(settings, _helper),
                 new SkyscaleLeap(settings, _helper),
+                new SummonConjuredDoorway(settings, _helper),
                 new Chair(settings, _helper),
                 new Music(settings, _helper),
                 new Held(settings, _helper),

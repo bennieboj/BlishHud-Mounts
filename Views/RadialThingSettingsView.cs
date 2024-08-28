@@ -13,7 +13,7 @@ namespace Manlaan.Mounts.Views
 {
     class RadialThingSettingsView : View
     {
-        private int totalWidth = 1000;
+        private int totalWidth = 2500;
         private int labelWidth = 170;
         private int bindingWidth = 170;
 

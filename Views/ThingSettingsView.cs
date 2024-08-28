@@ -20,12 +20,12 @@ namespace Manlaan.Mounts.Views
         public ThingSettingsView(ThingsSettings currentThingSettings)
         {
             CurrentThingSettings = currentThingSettings;
-            Width = 600;
-            Height = 600;
+            Width = 1000;
+            Height = 1000;
             panel = new Panel
             {
                 CanScroll = false,
-                Width = 600,
+                Width = 1000,
                 HeightSizingMode = SizingMode.AutoSize,
                 Parent = this
             };
@@ -88,7 +88,7 @@ namespace Manlaan.Mounts.Views
                 int index = thingItemAndIndex.i;
                 var isAvailable = thing.IsAvailable;
 
-                var curX = index%2 == 0 ? 0 : 300;
+                var curX = index%2 == 0 ? 0 : 350;
                 curY += index % 2 == 0 ? 30 : 0;
                 Label thingInSettings_Label = new Label()
                 {
@@ -103,7 +103,7 @@ namespace Manlaan.Mounts.Views
                 var deleteThing_Button = new StandardButton
                 {
                     Parent = panel,
-                    Location = new Point(thingInSettings_Label.Right, thingInSettings_Label.Top),
+                    Location = new Point(curX+200, thingInSettings_Label.Top),
                     Text = Strings.Delete
                 };
                 deleteThing_Button.Click += (args, sender) =>
