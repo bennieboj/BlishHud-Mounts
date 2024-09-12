@@ -90,19 +90,21 @@ namespace Manlaan.Mounts.Controls
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             RadialThings.Clear();
 
-            var applicableRadialSettings = _helper.GetTriggeredRadialSettings();
+            var triggeredRadialSettings = _helper.GetTriggeredRadialSettings();
             
-            if(applicableRadialSettings  == null)
+            if(triggeredRadialSettings  == null)
             {
+                _errorLabel.Text = $"No triggered radial settings found!!!";
+                _errorLabel.Show();
                 return;
             }
 
-            SelectedSettings = applicableRadialSettings;
+            SelectedSettings = triggeredRadialSettings;
 
-            var things = applicableRadialSettings.AvailableThings.ToList();
+            var things = triggeredRadialSettings.AvailableThings.ToList();
             if (!things.Any())
             {
-                _errorLabel.Text = $"No actions configured in the {applicableRadialSettings.Name} context \n(or no keybinds specified for these actions)\nClick button to go to the relevant settings: ";
+                _errorLabel.Text = $"No actions configured in the {triggeredRadialSettings.Name} context \n(or no keybinds specified for these actions)\nClick button to go to the relevant settings: ";
                 _errorLabel.Show();
                 _settingsButton.Show();
                 return;
@@ -113,10 +115,19 @@ namespace Manlaan.Mounts.Controls
                 _settingsButton.Hide();
             }
 
-            var thingToPutInCenter = applicableRadialSettings.GetCenterThing();
+            if(triggeredRadialSettings is ContextualRadialThingSettings)
+            {
+                var tapThing = ((ContextualRadialThingSettings)triggeredRadialSettings).GetApplyInstantlyOnTapThing();
+                if (tapThing != null)
+                {
+                    things.Remove(tapThing);
+                }
+            }
+
+            var thingToPutInCenter = triggeredRadialSettings.GetCenterThing();
             if (thingToPutInCenter != null && thingToPutInCenter.IsAvailable)
             {
-                if (applicableRadialSettings.RemoveCenterThing.Value)
+                if (triggeredRadialSettings.RemoveCenterThing.Value)
                 {
                     things.Remove(thingToPutInCenter);
                 }

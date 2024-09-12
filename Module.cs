@@ -51,6 +51,9 @@ namespace Manlaan.Mounts
 
         public static string[] _keybindBehaviours = new string[] { "Default", "Radial" };
 
+        private bool previousTriggeringState = false;
+        private DateTime? lastTriggered = null;
+        private TappedModuleKeybindState tappedModuleKeybind = TappedModuleKeybindState.Unknown;
 
         public static SettingEntry<int> _settingsLastRunMigrationVersion;
 
@@ -73,6 +76,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<bool> _settingMountAutomaticallyAfterLoadingScreen;
         public static SettingEntry<KeyBinding> _settingJumpBinding;
         public static SettingEntry<float> _settingFallingOrGlidingUpdateFrequency;
+        public static SettingEntry<int> _settingTapThresholdInMilliseconds;
 
 
 
@@ -180,7 +184,16 @@ namespace Manlaan.Mounts
                 "skiff-remix.png",
                 "summonconjureddoorway.png",
                 "summonconjureddoorway-trans.png",
-                "summonconjureddoorway-trans-color.png"
+                "summonconjureddoorway-trans-color.png",
+                "griffon_natural.png",
+                "jackal_natural.png",
+                "raptor_natural.png",
+                "roller_natural.png",
+                "skimmer_natural.png",
+                "skyscale_natural.png",
+                "springer_natural.png",
+                "turtle_natural.png",
+                "warclaw_natural.png"
             };
             thingsDirectory = DirectoriesManager.GetFullDirectoryPath("mounts");
             mountsFilesInRef.ForEach(f => ExtractFile(f, thingsDirectory));
@@ -407,6 +420,7 @@ namespace Manlaan.Mounts
             _settingJumpBinding.Value.Enabled = true;
             _settingJumpBinding.Value.Activated += delegate { _helper.UpdateLastJumped(); };
             _settingFallingOrGlidingUpdateFrequency = settings.DefineSetting("FallingOrGlidingUpdateFrequency", 0.1f);
+            _settingTapThresholdInMilliseconds = settings.DefineSetting("TapThresholdInMilliseconds", 0);
 
 
             ContextualRadialSettings = new List<ContextualRadialThingSettings>
@@ -435,7 +449,6 @@ namespace Manlaan.Mounts
                 MigrateAwayFromMount(settings);
                 _settingsLastRunMigrationVersion.Value = 1;
             }
-
 
 
             foreach (var t in _things)
@@ -473,11 +486,15 @@ namespace Manlaan.Mounts
 
         protected override void OnModuleLoaded(EventArgs e)
         {
-            _debug.Add("GetTriggeredRadialSettings Name", () => $"{_helper.GetTriggeredRadialSettings()?.Name}");
-            ContextualRadialSettings.ForEach(c => _debug.Add($"Contextual RadialSettings {c.Order} {c.Name}", () => $"IsApplicable: {c.IsApplicable()}, Center: {c.GetCenterThing()?.Name}, CenterBehavior: {c.CenterThingBehavior.Value}, ApplyInstantlyIfSingle: {c.ApplyInstantlyIfSingle.Value}, LastUsed: {c.GetLastUsedThing()?.Name}"));
-            _debug.Add("Applicable Contextual RadialSettings Name", () => $"{_helper.GetApplicableContextualRadialThingSettings()?.Name}");
-            _debug.Add("Applicable Contextual RadialSettings Things", () => $"{string.Join(", ", _helper.GetApplicableContextualRadialThingSettings()?.AvailableThings.Select(t => t.Name))}");
+            _debug.Add("GetTriggeredRadialSettings", () => {
+                var triggered = _helper.GetTriggeredRadialSettings();
+                return triggered == null ? "" : $"Name: {triggered.Name}, Number of things: {triggered.AvailableThings.Count}";
+                });
+            ContextualRadialSettings.ForEach(c => _debug.Add($"Contextual RadialSettings {c.Order} {c.Name} A", () => $"IsApplicable: {c.IsApplicable()}, ApplyInstantlyIfSingle: {c.ApplyInstantlyIfSingle.Value}, ApplyInstantlyOnTap: {c.ApplyInstantlyOnTap.Value}"));
+            ContextualRadialSettings.ForEach(c => _debug.Add($"Contextual RadialSettings {c.Order} {c.Name} B", () => $"Center: {c.GetCenterThing()?.Name}, CenterBehavior: {c.CenterThingBehavior.Value}, LastUsed: {c.GetLastUsedThing()?.Name}"));
+            _debug.Add("Applicable Contextual RadialSettings", () => $"Name: {_helper.GetApplicableContextualRadialThingSettings()?.Name}, Things count: {_helper.GetApplicableContextualRadialThingSettings()?.AvailableThings.Count}");
             _debug.Add("Queued for out of combat", () => $"{_helper.GetQueuedThing()?.Name}");
+            _debug.Add("TappedModuleKeybind", () => $"{DateTime.Now} {tappedModuleKeybind} {lastTriggered} {(lastTriggered != null ? (int)(DateTime.Now-lastTriggered.Value).TotalMilliseconds : "")}");
 
             Gw2ApiManager.SubtokenUpdated += async delegate
             {
@@ -493,6 +510,28 @@ namespace Manlaan.Mounts
         protected override void Update(GameTime gameTime)
         {
             _helper.UpdatePlayerGlidingOrFalling(gameTime);
+
+            var currentTriggeringState = _settingDefaultMountBinding.Value.IsTriggering;
+            double howLongIsModuleKeybindHeldHown = 0;
+            if (lastTriggered.HasValue)
+            {
+                howLongIsModuleKeybindHeldHown = (DateTime.Now - lastTriggered.Value).TotalMilliseconds;
+            }
+            var isWithinThreshold = howLongIsModuleKeybindHeldHown <= _settingTapThresholdInMilliseconds.Value;
+            if ((previousTriggeringState && !currentTriggeringState && isWithinThreshold) || howLongIsModuleKeybindHeldHown > _settingTapThresholdInMilliseconds.Value)
+            {
+                if (lastTriggered.HasValue)
+                {
+                    tappedModuleKeybind = isWithinThreshold ? TappedModuleKeybindState.True : TappedModuleKeybindState.False;
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                    DoKeybindActionAsync(KeybindTriggerType.Module);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                    lastTriggered = null;
+                }
+            }
+            previousTriggeringState = currentTriggeringState;
+
+
 
             var isThingSwitchable = CanThingBeActivated();
             var moduleHidden = _lastIsThingSwitchable && !isThingSwitchable;
@@ -656,10 +695,30 @@ namespace Manlaan.Mounts
             var selectedRadialSettings = _helper.GetApplicableContextualRadialThingSettings();
             Logger.Debug($"{nameof(DoKeybindActionAsync)} radial applicable settings: {selectedRadialSettings.Name}");
             var things = selectedRadialSettings.AvailableThings;
+            if (lastTriggered == null && selectedRadialSettings.IsTapApplicable())
+            {
+                Logger.Debug($"{nameof(DoKeybindActionAsync)} radial tap is applicable.");
+                lastTriggered = DateTime.Now;
+                return;
+            }
+
+            if (tappedModuleKeybind == TappedModuleKeybindState.True && selectedRadialSettings.IsTapApplicable())
+            {
+                Thing thing = things.FirstOrDefault(t => t.Name == selectedRadialSettings.ApplyInstantlyOnTap.Value);
+                await thing?.DoAction(selectedRadialSettings.UnconditionallyDoAction.Value);
+                Logger.Debug($"{nameof(DoKeybindActionAsync)} not showing radial selected thing (tappedModuleKeybind): {thing?.Name}");
+                tappedModuleKeybind = TappedModuleKeybindState.Unknown;
+                return;
+            }
+            else
+            {
+                tappedModuleKeybind = TappedModuleKeybindState.Unknown;
+            }
+
             if (things.Count() == 1 && selectedRadialSettings.ApplyInstantlyIfSingle.Value)
             {
                 await things.FirstOrDefault()?.DoAction(selectedRadialSettings.UnconditionallyDoAction.Value);
-                Logger.Debug($"{nameof(DoKeybindActionAsync)} not showing radial selected thing: {selectedRadialSettings.Things.First().Name}");
+                Logger.Debug($"{nameof(DoKeybindActionAsync)} not showing radial selected thing (ApplyInstantlyIfSingle): {things.First().Name}");
                 return;
             }
 

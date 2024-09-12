@@ -55,6 +55,9 @@ On the right you'll see a list of settings:
   - Lower: faster reaction, but might cause flickering depending on framerate etc.
   - Higher: less flickering, but slower change of state (to and from IsPlayerGlidingOrFalling).
 
+#### Tap Threshold
+The threshold to determine whether a [module keybind](#the-module-keybind) press is a "tap" (in milliseconds). Used in ["Apply instantly on tap"](#apply-instantly-on-tap).
+
 #### Display the module on the loading screen
 Either display or not display the module on the loading screen.
 
@@ -183,6 +186,21 @@ Per radial settings/context we have the following options:
 ##### Apply instantly if single
 When there is only 1 action configured in a radial context and this option is checked we do not display the radial, but we perform the action immediately instead.
 Remember the "hard coded logic" we talked about earlier in the section, this is the replacement of this.
+
+##### Apply instantly on tap
+Version 1.5.0 of the module introduces the concept of tapping the module keybind.
+A tap is defined by the user pressing the module keybind and releasing it within the [Tap Threshold](#tap-threshold).
+When the threshold is exceeded the normal radial is shown even if the user is still holding the module keybind.
+This is only applicable to the module keybind, e.g. for contextual radial settings, **not for user-defined radial settings**.
+
+This allows the user to instantly trigger 1 action per contextual radial settings whilst still keeping the existing radial.
+In the screenshot below the user has configured the following:
+- "Apply instantly on tap": Griffon
+- "Default": Skyscale (and "Center": Default)
+
+When the radial context is active this allows the user to tap the module keybind to use griffon and hold it to spawn the radial. The "Apply instantly on tap" action is removed from radial. Since skyscale is default and the default is put in the center, when the user releases the module keybind without moving the mouse it will trigger skyscale.
+
+![](./readme/tap_flying_griffon_skyscale.png)
 
 ##### Unconditionally Do Action
 Used to disable [out of combat queuing](#out-of-combat-queuing), [LastUsed](#center-action) and [mount automatically after loading screen](#mount-automatically-after-loading-screen).

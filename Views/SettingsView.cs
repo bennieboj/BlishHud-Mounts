@@ -288,7 +288,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = defaultMountPanel,
                 Text = "Falling or gliding update frequency:",
-                BasicTooltipText = "Lower: faster reaction (might cause flickering). Higher: vice versa. Default 0.1."
+                BasicTooltipText = "Lower: faster reaction (might cause flickering). Higher: vice versa. Default: 0.1."
             };
             TrackBar settingFallingOrGlidingUpdateFrequency_Slider = new TrackBar()
             {
@@ -306,10 +306,35 @@ namespace Manlaan.Mounts.Views
                 settingFallingOrGlidingUpdateFrequency_Slider.BasicTooltipText = $"{Module._settingFallingOrGlidingUpdateFrequency.Value}";
             };
 
+            Label settingTapThresholdInMilliseconds_Label = new Label()
+            {
+                Location = new Point(0, settingFallingOrGlidingUpdateFrequency_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Tap Threshold:",
+                BasicTooltipText = "The threshold to determine whether a module keybind press is a \"tap\" (in milliseconds). Default: 500ms (0.5s)."
+            };
+            TrackBar settingTapThresholdInMilliseconds_Slider = new TrackBar()
+            {
+                Location = new Point(settingTapThresholdInMilliseconds_Label.Right + 5, settingTapThresholdInMilliseconds_Label.Top),
+                Width = mountsAndRadialInputWidth,
+                MaxValue = 5000,
+                MinValue = 0,
+                Value = Module._settingTapThresholdInMilliseconds.Value,
+                Parent = defaultMountPanel,
+                BasicTooltipText = $"{Module._settingTapThresholdInMilliseconds.Value}"
+            };
+            settingTapThresholdInMilliseconds_Slider.ValueChanged += delegate {
+                Module._settingTapThresholdInMilliseconds.Value = (int) settingTapThresholdInMilliseconds_Slider.Value ;
+                settingTapThresholdInMilliseconds_Slider.BasicTooltipText = $"{Module._settingTapThresholdInMilliseconds.Value}";
+            };
+
 
             Label settingDisplayModuleOnLoadingScreen_Label = new Label()
             {
-                Location = new Point(0, settingFallingOrGlidingUpdateFrequency_Label.Bottom + 6),
+                Location = new Point(0, settingTapThresholdInMilliseconds_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,

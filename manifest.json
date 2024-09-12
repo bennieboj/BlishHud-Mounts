@@ -1,6 +1,6 @@
 {
   "name": "Mounts & More",
-  "version": "1.4.13",
+  "version": "1.4.14",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -36,6 +36,8 @@
 
 /*
     "changelog": {
+        "1.5.0-beta2": "2024-05-09: Added ApplyInstantlyOnTap.",
+        "1.5.0-beta1": "2024-03-20: Added natural mounts by maanlichtje. Replace ApplyInstantlyWhenSingle option with ApplyInstantlyOnTap and ApplyInstantlyOnHold.",
         "1.4.13": "2024-08-28: Allow warclaw to be usable in combat and add summon conjured doorway mastery.",
         "1.4.12": "2024-08-08: Allow block module keybind and user defined keybinds from going to GW2 to be configurable.",
         "1.4.11": "2024-08-01: Public release 1.4.11",
