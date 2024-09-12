@@ -1,6 +1,6 @@
-Adds mounts, mastery skills and novelty icons in the form of radial, icon rows and corner icons.
+Adds mounts, mastery skills and novelty icons in the form of contextual and user-defined radials, icon rows and corner icons.
 
-Custom icons, out of combat queueing and automatically loading after map change (mounts only).
+Custom icons, out of combat queueing, targettable actions and automatically loading after map change (mounts only).
 
 [Settings](#settings) need to be configured before using the module!
 
@@ -31,7 +31,7 @@ The keybinds in the module need to match the ones in you in-game settings:
 To use custom icons:
 - Open the designated folder:
   ![](./readme/custom_icons.png)
-- Add your new icons, name them like the existing icons `raptor-something-new.png`. Do not replace files, use new filenames or your icons will be replaced.
+- Add your new icons, name them like the existing icons `raptor-something-new.png`. Do not replace files! Use new filenames, otherwise your icons will be replaced.
 - Restart the module by disabling and enabling it (see screenshot step 1)
 
 
@@ -65,7 +65,7 @@ Either display or not display the module on the loading screen.
 When checked, the sequence is not sent to GW2 otherwise it is sent to GW2.
 
 #### Mount automatically after loading screen
-StoreThingForLaterActivation: keeps track of which character is mounted on which mount and re-applies this afterwards. Only applicable on mounts, since for other things we cannot determine if it's in use via the API.
+StoreThingForLaterActivation: keeps track of which character is mounted on which mount and re-applies this afterwards. Only applicable on mounts, since for other actions we cannot determine if it's in use via the API.
 
 
 #### Out of Combat queuing
@@ -78,29 +78,32 @@ Settings related to out of combat queueing:
   - Combat Launch mastery unlocked
 
 The following actions are usable in-game when in combat:
-- For both [Skyscale](https://wiki.guildwars2.com/wiki/Skyscale_(skill)) and [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)) when the  [Combat Launch Mastery](https://wiki.guildwars2.com/wiki/Combat_Launch) is unlocked.
-  - It is not possible to read in-game cooldowns via mumble, so the module does not know when the [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)) skill is available.
+- For both [Skyscale](https://wiki.guildwars2.com/wiki/Skyscale_(skill)) and [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)) when the [Combat Launch Mastery](https://wiki.guildwars2.com/wiki/Combat_Launch) is unlocked.
+  - It is not possible to read in-game cooldowns via mumble, so the module does not know when the [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)) skill is off cooldown.
   - The game launches you in the air for both these skills when you're in combat, see "Mechanics": [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)).
   - If you don't want to use this combat launch mastery for skyscale you can disable the "Combat Launch mastery unlocked" setting. 
 - Unmount
-
-##### Combat Launch
-Currently it's not possible to detect this via the API, see these issues for more information:
-  - https://github.com/gw2-api/issues/issues/31
-  - https://github.com/gw2-api/issues/issues/32
-
-The "Combat Launch mastery unlocked" setting was added to mimick this.
+- Warclaw (since the Janthir Wilds expansion)
 
 #### General Radial Settings
 These radial settings are globally applied and should be self explanatory:
 - Spawn at mouse (either at mouse position or the center of the screen)
 - Radius of the radial
-- Start angle of the first thing/action in the list
+- Start angle of the first action in the list
 - Icon size
 - Icon opacity
 - Action camera keybinding
   - Used to toggle action camera, radial doesn't function well in action camera
   - This must match the in-game keybind as described in [keybinds](#keybinds)
+
+#### Targettable actions
+In-game some actions are [ground-targettable](https://wiki.guildwars2.com/wiki/Targeting#Ground_targeting).
+
+When such an action is cast using a mouse action in the module via a radial or icons, it usually ends up in the wrong place.
+
+Since version 1.5.0 the module now keeps track of targettable actions when you use them via a radial or icons and casts them the next time you click your left mouse button.
+Currently there is no UI indication just yet.
+
 
 ### Radial Settings (2nd tab)
 Custom radial settings come in two forms:
@@ -173,8 +176,8 @@ In version 1.3.3 we handled unmounting in the following way:
 In version 1.4.0 we handle unmounting in the following way:
 
  - We configure which mounts you want to see in the radial when using the IsPlayerMounted radial setting. 
- - If you select multiple things then you will see these in the radial when mounted. 
- - If you select only 1 thing and select "Apply Instantly if single" then we immediately do the single action.
+ - If you select multiple actions then you will see these in the radial when mounted. 
+ - If you select only 1 action and select "Apply Instantly if single" then we immediately do the single action.
  - The mount/dismount keybind is used to also unmount from chairs, etc.
  - You can dismount using the mount/dismount action.
  - By default from versions 1.4.0 till 1.4.7 the following is migrated: IsPlayerMounted enabled, unmount added. The only thing you need to do is to set the dismount keybind.
@@ -227,7 +230,7 @@ Users are able to define their own radial settings which are not dependent on th
 
 ![](./readme/user_defined_radial_settings.png)
 
-This allows for the creation of seperate sets of things/actions displayed in their own radial.
+This allows for the creation of seperate sets of actions displayed in their own radial.
 
 Sending to GW2 is [configurable](#block-sequence-from-gw2).
 

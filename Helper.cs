@@ -23,6 +23,8 @@ namespace Manlaan.Mounts
 
         private Dictionary<string, Thing> StoredThingForLater = new Dictionary<string, Thing>();
 
+        private Thing StoredThingRanged = null;
+
         private readonly Dictionary<(Keys, ModifierKeys), SemaphoreSlim> _semaphores;
 
         private float _lastZPosition = 0.0f;
@@ -42,7 +44,7 @@ namespace Manlaan.Mounts
 
         public bool IsCombatLaunchUnlocked()
         {
-            return _isCombatLaunchUnlocked || Module._settingCombatLaunchMasteryUnlocked.Value;
+            return _isCombatLaunchUnlocked && Module._settingCombatLaunchMasteryUnlocked.Value;
         }
 
         public async Task IsCombatLaunchUnlockedAsync()
@@ -53,7 +55,7 @@ namespace Manlaan.Mounts
             }
 
             var masteries = await Gw2ApiManager.Gw2ApiClient.V2.Masteries.AllAsync();
-            _isCombatLaunchUnlocked = masteries.Any(m => m.Name == "Combat Launch");
+            _isCombatLaunchUnlocked = masteries.Any(m => m.Levels.Any(ml => ml.Name == "Combat Launch"));
         }
 
         public bool IsPlayerInWvwMap()
@@ -222,6 +224,23 @@ namespace Manlaan.Mounts
             StoredThingForLater[characterName] = thing;
         }
 
+        internal void StoreRangedThing(Thing thing)
+        {
+            Logger.Debug($"{nameof(StoreRangedThing)}: {thing.Name}");
+            StoredThingRanged = thing;
+        }
+
+        internal async Task DoRangedThing()
+        {
+            if(StoredThingRanged != null)
+            {
+                var thing = StoredThingRanged;
+                Logger.Debug($"{nameof(DoRangedThing)} {thing?.Name}");
+                await thing?.DoAction(false, false);
+                StoredThingRanged = null;
+            }
+        }
+
         internal bool IsSomethingStoredForLaterActivation(string characterName)
         {
             var result = StoredThingForLater.ContainsKey(characterName);
@@ -239,7 +258,7 @@ namespace Manlaan.Mounts
         {
             var thing = StoredThingForLater[characterName];
             Logger.Debug($"{nameof(ClearSomethingStoredForLaterActivation)} {thing?.Name} for character: {characterName}");
-            await thing?.DoAction(false);
+            await thing?.DoAction(false, false);
             ClearSomethingStoredForLaterActivation(characterName);
         }
 

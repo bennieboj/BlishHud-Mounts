@@ -48,7 +48,7 @@ namespace Manlaan.Mounts.Things
                 HoverIcon = img,
                 Priority = 10
             };
-            CornerIcon.Click += async delegate { await DoAction(false); };
+            CornerIcon.Click += async delegate { await DoAction(false, true); };
         }
 
         public void DisposeCornerIcon()
@@ -56,7 +56,7 @@ namespace Manlaan.Mounts.Things
             CornerIcon?.Dispose();
         }
 
-        public async Task DoAction(bool unconditionallyDoAction)
+        public async Task DoAction(bool unconditionallyDoAction, bool isActionComingFromMouseAction)
         {
             if (unconditionallyDoAction)
             {
@@ -77,6 +77,12 @@ namespace Manlaan.Mounts.Things
                 return;
             }
 
+            if (isActionComingFromMouseAction && IsTargettable())
+            {
+                _helper.StoreRangedThing(this);
+                return;
+            }
+
             LastUsedTimestamp = DateTime.UtcNow;
             await _helper.TriggerKeybind(KeybindingSetting);
         }
@@ -87,6 +93,11 @@ namespace Manlaan.Mounts.Things
         }
 
         public virtual bool IsUsableInCombat()
+        {
+            return false;
+        }
+
+        public virtual bool IsTargettable()
         {
             return false;
         }

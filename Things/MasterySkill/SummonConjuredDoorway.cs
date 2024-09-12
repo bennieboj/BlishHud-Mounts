@@ -8,5 +8,10 @@ namespace Manlaan.Mounts.Things.Mounts
             : base(settingCollection, helper, "Summon Conjured Doorway", "Summon Conjured Doorway", "summonconjureddoorway")
         {
         }
+
+        public override bool IsTargettable()
+        {
+            return true;
+        }
     }
 }

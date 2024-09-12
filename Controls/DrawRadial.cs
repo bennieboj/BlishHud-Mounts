@@ -255,7 +255,7 @@ namespace Manlaan.Mounts.Controls
                 unconditionallyDoAction = ((ContextualRadialThingSettings)SelectedSettings).UnconditionallyDoAction.Value;
             }
 
-            await (SelectedMount?.Thing.DoAction(unconditionallyDoAction) ?? Task.CompletedTask);
+            await (SelectedMount?.Thing.DoAction(unconditionallyDoAction, true) ?? Task.CompletedTask);
             SelectedSettings = null;
         }
 
