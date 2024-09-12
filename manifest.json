@@ -1,6 +1,6 @@
 {
   "name": "Mounts & More",
-  "version": "1.5.0-beta3",
+  "version": "1.5.0-beta4",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -36,6 +36,7 @@
 
 /*
     "changelog": {
+        "1.5.0-beta4": "2024-09-12: Fix GetTriggeredRadialSettings for UserDefinedRadialSettings being swapped if there are more than 1.",
         "1.5.0-beta3": "2024-09-12: Remove tapped action to allow 'Apply instantly on tap' to work together with 'Apply instantly if single' + allow actions to be targettable + implemented Skyscale's Combat Launch mastery via API.",
         "1.4.13": "2024-08-28: Allow warclaw to be usable in combat and add summon conjured doorway mastery.",
         "1.4.12": "2024-08-08: Allow block module keybind and user defined keybinds from going to GW2 to be configurable.",

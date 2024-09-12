@@ -280,7 +280,7 @@ namespace Manlaan.Mounts
                 return contextual;
             }
 
-            var userdefinedList = Module.UserDefinedRadialSettings.Where(s => !s.GetKeybind().Value.IsTriggering);
+            var userdefinedList = Module.UserDefinedRadialSettings.Where(s => s.GetKeybind().Value.IsTriggering);
             if (userdefinedList.Count() == 1)
             {
                 return userdefinedList.Single();
