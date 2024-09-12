@@ -56,7 +56,7 @@ On the right you'll see a list of settings:
   - Higher: less flickering, but slower change of state (to and from IsPlayerGlidingOrFalling).
 
 #### Tap Threshold
-The threshold to determine whether a [module keybind](#the-module-keybind) press is a "tap" (in milliseconds). Used in ["Apply instantly on tap"](#apply-instantly-on-tap).
+The threshold to determine whether a [module keybind](#the-module-keybind) press (press and release) is a "tap" (in milliseconds, 1000 milliseconds is 1 second). Used in ["Apply instantly on tap"](#apply-instantly-on-tap). Set to 0 to completely disable taps.
 
 #### Display the module on the loading screen
 Either display or not display the module on the loading screen.
@@ -189,16 +189,31 @@ Remember the "hard coded logic" we talked about earlier in the section, this is 
 
 ##### Apply instantly on tap
 Version 1.5.0 of the module introduces the concept of tapping the module keybind.
-A tap is defined by the user pressing the module keybind and releasing it within the [Tap Threshold](#tap-threshold).
-When the threshold is exceeded the normal radial is shown even if the user is still holding the module keybind.
 This is only applicable to the module keybind, e.g. for contextual radial settings, **not for user-defined radial settings**.
 
-This allows the user to instantly trigger 1 action per contextual radial settings whilst still keeping the existing radial.
-In the screenshot below the user has configured the following:
-- "Apply instantly on tap": Griffon
-- "Default": Skyscale (and "Center": Default)
+A tap is defined by the user pressing the module keybind and releasing it within the [Tap Threshold](#tap-threshold).
+When the threshold is exceeded the normal logic kicks in even if the user is still holding the module keybind.
 
-When the radial context is active this allows the user to tap the module keybind to use griffon and hold it to spawn the radial. The "Apply instantly on tap" action is removed from radial. Since skyscale is default and the default is put in the center, when the user releases the module keybind without moving the mouse it will trigger skyscale.
+The normal logic is the following:
+1. check "Apply instantly if single"
+1. default action in case of mouse dragging (see [default action](#default-action))
+1. do default action or display radial (see [default action](#default-action))
+
+This allows the user to instantly trigger 1 action per contextual radial settings whilst still keeping the existing radial (when Apply instantly if single is disabled).
+
+The selected action in "Apply instantly on tap" is removed from the logic once the user exceeds the tap threshold.
+This allows "Apply instantly on tap" to work together with "Apply instantly if single" (if enabled).
+Meaning that if the user held the module keybind too long the tap action is removed from the possible options.
+If after the removal there is only 1 action left in the context Apply instantly if single will trigger, see example below.
+
+In the screenshot below the user has configured the following:
+- 2 actions: Griffon and Skyscale
+- "Apply instantly if single" enabled
+- "Apply instantly on tap": Griffon
+
+When the radial context is active this allows the user to tap the module keybind to use griffon.
+When the user holds the module keybind. The "Apply instantly on tap" action is removed from radial which only leavee skyscale is the only left over action and .
+
 
 ![](./readme/tap_flying_griffon_skyscale.png)
 

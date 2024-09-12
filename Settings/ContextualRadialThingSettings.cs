@@ -46,7 +46,7 @@ namespace Mounts.Settings
 
         public bool IsTapApplicable()
         {
-            return ApplyInstantlyOnTap.Value != "Disabled";
+            return ApplyInstantlyOnTap.Value != "Disabled" && Module._settingTapThresholdInMilliseconds.Value != 0;
         }
 
         private void ThingsSetting_SettingChanged(object sender, ValueChangedEventArgs<IList<string>> e)

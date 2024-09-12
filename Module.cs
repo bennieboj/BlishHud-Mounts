@@ -702,16 +702,20 @@ namespace Manlaan.Mounts
                 return;
             }
 
+            Thing tappedThing = things.FirstOrDefault(t => t.Name == selectedRadialSettings.ApplyInstantlyOnTap.Value);
             if (tappedModuleKeybind == TappedModuleKeybindState.True && selectedRadialSettings.IsTapApplicable())
             {
-                Thing thing = things.FirstOrDefault(t => t.Name == selectedRadialSettings.ApplyInstantlyOnTap.Value);
-                await thing?.DoAction(selectedRadialSettings.UnconditionallyDoAction.Value);
-                Logger.Debug($"{nameof(DoKeybindActionAsync)} not showing radial selected thing (tappedModuleKeybind): {thing?.Name}");
+                await tappedThing?.DoAction(selectedRadialSettings.UnconditionallyDoAction.Value);
+                Logger.Debug($"{nameof(DoKeybindActionAsync)} not showing radial selected thing (tappedModuleKeybind): {tappedThing?.Name}");
                 tappedModuleKeybind = TappedModuleKeybindState.Unknown;
                 return;
             }
             else
             {
+                if(things.Count() > 1 && tappedThing != null)
+                {
+                    things.Remove(tappedThing);
+                }
                 tappedModuleKeybind = TappedModuleKeybindState.Unknown;
             }
 
