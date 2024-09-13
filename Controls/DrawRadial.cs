@@ -117,8 +117,9 @@ namespace Manlaan.Mounts.Controls
 
             if(triggeredRadialSettings is ContextualRadialThingSettings)
             {
-                var tapThing = ((ContextualRadialThingSettings)triggeredRadialSettings).GetApplyInstantlyOnTapThing();
-                if (tapThing != null)
+                var triggeredContextual = (ContextualRadialThingSettings)triggeredRadialSettings;
+                var tapThing = triggeredContextual.GetApplyInstantlyOnTapThing();
+                if (tapThing != null && triggeredContextual.IsTapApplicable())
                 {
                     things.Remove(tapThing);
                 }

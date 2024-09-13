@@ -12,18 +12,28 @@ using Mounts.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Manlaan.Mounts
 {
+    public class RangedThingUpdatedEvent : EventArgs
+    {
+        public Thing NewThing { get; set; }
+        public RangedThingUpdatedEvent(Thing newThing)
+        {
+            NewThing = newThing;
+        }
+    }
+
     public class Helper
     {
         private static readonly Logger Logger = Logger.GetLogger<Helper>();
 
         private Dictionary<string, Thing> StoredThingForLater = new Dictionary<string, Thing>();
 
-        private Thing StoredThingRanged = null;
+        private Thing StoredRangedThing = null;
 
         private readonly Dictionary<(Keys, ModifierKeys), SemaphoreSlim> _semaphores;
 
@@ -32,7 +42,9 @@ namespace Manlaan.Mounts
         private bool _isPlayerGlidingOrFalling = false;
         private Gw2ApiManager Gw2ApiManager;
         private bool _isCombatLaunchUnlocked;
-        private DateTime lastTimeJumped = DateTime.MinValue;        
+        private DateTime lastTimeJumped = DateTime.MinValue;
+
+        public event EventHandler<RangedThingUpdatedEvent> RangedThingUpdated;
 
         public Helper(Gw2ApiManager gw2ApiManager)
         {
@@ -227,17 +239,25 @@ namespace Manlaan.Mounts
         internal void StoreRangedThing(Thing thing)
         {
             Logger.Debug($"{nameof(StoreRangedThing)}: {thing.Name}");
-            StoredThingRanged = thing;
+            StoredRangedThing = thing;
+            if (RangedThingUpdated != null)
+            {
+                RangedThingUpdated(this, new RangedThingUpdatedEvent(StoredRangedThing));
+            }
         }
 
         internal async Task DoRangedThing()
         {
-            if(StoredThingRanged != null)
+            if(StoredRangedThing != null)
             {
-                var thing = StoredThingRanged;
+                var thing = StoredRangedThing;
                 Logger.Debug($"{nameof(DoRangedThing)} {thing?.Name}");
                 await thing?.DoAction(false, false);
-                StoredThingRanged = null;
+                StoredRangedThing = null;
+                if (RangedThingUpdated != null)
+                {
+                    RangedThingUpdated(this, new RangedThingUpdatedEvent(StoredRangedThing));
+                }
             }
         }
 

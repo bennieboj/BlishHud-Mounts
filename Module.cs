@@ -60,9 +60,10 @@ namespace Manlaan.Mounts
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
         public static SettingEntry<bool> _settingBlockSequenceFromGw2;
         public static SettingEntry<bool> _settingDisplayMountQueueing;
+        public static SettingEntry<bool> _settingDisplayTargettableAction;
         public static SettingEntry<bool> _settingEnableMountQueueing;
-        public static SettingEntry<Point> _settingDisplayMountQueueingLocation;
-        public static SettingEntry<bool> _settingDragMountQueueing;
+        public static SettingEntry<Point> _settingInfoPanelLocation;
+        public static SettingEntry<bool> _settingDragInfoPanel;
         public static SettingEntry<bool> _settingCombatLaunchMasteryUnlocked;
         public static SettingEntry<string> _settingDefaultMountBehaviour;
         public static SettingEntry<string> _settingKeybindBehaviour;
@@ -84,7 +85,7 @@ namespace Manlaan.Mounts
         public static DebugControl _debug;
         private DrawRadial _radial;
         private ICollection<DrawIcons> _drawIcons = new List<DrawIcons>();
-        private DrawOutOfCombat _drawOutOfCombat;
+        private InfoPanel _drawInfoPanel;
         private DrawMouseCursor _drawMouseCursor;
         private Helper _helper;
         private TextureCache _textureCache;
@@ -235,6 +236,25 @@ namespace Manlaan.Mounts
                 var content = fs.Read(buffer, 0, (int)fs.Length);
                 Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
                 File.WriteAllBytes(fullPath, buffer);
+            }
+        }
+
+        /***
+         * version 1.5.0 = migration version 2
+         * 
+         * ***/
+
+        private void MigrateToInfoPanelLocation(SettingCollection settings)
+        {
+            if (settings.ContainsSetting("DisplayMountQueueingLocation"))
+            {
+                var settingDisplayMountQueueingLocation = settings["DisplayMountQueueingLocation"] as SettingEntry<Point>;
+                _settingInfoPanelLocation.Value = new Point(settingDisplayMountQueueingLocation.Value.X, settingDisplayMountQueueingLocation.Value.Y);
+            }
+            if (settings.ContainsSetting("DragMountQueueing"))
+            {
+                var settingDragMountQueueing = settings["DragMountQueueing"] as SettingEntry<bool>;
+                _settingDragInfoPanel.Value = settingDragMountQueueing.Value;
             }
         }
 
@@ -399,9 +419,10 @@ namespace Manlaan.Mounts
             _settingKeybindBehaviour = settings.DefineSetting("KeybindBehaviour", "Radial");
             _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false);
             _settingEnableMountQueueing = settings.DefineSetting("EnableMountQueueing", false);
-            _settingDragMountQueueing = settings.DefineSetting("DragMountQueueing", false);
+            _settingDisplayTargettableAction = settings.DefineSetting("DisplayTargettableAction", false);
             _settingCombatLaunchMasteryUnlocked = settings.DefineSetting("CombatLaunchMasteryUnlocked", false);
-            _settingDisplayMountQueueingLocation = settings.DefineSetting("DisplayMountQueueingLocation", new Point(200,200));
+            _settingInfoPanelLocation = settings.DefineSetting("InfoPanelLocation", new Point(200, 200));
+            _settingDragInfoPanel = settings.DefineSetting("DragInfoPanel", false);
             _settingMountRadialSpawnAtMouse = settings.DefineSetting("MountRadialSpawnAtMouse", false, () => Strings.Setting_MountRadialSpawnAtMouse, () => "");
             _settingMountRadialIconSizeModifier = settings.DefineSetting("MountRadialIconSizeModifier", 0.28f, () => Strings.Setting_MountRadialIconSizeModifier, () => "");
             _settingMountRadialIconSizeModifier.SetRange(0.05f, 1f);
@@ -449,6 +470,11 @@ namespace Manlaan.Mounts
                 MigrateAwayFromMount(settings);
                 _settingsLastRunMigrationVersion.Value = 1;
             }
+            if (_settingsLastRunMigrationVersion.Value < 2)
+            {
+                MigrateToInfoPanelLocation(settings);
+                _settingsLastRunMigrationVersion.Value = 2;
+            }
 
 
             foreach (var t in _things)
@@ -460,8 +486,8 @@ namespace Manlaan.Mounts
             _settingMountAutomaticallyAfterLoadingScreen.SettingChanged += UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged += UpdateSettings;
             _settingEnableMountQueueing.SettingChanged += UpdateSettings;
-            _settingDragMountQueueing.SettingChanged += UpdateSettings;
-            _settingDisplayMountQueueingLocation.SettingChanged += UpdateSettings;
+            _settingDragInfoPanel.SettingChanged += UpdateSettings;
+            _settingInfoPanelLocation.SettingChanged += UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged += UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged += UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged += UpdateSettings;
@@ -577,15 +603,8 @@ namespace Manlaan.Mounts
             {
                 foreach (var drawIcons in _drawIcons) drawIcons.Hide();
             }
-
-            if (_things.Any(m => m.QueuedTimestamp != null) || Module._settingDragMountQueueing.Value)
-            {
-                _drawOutOfCombat?.ShowSpinner();
-            }
-            else
-            {
-                _drawOutOfCombat?.HideSpinner();
-            }
+            
+            _drawInfoPanel?.Update();
 
             //if (GameService.Input.Mouse.CameraDragging && _radial.Visible && !GameService.Input.Mouse.CursorIsVisible)
             //{
@@ -629,8 +648,8 @@ namespace Manlaan.Mounts
 
             _settingDisplayMountQueueing.SettingChanged -= UpdateSettings;
             _settingEnableMountQueueing.SettingChanged -= UpdateSettings;
-            _settingDragMountQueueing.SettingChanged -= UpdateSettings;
-            _settingDisplayMountQueueingLocation.SettingChanged -= UpdateSettings;
+            _settingDragInfoPanel.SettingChanged -= UpdateSettings;
+            _settingInfoPanelLocation.SettingChanged -= UpdateSettings;
             _settingMountRadialSpawnAtMouse.SettingChanged -= UpdateSettings;
             _settingMountRadialIconSizeModifier.SettingChanged -= UpdateSettings;
             _settingMountRadialRadiusModifier.SettingChanged -= UpdateSettings;
@@ -674,8 +693,8 @@ namespace Manlaan.Mounts
             foreach (var drawIcons in _drawIcons) drawIcons.Dispose();
             _drawIcons = IconThingSettings.Select(iconSetting => new DrawIcons(iconSetting, _helper, _textureCache)).ToList();
 
-            _drawOutOfCombat?.Dispose();
-            _drawOutOfCombat = new DrawOutOfCombat();
+            _drawInfoPanel?.Dispose();
+            _drawInfoPanel = new InfoPanel(_textureCache, _helper);
 
             _drawMouseCursor?.Dispose();
             _drawMouseCursor = new DrawMouseCursor(_textureCache);
@@ -713,21 +732,25 @@ namespace Manlaan.Mounts
             }
 
             Thing tappedThing = things.FirstOrDefault(t => t.Name == selectedRadialSettings.ApplyInstantlyOnTap.Value);
-            if (tappedModuleKeybind == TappedModuleKeybindState.True && selectedRadialSettings.IsTapApplicable())
+            if (selectedRadialSettings.IsTapApplicable())
             {
-                await tappedThing?.DoAction(selectedRadialSettings.UnconditionallyDoAction.Value, false);
-                Logger.Debug($"{nameof(DoKeybindActionAsync)} not showing radial selected thing (tappedModuleKeybind): {tappedThing?.Name}");
-                tappedModuleKeybind = TappedModuleKeybindState.Unknown;
-                return;
-            }
-            else
-            {
-                if(things.Count() > 1 && tappedThing != null)
+                if (tappedModuleKeybind == TappedModuleKeybindState.True)
                 {
-                    things.Remove(tappedThing);
+                    await tappedThing?.DoAction(selectedRadialSettings.UnconditionallyDoAction.Value, false);
+                    Logger.Debug($"{nameof(DoKeybindActionAsync)} not showing radial selected thing (tappedModuleKeybind): {tappedThing?.Name}");
+                    tappedModuleKeybind = TappedModuleKeybindState.Unknown;
+                    return;
                 }
-                tappedModuleKeybind = TappedModuleKeybindState.Unknown;
+                else
+                {
+                    if (things.Count() > 1 && tappedThing != null)
+                    {
+                        things.Remove(tappedThing);
+                    }
+                    tappedModuleKeybind = TappedModuleKeybindState.Unknown;
+                }
             }
+
 
             if (things.Count() == 1 && selectedRadialSettings.ApplyInstantlyIfSingle.Value)
             {

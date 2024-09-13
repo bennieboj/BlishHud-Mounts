@@ -24,6 +24,8 @@ namespace Manlaan.Mounts
         public static readonly string SupportMeTabTextureName = "156127-32-grey.png";
         public static readonly string KofiTextureName = "kofi-small.png";
         public static readonly string AnetIconTextureName = "1441452.png";
+        public static readonly string InCombatTextureName = "1636746-cropped.png";
+        public static readonly string RangeIndicatorTextureName = "157133.png";
 
         public TextureCache(ContentsManager contentsManager)
         {
@@ -48,6 +50,8 @@ namespace Manlaan.Mounts
             PreCacheTexture(SupportMeTabTextureName, getTextureFromRef);
             PreCacheTexture(KofiTextureName, getTextureFromRef);
             PreCacheTexture(AnetIconTextureName, getTextureFromRef);
+            PreCacheTexture(InCombatTextureName, getTextureFromRef);
+            PreCacheTexture(RangeIndicatorTextureName, getTextureFromRef);
         }
 
         private Texture2D PremultiplyTexture(string textureName)
