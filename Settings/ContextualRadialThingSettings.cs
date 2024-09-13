@@ -31,7 +31,6 @@ namespace Mounts.Settings
             ApplyInstantlyIfSingle = settingCollection.DefineSetting($"RadialThingSettings{_name}ApplyInstantlyIfSingle", defaultApplyInstantlyIfSingle);
             ApplyInstantlyOnTap = settingCollection.DefineSetting($"RadialThingSettings{_name}ApplyInstantlyOnTap", "Disabled");
             UnconditionallyDoAction = settingCollection.DefineSetting($"RadialThingSettings{_name}UnconditionallyDoAction", defaultUnconditionallyDoAction);
-            ThingsSetting.SettingChanged += ThingsSetting_SettingChanged;
         }
 
         public override SettingEntry<KeyBinding> GetKeybind()
@@ -47,11 +46,6 @@ namespace Mounts.Settings
         public bool IsTapApplicable()
         {
             return ApplyInstantlyOnTap.Value != "Disabled" && Module._settingTapThresholdInMilliseconds.Value != 0;
-        }
-
-        private void ThingsSetting_SettingChanged(object sender, ValueChangedEventArgs<IList<string>> e)
-        {
-            ApplyInstantlyIfSingle.Value = ThingsSetting.Value.Count == 1;
         }
 
         internal Thing GetApplyInstantlyOnTapThing()
