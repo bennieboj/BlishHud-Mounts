@@ -11,18 +11,22 @@ namespace Manlaan.Mounts.Controls
     public class InfoPanel : Container
     {
         private readonly TextureCache _textureCache;
+        private readonly Helper _helper;
         private bool _dragging;
         private Point _dragStart = Point.Zero;
         private Image infoPanelInfo;
         private Image rangedThing;
         private Image rangedIndicator;
-        private Image outOfCombatQueuing;
-        private Image outOfCombatQueueingSword;
+        private Image outOfCombatQueuingThing;
+        private Image outOfCombatQueueingIndicator;
+        private Image laterActivationThing;
+        private Image laterActivationIndicator;
 
         public InfoPanel(TextureCache textureCache, Helper helper)
         {
             _textureCache = textureCache;
-            helper.RangedThingUpdated += RangedThingUpdated;
+            _helper = helper;
+            _helper.RangedThingUpdated += RangedThingUpdated;
 
             Draw();
         }
@@ -58,20 +62,37 @@ namespace Manlaan.Mounts.Controls
                 infoPanelInfo.Visible = Module._settingDragInfoPanel.Value;
                 infoPanelInfo.ZIndex = 1;
             }
-            if (outOfCombatQueuing != null && outOfCombatQueueingSword != null && Module._settingDisplayMountQueueing.Value)
+            if (outOfCombatQueuingThing != null && outOfCombatQueueingIndicator != null && Module._settingDisplayMountQueueing.Value)
             {
                 var thing = Module._things.FirstOrDefault(m => m.QueuedTimestamp != null);
-                if(thing != null)
+                if (thing != null)
                 {
-                    SetThingOnImage(thing, outOfCombatQueuing);
-                    outOfCombatQueuing.ZIndex = 2;
-                    outOfCombatQueueingSword.Visible = true;
-                    outOfCombatQueueingSword.ZIndex = 3;
+                    SetThingOnImage(thing, outOfCombatQueuingThing);
+                    outOfCombatQueuingThing.ZIndex = 2;
+                    outOfCombatQueueingIndicator.Visible = true;
+                    outOfCombatQueueingIndicator.ZIndex = 3;
                 }
                 else
                 {
-                    outOfCombatQueuing.Visible = false;
-                    outOfCombatQueueingSword.Visible = false;
+                    outOfCombatQueuingThing.Visible = false;
+                    outOfCombatQueueingIndicator.Visible = false;
+
+                }
+            }
+            if (laterActivationThing != null && laterActivationIndicator != null && Module._settingDisplayLaterActivation.Value)
+            {
+                var thing = _helper.IsSomethingStoredForLaterActivation();
+                if (thing != null)
+                {
+                    SetThingOnImage(thing, laterActivationThing);
+                    laterActivationThing.ZIndex = 2;
+                    laterActivationIndicator.Visible = true;
+                    laterActivationIndicator.ZIndex = 3;
+                }
+                else
+                {
+                    laterActivationThing.Visible = false;
+                    laterActivationIndicator.Visible = false;
 
                 }
             }
@@ -95,23 +116,23 @@ namespace Manlaan.Mounts.Controls
                 BasicTooltipText = "Mounts & More info panel\nDisplays out of combat queueing, targetted action and tap action.\nSee settings and documentation for more info."
             };
 
-            outOfCombatQueuing = new Image
+            outOfCombatQueuingThing = new Image
             {
                 Parent = this,
                 Visible = false,
                 Size = new Point(Width, Height),
                 Location = new Point(0, 0),
+                BasicTooltipText = "Action will be performed when out of combat"
             };
 
             Texture2D imgSword = _textureCache.GetImgFile(TextureCache.InCombatTextureName);
-            outOfCombatQueueingSword = new Image
+            outOfCombatQueueingIndicator = new Image
             {
                 Texture = imgSword,
                 Parent = this,
                 Visible = false,
                 Size = new Point(Width, Height),
                 Location = new Point(0, 0),
-                BasicTooltipText = "Out of combat queuing"
             };
 
             rangedThing = new Image
@@ -129,8 +150,27 @@ namespace Manlaan.Mounts.Controls
                 Texture = imgRanged,
                 Parent = this,
                 Visible = false,
-                Size = new Point(Width/3, Height/3),
-                Location = new Point(Width/2-Width/3/2, Height-Height/3)
+                Size = new Point(Width / 3, Height / 3),
+                Location = new Point(Width / 2 - Width / 3 / 2, Height - Height / 3)
+            };
+
+            laterActivationThing = new Image
+            {
+                Parent = this,
+                Visible = false,
+                Size = new Point(Width, Height),
+                Location = new Point(0, 0),
+                BasicTooltipText = "Action will be performed later"
+            };
+
+            Texture2D imgLater = _textureCache.GetImgFile(TextureCache.LaterActivationTextureName);
+            laterActivationIndicator = new Image
+            {
+                Texture = imgLater,
+                Parent = this,
+                Visible = false,
+                Size = new Point(Width / 3, Height / 3),
+                Location = new Point(Width / 2 - Width / 3 / 2, Height - Height / 3)
             };
 
 

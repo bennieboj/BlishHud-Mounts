@@ -60,6 +60,7 @@ namespace Manlaan.Mounts
         public static SettingEntry<KeyBinding> _settingDefaultMountBinding;
         public static SettingEntry<bool> _settingBlockSequenceFromGw2;
         public static SettingEntry<bool> _settingDisplayMountQueueing;
+        public static SettingEntry<bool> _settingDisplayLaterActivation;
         public static SettingEntry<bool> _settingDisplayTargettableAction;
         public static SettingEntry<bool> _settingEnableMountQueueing;
         public static SettingEntry<Point> _settingInfoPanelLocation;
@@ -419,6 +420,7 @@ namespace Manlaan.Mounts
             _settingKeybindBehaviour = settings.DefineSetting("KeybindBehaviour", "Radial");
             _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false);
             _settingEnableMountQueueing = settings.DefineSetting("EnableMountQueueing", false);
+            _settingDisplayLaterActivation = settings.DefineSetting("DisplayLaterActivation", false);
             _settingDisplayTargettableAction = settings.DefineSetting("DisplayTargettableAction", false);
             _settingCombatLaunchMasteryUnlocked = settings.DefineSetting("CombatLaunchMasteryUnlocked", false);
             _settingInfoPanelLocation = settings.DefineSetting("InfoPanelLocation", new Point(200, 200));
@@ -485,6 +487,7 @@ namespace Manlaan.Mounts
             _settingDisplayModuleOnLoadingScreen.SettingChanged += UpdateSettings;
             _settingMountAutomaticallyAfterLoadingScreen.SettingChanged += UpdateSettings;
             _settingDisplayMountQueueing.SettingChanged += UpdateSettings;
+            _settingDisplayLaterActivation.SettingChanged += UpdateSettings;
             _settingEnableMountQueueing.SettingChanged += UpdateSettings;
             _settingDragInfoPanel.SettingChanged += UpdateSettings;
             _settingInfoPanelLocation.SettingChanged += UpdateSettings;
@@ -572,22 +575,21 @@ namespace Manlaan.Mounts
             var isThingSwitchable = CanThingBeActivated();
             var moduleHidden = _lastIsThingSwitchable && !isThingSwitchable;
             var moduleShown = !_lastIsThingSwitchable && isThingSwitchable;
-            var currentCharacterName = GameService.Gw2Mumble.PlayerCharacter.Name;
             var inUseThingsCount = _things.Count(m => m.IsInUse());
 
             if (inUseThingsCount == 0 && _lastInUseThingsCount > 0 && moduleHidden == false && moduleShown == false)
             {
-                _helper.ClearSomethingStoredForLaterActivation(currentCharacterName);
+                _helper.ClearSomethingStoredForLaterActivation();
             }
 
             if (moduleHidden && inUseThingsCount == 1 && _settingMountAutomaticallyAfterLoadingScreen.Value && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
             {
-                _helper.StoreThingForLaterActivation(_things.Single(m => m.IsInUse()), currentCharacterName, "ModuleHidden");
+                _helper.StoreThingForLaterActivation(_things.Single(m => m.IsInUse()), "ModuleHidden");
             }
-            if (moduleShown && inUseThingsCount == 0 && _helper.IsSomethingStoredForLaterActivation(currentCharacterName) && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
+            if (moduleShown && inUseThingsCount == 0 && _helper.IsSomethingStoredForLaterActivation() != null && GameService.GameIntegration.Gw2Instance.Gw2HasFocus)
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                _helper.DoThingActionForLaterActivation(currentCharacterName);
+                _helper.DoThingActionForLaterActivation();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 
@@ -598,10 +600,12 @@ namespace Manlaan.Mounts
             if (shouldShowModule)
             {
                 foreach (var drawIcons in _drawIcons) drawIcons.Show();
+                _drawInfoPanel?.Show();
             }
             else
             {
                 foreach (var drawIcons in _drawIcons) drawIcons.Hide();
+                _drawInfoPanel?.Hide();
             }
             
             _drawInfoPanel?.Update();
@@ -647,6 +651,7 @@ namespace Manlaan.Mounts
             }
 
             _settingDisplayMountQueueing.SettingChanged -= UpdateSettings;
+            _settingDisplayLaterActivation.SettingChanged -= UpdateSettings;
             _settingEnableMountQueueing.SettingChanged -= UpdateSettings;
             _settingDragInfoPanel.SettingChanged -= UpdateSettings;
             _settingInfoPanelLocation.SettingChanged -= UpdateSettings;

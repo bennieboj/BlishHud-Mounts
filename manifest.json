@@ -1,6 +1,6 @@
 {
   "name": "Mounts & More",
-  "version": "1.5.0-beta5",
+  "version": "1.5.0-beta6",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -32,6 +32,7 @@
 
 /*
     "changelog": {
+        "1.5.0-beta6": "2024-09-16: Add infopanel.",
         "1.5.0-beta5": "2024-09-13: Add api_permissions to manifest + prevent 'Apply instantly if single' to toggle on count of actions + indicate permissions.",
         "1.5.0-beta4": "2024-09-12: Fix GetTriggeredRadialSettings for UserDefinedRadialSettings being swapped if there are more than 1.",
         "1.5.0-beta3": "2024-09-12: Remove tapped action to allow 'Apply instantly on tap' to work together with 'Apply instantly if single' + allow actions to be targettable + implemented Skyscale's Combat Launch mastery via API.",

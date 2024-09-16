@@ -73,7 +73,7 @@ namespace Manlaan.Mounts.Things
 
             if (!Module.CanThingBeActivated())
             {
-                _helper.StoreThingForLaterActivation(this, GameService.Gw2Mumble.PlayerCharacter.Name, "NotAbleToActivate");
+                _helper.StoreThingForLaterActivation(this, "NotAbleToActivate");
                 return;
             }
 
@@ -84,6 +84,7 @@ namespace Manlaan.Mounts.Things
             }
 
             LastUsedTimestamp = DateTime.UtcNow;
+            _helper.StoreRangedThing(null); //reset
             await _helper.TriggerKeybind(KeybindingSetting);
         }
 

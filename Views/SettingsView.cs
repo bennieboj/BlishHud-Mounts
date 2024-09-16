@@ -382,7 +382,8 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                Text = "Mount automatically after loading screen:"
+                Text = "Mount automatically later:",
+                BasicTooltipText = "Later activation, e.g.: after loading screen"
             };
             Checkbox settingMountAutomaticallyAfterLoadingScreen_Checkbox = new Checkbox()
             {
@@ -444,7 +445,7 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                BasicTooltipText = "The info panel displays out of combat queueing, targetted action and tap action.\nSee settings and documentation for more info.",
+                BasicTooltipText = "The info panel displays out of combat queueing, later activation, targetted action and tap action.\nSee settings and documentation for more info.",
                 Text = "Drag info panel: "
             };
             Checkbox dragInfoPanel_Checkbox = new Checkbox()
@@ -480,9 +481,31 @@ namespace Manlaan.Mounts.Views
             };
 
 
-            Label settingDisplayTargettableAction_Label = new Label()
+            Label settingDisplayLaterActivation_Label = new Label()
             {
                 Location = new Point(0, settingDisplayMountQueueing_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Display later activation:",
+                BasicTooltipText = "Displays \"mount automatically after loading screen\""
+            };
+            Checkbox settingDisplayLaterActivation_Checkbox = new Checkbox()
+            {
+                Size = new Point(labelWidth2, 20),
+                Parent = defaultMountPanel,
+                Checked = Module._settingDisplayLaterActivation.Value,
+                Location = new Point(settingDisplayLaterActivation_Label.Right + 5, settingDisplayLaterActivation_Label.Top - 1),
+            };
+            settingDisplayLaterActivation_Checkbox.CheckedChanged += delegate {
+                Module._settingDisplayLaterActivation.Value = settingDisplayLaterActivation_Checkbox.Checked;
+            };
+
+
+            Label settingDisplayTargettableAction_Label = new Label()
+            {
+                Location = new Point(0, settingDisplayLaterActivation_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,

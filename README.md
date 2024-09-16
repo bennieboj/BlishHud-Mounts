@@ -42,7 +42,10 @@ On the right you'll see a list of settings:
   - Sending to GW2 is [configurable](#block-sequence-from-gw2).
 - `module keybind` behaviour
   - `radial` (see [radial-settings](#radial-settings-2nd-tab))
-  - `default` always use the same action.
+  - `default` always use the same action, no radial.
+
+#### Tap Threshold
+The threshold to determine whether a [module keybind](#the-module-keybind) press (press and release) is a "tap" (in milliseconds, 1000 milliseconds is 1 second). Used in ["Apply instantly on tap"](#apply-instantly-on-tap). Set to 0 to completely disable taps.
 
 #### The jump keybind
 - Used to detect if the player is gliding in [the IsPlayerGlidingOrFalling radial context](#gliding-and-falling-detection).
@@ -55,27 +58,28 @@ On the right you'll see a list of settings:
   - Lower: faster reaction, but might cause flickering depending on framerate etc.
   - Higher: less flickering, but slower change of state (to and from IsPlayerGlidingOrFalling).
 
-#### Tap Threshold
-The threshold to determine whether a [module keybind](#the-module-keybind) press (press and release) is a "tap" (in milliseconds, 1000 milliseconds is 1 second). Used in ["Apply instantly on tap"](#apply-instantly-on-tap). Set to 0 to completely disable taps.
+#### Block sequence from GW2
+When checked, the sequence is not sent to GW2 otherwise it is sent to GW2.
 
 #### Display the module on the loading screen
 Either display or not display the module on the loading screen.
 
-#### Block sequence from GW2
-When checked, the sequence is not sent to GW2 otherwise it is sent to GW2.
-
 #### Mount automatically after loading screen
-StoreThingForLaterActivation: keeps track of which character is mounted on which mount and re-applies this afterwards. Only applicable on mounts, since for other actions we cannot determine if it's in use via the API.
+Activate later feature. Sometimes it's not possible to apply an action.
+This feature keeps track of which character is mounted on which mount and re-applies this after the loading screen.
+Only applicable on mounts, since for other actions we cannot determine if it's in use via the API.
+This is also used when you choose a mount action during a loading screen.
 
 
 #### Out of Combat queuing
 When using an mount that cannot be used in combat we automatically queuing this action when out of combat.
 
 Settings related to out of combat queueing:
-  - enable
+  - Combat Launch mastery unlocked
+  - enable out of Combat queuing
   - display a spinner when active
   - positioning the spinner on the screen
-  - Combat Launch mastery unlocked
+
 
 The following actions are usable in-game when in combat:
 - For both [Skyscale](https://wiki.guildwars2.com/wiki/Skyscale_(skill)) and [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)) when the [Combat Launch Mastery](https://wiki.guildwars2.com/wiki/Combat_Launch) is unlocked.
@@ -84,6 +88,23 @@ The following actions are usable in-game when in combat:
   - If you don't want to use this combat launch mastery for skyscale you can disable the "Combat Launch mastery unlocked" setting. 
 - Unmount
 - Warclaw (since the Janthir Wilds expansion)
+
+#### Info panel
+Since version 1.5.0 the out of combat queuing display has been changed into the info panel.
+
+Dragging is still supported: 
+
+![](./readme/info_panel_drag.png)
+
+It shows the following information:
+
+| Feature                                                                                | Image                                             |
+|----------------------------------------------------------------------------------------|---------------------------------------------------|
+| [Out of combat queuing](#out-of-combat-queuing)                                        | ![](./readme/info_panel_combat.png)               |
+| [Mount automatically after loading screen](#mount-automatically-after-loading-screen)  | ![](./readme/info_panel_later_activation.png)     |
+| ["Apply instantly on tap state"](#apply-instantly-on-tap)                              | ![](./readme/info_panel_tap_vs_hold.png)          |
+| [If a targettable action is stored](#targettable-actions)                              | ![](./readme/info_panel_targettable.png)          |
+
 
 #### General Radial Settings
 These radial settings are globally applied and should be self explanatory:

@@ -230,15 +230,16 @@ namespace Manlaan.Mounts
             return Module._things.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault();
         }
 
-        internal void StoreThingForLaterActivation(Thing thing, string characterName, string reason)
+        internal void StoreThingForLaterActivation(Thing thing, string reason)
         {
+            var characterName = GameService.Gw2Mumble.PlayerCharacter.Name;
             Logger.Debug($"{nameof(StoreThingForLaterActivation)}: {thing.Name} for character: {characterName} with reason: {reason}");
             StoredThingForLater[characterName] = thing;
         }
 
         internal void StoreRangedThing(Thing thing)
         {
-            Logger.Debug($"{nameof(StoreRangedThing)}: {thing.Name}");
+            Logger.Debug($"{nameof(StoreRangedThing)}: {thing?.Name}");
             StoredRangedThing = thing;
             if (RangedThingUpdated != null)
             {
@@ -261,25 +262,28 @@ namespace Manlaan.Mounts
             }
         }
 
-        internal bool IsSomethingStoredForLaterActivation(string characterName)
+        internal Thing IsSomethingStoredForLaterActivation()
         {
-            var result = StoredThingForLater.ContainsKey(characterName);
-            Logger.Debug($"{nameof(IsSomethingStoredForLaterActivation)} for character {characterName} : {result}");
+            var characterName = GameService.Gw2Mumble.PlayerCharacter.Name;
+            StoredThingForLater.TryGetValue(characterName, out Thing result);
+            Logger.Debug($"{nameof(IsSomethingStoredForLaterActivation)} for character {characterName} : {result?.Name}");
             return result;
         }
 
-        internal void ClearSomethingStoredForLaterActivation(string characterName)
+        internal void ClearSomethingStoredForLaterActivation()
         {
+            var characterName = GameService.Gw2Mumble.PlayerCharacter.Name;
             Logger.Debug($"{nameof(ClearSomethingStoredForLaterActivation)} for character: {characterName}");
             StoredThingForLater.Remove(characterName);
         }
 
-        internal async Task DoThingActionForLaterActivation(string characterName)
+        internal async Task DoThingActionForLaterActivation()
         {
+            var characterName = GameService.Gw2Mumble.PlayerCharacter.Name;
             var thing = StoredThingForLater[characterName];
-            Logger.Debug($"{nameof(ClearSomethingStoredForLaterActivation)} {thing?.Name} for character: {characterName}");
+            Logger.Debug($"{nameof(DoThingActionForLaterActivation)} {thing?.Name} for character: {characterName}");
             await thing?.DoAction(false, false);
-            ClearSomethingStoredForLaterActivation(characterName);
+            ClearSomethingStoredForLaterActivation();
         }
 
         internal ContextualRadialThingSettings GetApplicableContextualRadialThingSettings() => Module.ContextualRadialSettings.OrderBy(c => c.Order).FirstOrDefault(c => c.IsEnabled.Value && c.IsApplicable());
