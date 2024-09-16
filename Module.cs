@@ -561,7 +561,7 @@ namespace Manlaan.Mounts
             {
                 if (lastTriggered.HasValue)
                 {
-                    tappedModuleKeybind = isWithinThreshold ? TappedModuleKeybindState.True : TappedModuleKeybindState.False;
+                    tappedModuleKeybind = isWithinThreshold ? TappedModuleKeybindState.Tap : TappedModuleKeybindState.Hold;
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     DoKeybindActionAsync(KeybindTriggerType.Module);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
@@ -739,7 +739,7 @@ namespace Manlaan.Mounts
             Thing tappedThing = things.FirstOrDefault(t => t.Name == selectedRadialSettings.ApplyInstantlyOnTap.Value);
             if (selectedRadialSettings.IsTapApplicable())
             {
-                if (tappedModuleKeybind == TappedModuleKeybindState.True)
+                if (tappedModuleKeybind == TappedModuleKeybindState.Tap)
                 {
                     await tappedThing?.DoAction(selectedRadialSettings.UnconditionallyDoAction.Value, false);
                     Logger.Debug($"{nameof(DoKeybindActionAsync)} not showing radial selected thing (tappedModuleKeybind): {tappedThing?.Name}");

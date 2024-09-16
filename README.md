@@ -102,7 +102,6 @@ It shows the following information:
 |----------------------------------------------------------------------------------------|---------------------------------------------------|
 | [Out of combat queuing](#out-of-combat-queuing)                                        | ![](./readme/info_panel_combat.png)               |
 | [Mount automatically after loading screen](#mount-automatically-after-loading-screen)  | ![](./readme/info_panel_later_activation.png)     |
-| ["Apply instantly on tap state"](#apply-instantly-on-tap)                              | ![](./readme/info_panel_tap_vs_hold.png)          |
 | [If a targettable action is stored](#targettable-actions)                              | ![](./readme/info_panel_targettable.png)          |
 
 

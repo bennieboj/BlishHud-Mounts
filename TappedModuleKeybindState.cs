@@ -3,7 +3,7 @@
     internal enum TappedModuleKeybindState
     {
         Unknown = 0,
-        False = 1,
-        True = 2,
+        Hold = 1,
+        Tap = 2,
     }
 }
