@@ -70,6 +70,7 @@ This feature keeps track of which character is mounted on which mount and re-app
 Only applicable on mounts, since for other actions we cannot determine if it's in use via the API.
 This is also used when you choose a mount action during a loading screen.
 
+When active it's displayed in the [Info panel](#info-panel).
 
 #### Out of Combat queuing
 When using an mount that cannot be used in combat we automatically queuing this action when out of combat.
@@ -113,13 +114,15 @@ These radial settings are globally applied and should be self explanatory:
   - This must match the in-game keybind as described in [keybinds](#keybinds)
 
 #### Ground target actions
-In-game some actions are [ground-targetable](https://wiki.guildwars2.com/wiki/Targeting#Ground_targeting).
+In-game some actions are [ground-targetable](https://wiki.guildwars2.com/wiki/Targeting#Ground_targeting), like [Skiff](https://wiki.guildwars2.com/wiki/Summon_Skiff) and [Summon Conjured Doorway](https://wiki.guildwars2.com/wiki/Summon_Conjured_Doorway).
 
 When such an action is cast using a mouse action in the module via a radial or icons, it usually ends up in the wrong place.
 
 Since version 1.5.0 the module now keeps track of ground target actions when you use them via a radial or icons and casts them the next time you click your left mouse button.
-Currently there is no UI indication just yet.
 
+When active it's displayed in the [Info panel](#info-panel).
+
+❗ Make sure the Ground targeting option matches the one in your in-game settings.
 
 ### Radial Settings (2nd tab)
 Custom radial settings come in two forms:
