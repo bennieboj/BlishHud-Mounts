@@ -42,7 +42,7 @@ namespace Manlaan.Mounts.Views
             int labelWidth2               = 250;
             int orderWidth                = 80;
             int bindingWidth              = 170;
-            int mountsAndRadialInputWidth = 125;
+            int mountsAndRadialInputWidth = 170;
 
             labelExplanation = new Label()
             {
@@ -72,10 +72,10 @@ namespace Manlaan.Mounts.Views
             Panel thingsPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 600);
             BuildThingsPanel(thingsPanel, labelWidth, bindingWidth, orderWidth);
 
-            Panel generalSettingsPanel = CreateDefaultPanel(buildPanel, new Point(thingsPanel.Right + 20, labelExplanation.Bottom + panelPadding));
+            Panel generalSettingsPanel = CreateDefaultPanel(buildPanel, new Point(thingsPanel.Right + 20, labelExplanation.Bottom + panelPadding), 600);
             BuildGeneralSettingsPanel(generalSettingsPanel, labelWidth2, mountsAndRadialInputWidth);
 
-            Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(thingsPanel.Right + 20, 500));
+            Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(thingsPanel.Right + 20, 500), 600);
             BuildRadialSettingsPanel(radialPanel, labelWidth2, mountsAndRadialInputWidth);
 
             ValidateKeybindOverlaps();
@@ -105,7 +105,7 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsPanel,
-                Text = "must match in-game key binding",
+                Text = "must match in-game key settings",
                 HorizontalAlignment = HorizontalAlignment.Left
             };
             Label settingBinding_Label = new Label()
@@ -208,7 +208,7 @@ namespace Manlaan.Mounts.Views
             }
         }
 
-        private void BuildGeneralSettingsPanel(Panel defaultMountPanel, int labelWidth2, int mountsAndRadialInputWidth)
+        private void BuildGeneralSettingsPanel(Panel defaultMountPanel, int labelWidth2, int optionWidth)
         {
             Label settingDefaultMountKeybind_Label = new Label()
             {
@@ -222,7 +222,8 @@ namespace Manlaan.Mounts.Views
             settingDefaultMount_Keybind = new KeybindingAssigner(Module._settingDefaultMountBinding.Value)
             {
                 NameWidth = 0,
-                Size = new Point(mountsAndRadialInputWidth, 20),
+                Width = optionWidth,
+                Size = new Point(optionWidth, 20),
                 Parent = defaultMountPanel,
                 Location = new Point(settingDefaultMountKeybind_Label.Right + 4, settingDefaultMountKeybind_Label.Top - 1),
             };
@@ -241,7 +242,7 @@ namespace Manlaan.Mounts.Views
             Dropdown settingKeybindBehaviour_Select = new Dropdown()
             {
                 Location = new Point(settingKeybindBehaviour_Label.Right + 5, settingKeybindBehaviour_Label.Top - 4),
-                Width = settingDefaultMount_Keybind.Width,
+                Width = optionWidth,
                 Parent = defaultMountPanel,
             };
             settingKeybindBehaviour_Select.Items.Add("Disabled");
@@ -268,7 +269,7 @@ namespace Manlaan.Mounts.Views
             TrackBar settingTapThresholdInMilliseconds_Slider = new TrackBar()
             {
                 Location = new Point(settingTapThresholdInMilliseconds_Label.Right + 5, settingTapThresholdInMilliseconds_Label.Top),
-                Width = mountsAndRadialInputWidth,
+                Width = optionWidth,
                 MaxValue = 5000,
                 MinValue = 0,
                 Value = Module._settingTapThresholdInMilliseconds.Value,
@@ -300,7 +301,7 @@ namespace Manlaan.Mounts.Views
             var settingJump_Keybind = new KeybindingAssigner(Module._settingJumpBinding.Value)
             {
                 NameWidth = 0,
-                Size = new Point(mountsAndRadialInputWidth, 20),
+                Size = new Point(optionWidth, 20),
                 Parent = defaultMountPanel,
                 Location = new Point(settingJumpbinding_Label.Right + 4, settingJumpbinding_Label.Top - 1),
             };
@@ -318,7 +319,7 @@ namespace Manlaan.Mounts.Views
             TrackBar settingFallingOrGlidingUpdateFrequency_Slider = new TrackBar()
             {
                 Location = new Point(settingFallingOrGlidingUpdateFrequency_Label.Right + 5, settingFallingOrGlidingUpdateFrequency_Label.Top),
-                Width = mountsAndRadialInputWidth,
+                Width = optionWidth,
                 MaxValue = 1.0f,
                 SmallStep = true,
                 MinValue = 0.0f,
@@ -445,7 +446,7 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                BasicTooltipText = "The info panel displays out of combat queueing, later activation, targetted action and tap action.\nSee settings and documentation for more info.",
+                BasicTooltipText = "The info panel displays out of combat queueing, later activation, ground target action and tap action.\nSee settings and documentation for more info.",
                 Text = "Drag info panel: "
             };
             Checkbox dragInfoPanel_Checkbox = new Checkbox()
@@ -503,24 +504,56 @@ namespace Manlaan.Mounts.Views
             };
 
 
-            Label settingDisplayTargettableAction_Label = new Label()
+            Label settingDisplayGroundTargetAction_Label = new Label()
             {
                 Location = new Point(0, settingDisplayLaterActivation_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                Text = "Display targettable action:"
+                Text = "Display ground target action:"
             };
-            Checkbox settingDisplayTargettableAction_Checkbox = new Checkbox()
+            Checkbox settingDisplayGroundTargetAction_Checkbox = new Checkbox()
             {
                 Size = new Point(labelWidth2, 20),
                 Parent = defaultMountPanel,
-                Checked = Module._settingDisplayTargettableAction.Value,
-                Location = new Point(settingDisplayTargettableAction_Label.Right + 5, settingDisplayTargettableAction_Label.Top - 1),
+                Checked = Module._settingDisplayGroundTargetingAction.Value,
+                Location = new Point(settingDisplayGroundTargetAction_Label.Right + 5, settingDisplayGroundTargetAction_Label.Top - 1),
             };
-            settingDisplayTargettableAction_Checkbox.CheckedChanged += delegate {
-                Module._settingDisplayTargettableAction.Value = settingDisplayTargettableAction_Checkbox.Checked;
+            settingDisplayGroundTargetAction_Checkbox.CheckedChanged += delegate {
+                Module._settingDisplayGroundTargetingAction.Value = settingDisplayGroundTargetAction_Checkbox.Checked;
+            };
+
+            Label settingGroundTargetting_Label = new Label()
+            {
+                Location = new Point(0, settingDisplayGroundTargetAction_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Ground targeting: ",
+                BasicTooltipText = "Normal - Show range indicator on first press, cast on second.\nFast with range indicator - Show range indicator on keypress, cast on release.\nInstant - Instantly cast at your mouse cursor's location."
+            };
+            new Image
+            {
+                Parent = defaultMountPanel,
+                Size = new Point(16, 16),
+                Location = new Point(settingGroundTargetting_Label.Right - 140, settingGroundTargetting_Label.Bottom - 16),
+                Texture = anetTexture,
+            };
+            Dropdown settingGroundTargetting_Select = new Dropdown()
+            {
+                Location = new Point(settingGroundTargetting_Label.Right + 5, settingGroundTargetting_Label.Top - 4),
+                Width = optionWidth,
+                Parent = defaultMountPanel,
+            };
+            foreach (var i in Enum.GetValues(typeof(GroundTargeting)))
+            {
+                settingGroundTargetting_Select.Items.Add(i.ToString());
+            }
+            settingGroundTargetting_Select.SelectedItem = Module._settingGroundTargeting.Value.ToString();
+            settingGroundTargetting_Select.ValueChanged += delegate {
+                Module._settingGroundTargeting.Value = (GroundTargeting)Enum.Parse(typeof(GroundTargeting), settingGroundTargetting_Select.SelectedItem);
             };
 
 

@@ -27,44 +27,20 @@ namespace Manlaan.Mounts.Controls
             _textureCache = textureCache;
             _helper = helper;
             _helper.RangedThingUpdated += RangedThingUpdated;
+            _helper.StoredThingForLaterUpdated += StoredThingForLaterUpdated;
+            foreach (var t in Module._things)
+            {
+                t.QueuedTimestampUpdated += QueuedTimestampUpdated;
+            }
 
             Draw();
         }
 
-        private void SetThingOnImage(Thing thing, Image image)
+        private void QueuedTimestampUpdated(object sender, ValueChangedEventArgs e)
         {
-            var img = _textureCache.GetThingImgFile(thing);
-            image.Texture = img;
-            image.Visible = true;
-        }
-
-        private void RangedThingUpdated(object sender, RangedThingUpdatedEvent e)
-        {
-            var currentRangedThing = e.NewThing;
-            if (currentRangedThing != null && Module._settingDisplayTargettableAction.Value)
-            {
-                SetThingOnImage(currentRangedThing, rangedThing);
-                rangedThing.ZIndex = 2;
-                rangedIndicator.Visible = true;
-                rangedIndicator.ZIndex = 3;
-            }
-            else
-            {
-                rangedThing.Visible = false;
-                rangedIndicator.Visible = false;
-            }
-        }
-
-        public void Update()
-        {
-            if (infoPanelInfo != null)
-            {
-                infoPanelInfo.Visible = Module._settingDragInfoPanel.Value;
-                infoPanelInfo.ZIndex = 1;
-            }
             if (outOfCombatQueuingThing != null && outOfCombatQueueingIndicator != null && Module._settingDisplayMountQueueing.Value)
             {
-                var thing = Module._things.FirstOrDefault(m => m.QueuedTimestamp != null);
+                var thing = _helper.GetQueuedThing();
                 if (thing != null)
                 {
                     SetThingOnImage(thing, outOfCombatQueuingThing);
@@ -79,9 +55,37 @@ namespace Manlaan.Mounts.Controls
 
                 }
             }
-            if (laterActivationThing != null && laterActivationIndicator != null && Module._settingDisplayLaterActivation.Value)
+        }
+
+        private void SetThingOnImage(Thing thing, Image image)
+        {
+            var img = _textureCache.GetThingImgFile(thing);
+            image.Texture = img;
+            image.Visible = true;
+        }
+
+        private void RangedThingUpdated(object sender, ValueChangedEventArgs<Thing> e)
+        {
+            var currentRangedThing = e.NewValue;
+            if (currentRangedThing != null && Module._settingDisplayGroundTargetingAction.Value)
             {
-                var thing = _helper.IsSomethingStoredForLaterActivation();
+                SetThingOnImage(currentRangedThing, rangedThing);
+                rangedThing.ZIndex = 2;
+                rangedIndicator.Visible = true;
+                rangedIndicator.ZIndex = 3;
+            }
+            else
+            {
+                rangedThing.Visible = false;
+                rangedIndicator.Visible = false;
+            }
+        }
+
+        private void StoredThingForLaterUpdated(object sender, ValueChangedEventArgs<System.Collections.Generic.Dictionary<string, Thing>> e)
+        {
+            if (laterActivationThing != null && laterActivationIndicator != null && Module._settingDisplayLaterActivation.Value)
+            {                
+                e.NewValue.TryGetValue(GameService.Gw2Mumble.PlayerCharacter.Name, out Thing thing);
                 if (thing != null)
                 {
                     SetThingOnImage(thing, laterActivationThing);
@@ -98,6 +102,11 @@ namespace Manlaan.Mounts.Controls
             }
         }
 
+
+        public void Update()
+        {
+        }
+
         private void Draw()
         {
             Parent = GameService.Graphics.SpriteScreen;
@@ -111,9 +120,10 @@ namespace Manlaan.Mounts.Controls
                 Parent = this,
                 Texture = img,
                 Size = new Point(Width, Height),
-                Visible = false,
                 Location = new Point(0, 0),
-                BasicTooltipText = "Mounts & More info panel\nDisplays out of combat queueing, targetted action and tap action.\nSee settings and documentation for more info."
+                Visible = Module._settingDragInfoPanel.Value,
+                ZIndex = 1,
+                BasicTooltipText = "Mounts & More info panel\nDisplays out of combat queueing, ground target action and tap action.\nSee settings and documentation for more info."
             };
 
             outOfCombatQueuingThing = new Image

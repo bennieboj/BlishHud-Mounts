@@ -9,7 +9,7 @@ namespace Manlaan.Mounts.Things.Mounts
         {
         }
 
-        public override bool IsTargettable()
+        public override bool IsGroundTargeted()
         {
             return true;
         }

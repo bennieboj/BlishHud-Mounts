@@ -270,7 +270,7 @@ namespace Manlaan.Mounts.Controls
                 if (!GameService.Input.Mouse.CursorIsVisible && !Module._settingMountRadialToggleActionCameraKeyBinding.IsNull)
                 {
                     IsActionCamToggledOnMount = true;
-                    await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding);
+                    await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding, WhichKeybindToRun.Both);
                     Logger.Debug("HandleShown turned off action cam");
                 }
 
@@ -305,7 +305,7 @@ namespace Manlaan.Mounts.Controls
                 Logger.Debug("HandleHidden entered");
                 if (IsActionCamToggledOnMount)
                 {
-                    await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding);
+                    await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding, WhichKeybindToRun.Both);
                     IsActionCamToggledOnMount = false;
                     Logger.Debug("HandleHidden turned back on action cam");
                 }

@@ -61,7 +61,8 @@ namespace Manlaan.Mounts
         public static SettingEntry<bool> _settingBlockSequenceFromGw2;
         public static SettingEntry<bool> _settingDisplayMountQueueing;
         public static SettingEntry<bool> _settingDisplayLaterActivation;
-        public static SettingEntry<bool> _settingDisplayTargettableAction;
+        public static SettingEntry<bool> _settingDisplayGroundTargetingAction;
+        public static SettingEntry<GroundTargeting> _settingGroundTargeting;
         public static SettingEntry<bool> _settingEnableMountQueueing;
         public static SettingEntry<Point> _settingInfoPanelLocation;
         public static SettingEntry<bool> _settingDragInfoPanel;
@@ -421,7 +422,8 @@ namespace Manlaan.Mounts
             _settingDisplayMountQueueing = settings.DefineSetting("DisplayMountQueueing", false);
             _settingEnableMountQueueing = settings.DefineSetting("EnableMountQueueing", false);
             _settingDisplayLaterActivation = settings.DefineSetting("DisplayLaterActivation", false);
-            _settingDisplayTargettableAction = settings.DefineSetting("DisplayTargettableAction", false);
+            _settingDisplayGroundTargetingAction = settings.DefineSetting("DisplayGroundTargetingAction", false);
+            _settingGroundTargeting = settings.DefineSetting("GroundTargeting", GroundTargeting.Normal);
             _settingCombatLaunchMasteryUnlocked = settings.DefineSetting("CombatLaunchMasteryUnlocked", false);
             _settingInfoPanelLocation = settings.DefineSetting("InfoPanelLocation", new Point(200, 200));
             _settingDragInfoPanel = settings.DefineSetting("DragInfoPanel", false);
@@ -608,8 +610,6 @@ namespace Manlaan.Mounts
                 _drawInfoPanel?.Hide();
             }
             
-            _drawInfoPanel?.Update();
-
             //if (GameService.Input.Mouse.CameraDragging && _radial.Visible && !GameService.Input.Mouse.CursorIsVisible)
             //{
             //    _drawMouseCursor.Location = new Point(GameService.Input.Mouse.PositionRaw.X, GameService.Input.Mouse.PositionRaw.Y);
@@ -633,7 +633,7 @@ namespace Manlaan.Mounts
 
         public static bool CanThingBeActivated()
         {
-            return GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen;
+            return GameService.GameIntegration.Gw2Instance.IsInGame;// && !GameService.Gw2Mumble.UI.IsMapOpen;
         }
 
         /// <inheritdoc />

@@ -1,6 +1,6 @@
 Adds mounts, mastery skills and novelty icons in the form of contextual and user-defined radials, icon rows and corner icons.
 
-Custom icons, out of combat queueing, targettable actions and automatically loading after map change (mounts only).
+Custom icons, out of combat queueing, ground target actions and automatically loading after map change (mounts only).
 
 [Settings](#settings) need to be configured before using the module!
 
@@ -65,7 +65,7 @@ When checked, the sequence is not sent to GW2 otherwise it is sent to GW2.
 Either display or not display the module on the loading screen.
 
 #### Mount automatically after loading screen
-Activate later feature. Sometimes it's not possible to apply an action.
+Activate later feature.
 This feature keeps track of which character is mounted on which mount and re-applies this after the loading screen.
 Only applicable on mounts, since for other actions we cannot determine if it's in use via the API.
 This is also used when you choose a mount action during a loading screen.
@@ -77,8 +77,7 @@ When using an mount that cannot be used in combat we automatically queuing this 
 Settings related to out of combat queueing:
   - Combat Launch mastery unlocked
   - enable out of Combat queuing
-  - display a spinner when active
-  - positioning the spinner on the screen
+  - display out of combat queuing when active in the [Info panel](#info-panel)
 
 
 The following actions are usable in-game when in combat:
@@ -92,17 +91,14 @@ The following actions are usable in-game when in combat:
 #### Info panel
 Since version 1.5.0 the out of combat queuing display has been changed into the info panel.
 
-Dragging is still supported: 
-
-![](./readme/info_panel_drag.png)
-
-It shows the following information:
+It supports the following features:
 
 | Feature                                                                                | Image                                             |
 |----------------------------------------------------------------------------------------|---------------------------------------------------|
+| Positioning the info panel on the screen                                               | ![](./readme/info_panel_drag.png)               |
 | [Out of combat queuing](#out-of-combat-queuing)                                        | ![](./readme/info_panel_combat.png)               |
 | [Mount automatically after loading screen](#mount-automatically-after-loading-screen)  | ![](./readme/info_panel_later_activation.png)     |
-| [If a targettable action is stored](#targettable-actions)                              | ![](./readme/info_panel_targettable.png)          |
+| [Ground target action](#ground-target-actions)                                         | ![](./readme/info_panel_ground_target.png)          |
 
 
 #### General Radial Settings
@@ -116,12 +112,12 @@ These radial settings are globally applied and should be self explanatory:
   - Used to toggle action camera, radial doesn't function well in action camera
   - This must match the in-game keybind as described in [keybinds](#keybinds)
 
-#### Targettable actions
-In-game some actions are [ground-targettable](https://wiki.guildwars2.com/wiki/Targeting#Ground_targeting).
+#### Ground target actions
+In-game some actions are [ground-targetable](https://wiki.guildwars2.com/wiki/Targeting#Ground_targeting).
 
 When such an action is cast using a mouse action in the module via a radial or icons, it usually ends up in the wrong place.
 
-Since version 1.5.0 the module now keeps track of targettable actions when you use them via a radial or icons and casts them the next time you click your left mouse button.
+Since version 1.5.0 the module now keeps track of ground target actions when you use them via a radial or icons and casts them the next time you click your left mouse button.
 Currently there is no UI indication just yet.
 
 
