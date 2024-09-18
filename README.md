@@ -82,10 +82,13 @@ Settings related to out of combat queueing:
 
 
 The following actions are usable in-game when in combat:
-- For both [Skyscale](https://wiki.guildwars2.com/wiki/Skyscale_(skill)) and [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)) when the [Combat Launch Mastery](https://wiki.guildwars2.com/wiki/Combat_Launch) is unlocked.
+- For both [Skyscale](https://wiki.guildwars2.com/wiki/Skyscale_(skill)) and [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill))
+  - Requirements:
+    - [Combat Launch Mastery](https://wiki.guildwars2.com/wiki/Combat_Launch) unlocked
+    - "Combat Launch mastery unlocked" option in the module enabled
   - It is not possible to read in-game cooldowns via mumble, so the module does not know when the [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)) skill is off cooldown.
   - The game launches you in the air for both these skills when you're in combat, see "Mechanics": [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)).
-  - If you don't want to use this combat launch mastery for skyscale you can disable the "Combat Launch mastery unlocked" setting. 
+  - If you don't want to use this combat launch mastery for skyscale you can disable the "Combat Launch mastery unlocked" option. 
 - Unmount
 - Warclaw (since the Janthir Wilds expansion)
 
