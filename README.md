@@ -121,9 +121,11 @@ In-game some actions are [ground-targetable](https://wiki.guildwars2.com/wiki/Ta
 
 When such an action is cast using a mouse action in the module via a radial or icons, it usually ends up in the wrong place.
 
-Since version 1.5.0 the module now keeps track of ground target actions when you use them via a radial or icons and casts them the next time you click your left mouse button.
-
-When active it's displayed in the [Info panel](#info-panel).
+Since version 1.5.0 the module now handles ground target actions differently when you use them via a radial or icons depending on the `Ground targeting option`:
+- Normal: Show range indicator on first press, cast on second.
+- Fast with range indicator - Show range indicator on keypress, cast on release.
+- Instant - Keeps track of your action and instantly casts at your mouse cursor's location on the next click of the left mouse button.
+  - When active it's displayed in the [Info panel](#info-panel).
 
 ❗ Make sure the Ground targeting option matches the one in your in-game settings.
 
