@@ -39,12 +39,13 @@ namespace Manlaan.Mounts.Things
             get { return _queuedTimestamp;  }
             internal set
             {
-                if (QueuedTimestampUpdated != null)
+                var oldvalue = _queuedTimestamp;
+                Logger.Debug($"Setting {nameof(QueuedTimestamp)} on {Name} to: {value}");
+                _queuedTimestamp = value;
+                if (QueuedTimestampUpdated != null && oldvalue != value)
                 {
                     QueuedTimestampUpdated(this, new ValueChangedEventArgs("", ""));
                 }
-                Logger.Debug($"Setting {nameof(QueuedTimestamp)} on {Name} to: {value}");
-                _queuedTimestamp = value;
 
             }
         }
