@@ -445,7 +445,7 @@ namespace Manlaan.Mounts
             _settingJumpBinding.Value.Enabled = true;
             _settingJumpBinding.Value.Activated += delegate { _helper.UpdateLastJumped(); };
             _settingFallingOrGlidingUpdateFrequency = settings.DefineSetting("FallingOrGlidingUpdateFrequency", 0.1f);
-            _settingTapThresholdInMilliseconds = settings.DefineSetting("TapThresholdInMilliseconds", 0);
+            _settingTapThresholdInMilliseconds = settings.DefineSetting("TapThresholdInMilliseconds", 500);
 
 
             ContextualRadialSettings = new List<ContextualRadialThingSettings>

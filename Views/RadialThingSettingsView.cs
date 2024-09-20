@@ -417,6 +417,7 @@ namespace Manlaan.Mounts.Views
                     WrapText = false,
                     Parent = RadialSettingsDetailPanel,
                     Text = "Apply instantly on tap: ",
+                    TextColor = Color.White,
                     BasicTooltipText = "The configured action will be hidden from the radial. When the module keybind is tapped we do not display the radial, but we perform this action immediately instead."
                 };
                 Dropdown settingApplyInstantlyOnTap_Select = new Dropdown()
@@ -425,6 +426,12 @@ namespace Manlaan.Mounts.Views
                     Width = labelWidth,
                     Parent = RadialSettingsDetailPanel,
                 };
+                if (Module._settingTapThresholdInMilliseconds.Value == 0)
+                {
+                    settingApplyInstantlyOnTap_Label.TextColor = Color.DarkGray;
+                    settingApplyInstantlyOnTap_Label.BasicTooltipText = "Disabled since tap threshold is set to 0";
+                    settingApplyInstantlyOnTap_Select.Enabled = false;
+                }
                 settingApplyInstantlyOnTap_Select.Items.Add("Disabled");
                 var thingNamesApplyInstantlyOnTap = contextualRadialSettingsAtBottom.Things.Select(m => m.Name);
                 foreach (string i in thingNamesApplyInstantlyOnTap)
