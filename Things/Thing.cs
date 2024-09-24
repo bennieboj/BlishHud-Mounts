@@ -99,8 +99,12 @@ namespace Manlaan.Mounts.Things
                 switch (Module._settingGroundTargeting.Value)
                 {
                     case GroundTargeting.Instant:
-                        _helper.StoredRangedThing = this;
-                        return;
+                        if (ShouldGroundTargetingBeDelayed())
+                        {
+                            _helper.StoredRangedThing = this;
+                            return;
+                        }
+                        break;
                     case GroundTargeting.Normal:
                         break;
                     case GroundTargeting.FastWithRangeIndicator:
@@ -143,6 +147,11 @@ namespace Manlaan.Mounts.Things
         }
 
         public virtual bool IsGroundTargeted()
+        {
+            return false;
+        }
+
+        public virtual bool ShouldGroundTargetingBeDelayed()
         {
             return false;
         }
