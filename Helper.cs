@@ -1,5 +1,6 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls.Extern;
+using Blish_HUD.Gw2Mumble;
 using Blish_HUD.Input;
 using Blish_HUD.Modules.Managers;
 using Blish_HUD.Settings;
@@ -14,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Taimi.UndaDaSea_BlishHUD;
 
 namespace Manlaan.Mounts
 {
@@ -55,6 +57,7 @@ namespace Manlaan.Mounts
         private Gw2ApiManager Gw2ApiManager;
         private bool _isCombatLaunchUnlocked;
         private DateTime lastTimeJumped = DateTime.MinValue;
+        public SkyLake _lake = null;
 
 
         public Helper(Gw2ApiManager gw2ApiManager)
@@ -63,6 +66,7 @@ namespace Manlaan.Mounts
             Gw2ApiManager = gw2ApiManager;
 
             Module._debug.Add("StoreThingForLaterActivation", () => $"{string.Join(", ", StoredThingForLater.Select(x => x.Key + "=" + x.Value.Name).ToArray())}");
+            Module._debug.Add("Lake", () => $"name: {_lake?.Name} surface {_lake?.WaterSurface} Z {GameService.Gw2Mumble.PlayerCharacter.Position.Z} distance {_lake?.Distance}");
         }
 
         public bool IsCombatLaunchUnlocked()
@@ -96,13 +100,35 @@ namespace Manlaan.Mounts
 
         public bool IsPlayerUnderWater()
         {
-            return GameService.Gw2Mumble.PlayerCharacter.Position.Z <= -1.2;
+            var playerPosition = GameService.Gw2Mumble.PlayerCharacter.Position;
+            var waterSurface = GetRelevantWaterSurface(playerPosition);
+            return playerPosition.Z <= waterSurface-1.2;
+        }
+
+        private float GetRelevantWaterSurface(Vector3 playerPosition)
+        {
+            var currentMap = GameService.Gw2Mumble.CurrentMap.Id;
+            var lake = Module._skyLakes.Where(lake => lake.Map == currentMap).Where(lake => lake.IsNearby(playerPosition)).OrderBy(lake => lake.Distance).FirstOrDefault();
+
+            _lake = lake;
+
+            var waterSurface = 0f;
+            if (lake != null)
+            {
+                if (lake.IsInWater(playerPosition))
+                {
+                    waterSurface = lake.WaterSurface;
+                }
+            }
+            return waterSurface;
         }
 
         public bool IsPlayerOnWaterSurface()
         {
-            var zpos = GameService.Gw2Mumble.PlayerCharacter.Position.Z;
-            return zpos > -1.2 && zpos < 0;
+            var playerPosition = GameService.Gw2Mumble.PlayerCharacter.Position;
+            var zpos = playerPosition.Z;
+            var waterSurface = GetRelevantWaterSurface(playerPosition);
+            return zpos > waterSurface - 1.2 && zpos < waterSurface;
         }
 
         public bool IsPlayerInCombat()

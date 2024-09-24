@@ -1,13 +1,13 @@
 {
   "name": "Mounts & More",
-  "version": "1.5.0-beta7",
+  "version": "1.5.0-beta8",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
 
   "description": "Mounts, mastery skills and novelty icons in radial, icon rows and corner icons. Settings need to be configured before using the module!",
   "dependencies": {
-    "bh.blishhud": ">=1.0.0"
+    "bh.blishhud": ">=1.2.0"
   },
   "url": "https://github.com/bennieboj/BlishHud-Mounts",
   "contributors": [  
@@ -32,6 +32,7 @@
 
 /*
     "changelog": {
+        "1.5.0-beta8": "2024-09-24: Added SotO sky lakes, thanks to TinyTaimi from the UndaDaSea module and Teh from the BlishHUD discord + changed keybinds validation",
         "1.5.0-beta7": "2024-09-16: Fix ooc infopanel display + disable radial setting tap in UI when threshold is 0.",
         "1.5.0-beta6": "2024-09-16: Add infopanel + add ground targeting options.",
         "1.5.0-beta5": "2024-09-13: Add api_permissions to manifest + prevent 'Apply instantly if single' to toggle on count of actions + indicate permissions.",

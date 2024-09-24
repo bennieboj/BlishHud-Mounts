@@ -22,8 +22,7 @@ The keybinds in the module need to match the ones in you in-game settings:
 
 1. **Match the keybinds to the game settings** and configure the `module keybind` (purple)
   ![](./readme/keybinds.png)
-  The game and the module might display different values for the keybinds due to your keyboard layout, especially for QWERTY vs AZERTY etc.
-  - Each keybind should have their own unique non-overlapping key. (e.g. not use "B" for 1 keybind and B/Ctrl+B/Alt+B/Shift+B for the other, for more info on overlapping see: blish-hud/Blish-HUD#862)
+  The game and the module might display different values for the keybinds due to your keyboard layout, especially for QWERTY vs AZERTY etc. Each keybind should have their own unique key.
 1. When you are just standing on the ground, not in water, etc you should see this result when you hold down the keybind.
   ![](./readme/initial_setup_result.png)
 
@@ -180,7 +179,7 @@ Which radial settings/context is active is a bit hidden for the end user, but sh
 
 ##### Underwater in SotO maps
 Normally all water is at the same level (z = 0).
-The underwater radial settings/context currently does not support SotO under water areas (some of these are above above z = 0).
+The underwater radial settings/context currently does support SotO under water areas thanks to [TinyTaimi from the UndaDaSea module](https://github.com/OpNop/UndaDaSea-BlishHUD) and Teh from the BlishHUD discord.
 
 ##### Gliding and falling detection
 Gliding and falling is detected by looking at the z values of the player character and calculating the velocity of that movement.
@@ -258,7 +257,7 @@ This allows for the creation of seperate sets of actions displayed in their own 
 
 Sending to GW2 is [configurable](#block-sequence-from-gw2).
 
-These user-defined radial settings each should have their own unique non-overlapping keybind. (e.g. not use "B" for 1 keybind and B/Ctrl+B/Alt+B/Shift+B for the other, for more info on overlapping see: https://github.com/blish-hud/Blish-HUD/issues/862)
+These user-defined radial settings each should have their own unique keybind.
 
 ### Icon Settings (3rd tab)
 Icon settings provide rows of actions that are always on the screen.

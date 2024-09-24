@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Mounts;
 using System;
+using Blish_HUD.Input;
 
 namespace Manlaan.Mounts.Views
 {
@@ -187,7 +188,7 @@ namespace Manlaan.Mounts.Views
 
         private void ValidateKeybindOverlaps()
         {
-            var kbaIssues = KeybindingAssigners.Where(k => settingDefaultMount_Keybind.KeyBinding.PrimaryKey.Equals(k.KeyBinding.PrimaryKey) && k.KeyBinding.PrimaryKey != Microsoft.Xna.Framework.Input.Keys.None);
+            var kbaIssues = KeybindingAssigners.Where(k => settingDefaultMount_Keybind.KeyBinding.EqualsKeyBinding(k.KeyBinding) && k.KeyBinding.PrimaryKey != Microsoft.Xna.Framework.Input.Keys.None);
             if (kbaIssues.Any() && settingDefaultMount_Keybind.KeyBinding.PrimaryKey != Microsoft.Xna.Framework.Input.Keys.None)
             {
                 foreach (var kbaIssue in kbaIssues)
@@ -693,6 +694,18 @@ namespace Manlaan.Mounts.Views
                 Parent = radialPanel,
                 Location = new Point(settingMountRadialToggleActionCameraKeyBinding_Label.Right + 4, settingMountRadialToggleActionCameraKeyBinding_Label.Top - 1),
             };
+        }
+    }
+
+    public static class KeyBindingExtensions
+    {
+        public static bool EqualsKeyBinding(this KeyBinding firstKeyBinding, KeyBinding secondKeyBinding)
+        {
+            if (firstKeyBinding == null || secondKeyBinding == null)
+                return false;
+
+            return firstKeyBinding.PrimaryKey == secondKeyBinding.PrimaryKey &&
+                   firstKeyBinding.ModifierKeys == secondKeyBinding.ModifierKeys;
         }
     }
 }

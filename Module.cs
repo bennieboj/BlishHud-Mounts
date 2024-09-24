@@ -21,6 +21,8 @@ using Manlaan.Mounts.Things.Mounts;
 using Manlaan.Mounts.Things;
 using Mounts;
 using Mounts.Settings;
+using Newtonsoft.Json;
+using Taimi.UndaDaSea_BlishHUD;
 
 namespace Manlaan.Mounts
 {
@@ -91,7 +93,7 @@ namespace Manlaan.Mounts
         private DrawMouseCursor _drawMouseCursor;
         private Helper _helper;
         private TextureCache _textureCache;
-
+        public static List<SkyLake> _skyLakes = new List<SkyLake>();
         private bool _lastIsThingSwitchable = false;
         private int _lastInUseThingsCount = 0;
 
@@ -205,6 +207,8 @@ namespace Manlaan.Mounts
                 .Select(file => new ThingImageFile() { Name = file.Substring(thingsDirectory.Length + 1) }).ToList();
             _textureCache = new TextureCache(ContentsManager);
 
+            _skyLakes = LoadSkyLakesFromJson();
+
             GameService.Gw2Mumble.PlayerCharacter.IsInCombatChanged += async (sender, e) => await HandleCombatChangeAsync(sender, e);
 
             var mountsIcon = _textureCache.GetImgFile(TextureCache.ModuleLogoTextureName);
@@ -226,6 +230,17 @@ namespace Manlaan.Mounts
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.RadialSettingsTextureName), () => new RadialThingSettingsView(DoKeybindActionAsync, _helper), Strings.Window_RadialSettingsTab));
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.IconSettingsTextureName), () => new IconThingSettingsView(), Strings.Window_IconSettingsTab));
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SupportMeTabTextureName), () => new SupportMeView(_textureCache), Strings.Window_SupportMeTab));
+        }
+
+        public List<SkyLake> LoadSkyLakesFromJson()
+        {
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.Converters.Add(new Vector3Converter());
+            using (StreamReader stream = new StreamReader(ContentsManager.GetFileStream("SkyLakes.json")))
+            using (JsonReader reader = new JsonTextReader(stream))
+            {
+                return serializer.Deserialize<List<SkyLake>>(reader);
+            }
         }
 
         private void ExtractFile(string filePath, string directoryToExtractTo)
@@ -639,6 +654,7 @@ namespace Manlaan.Mounts
         /// <inheritdoc />
         protected override void Unload()
         {
+            _skyLakes?.Clear();
             _debug?.Dispose();
             foreach (var drawIcons in _drawIcons) drawIcons.Dispose();
             _radial?.Dispose();
