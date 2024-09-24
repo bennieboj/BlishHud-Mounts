@@ -10,5 +10,14 @@ namespace Manlaan.Mounts.Things.Mounts
         {
         }
         protected override MountType MountType => MountType.Skiff;
+
+        public override bool IsGroundTargeted()
+        {
+            return true;
+        }
+        public override bool ShouldGroundTargetingBeDelayed()
+        {
+            return !_helper.IsPlayerOnWaterSurface();
+        }
     }
 }

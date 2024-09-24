@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Mounts;
 using System;
+using Blish_HUD.Input;
 
 namespace Manlaan.Mounts.Views
 {
@@ -42,7 +43,7 @@ namespace Manlaan.Mounts.Views
             int labelWidth2               = 250;
             int orderWidth                = 80;
             int bindingWidth              = 170;
-            int mountsAndRadialInputWidth = 125;
+            int mountsAndRadialInputWidth = 170;
 
             labelExplanation = new Label()
             {
@@ -72,10 +73,10 @@ namespace Manlaan.Mounts.Views
             Panel thingsPanel = CreateDefaultPanel(buildPanel, new Point(panelPadding, labelExplanation.Bottom + panelPadding), 600);
             BuildThingsPanel(thingsPanel, labelWidth, bindingWidth, orderWidth);
 
-            Panel generalSettingsPanel = CreateDefaultPanel(buildPanel, new Point(thingsPanel.Right + 20, labelExplanation.Bottom + panelPadding));
+            Panel generalSettingsPanel = CreateDefaultPanel(buildPanel, new Point(thingsPanel.Right + 20, labelExplanation.Bottom + panelPadding), 600);
             BuildGeneralSettingsPanel(generalSettingsPanel, labelWidth2, mountsAndRadialInputWidth);
 
-            Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(thingsPanel.Right + 20, 500));
+            Panel radialPanel = CreateDefaultPanel(buildPanel, new Point(thingsPanel.Right + 20, 500), 600);
             BuildRadialSettingsPanel(radialPanel, labelWidth2, mountsAndRadialInputWidth);
 
             ValidateKeybindOverlaps();
@@ -105,7 +106,7 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = mountsPanel,
-                Text = "must match in-game key binding",
+                Text = "must match in-game key settings",
                 HorizontalAlignment = HorizontalAlignment.Left
             };
             Label settingBinding_Label = new Label()
@@ -187,8 +188,8 @@ namespace Manlaan.Mounts.Views
 
         private void ValidateKeybindOverlaps()
         {
-            var kbaIssues = KeybindingAssigners.Where(k => settingDefaultMount_Keybind.KeyBinding.PrimaryKey.Equals(k.KeyBinding.PrimaryKey));
-            if (kbaIssues.Any())
+            var kbaIssues = KeybindingAssigners.Where(k => settingDefaultMount_Keybind.KeyBinding.EqualsKeyBinding(k.KeyBinding) && k.KeyBinding.PrimaryKey != Microsoft.Xna.Framework.Input.Keys.None);
+            if (kbaIssues.Any() && settingDefaultMount_Keybind.KeyBinding.PrimaryKey != Microsoft.Xna.Framework.Input.Keys.None)
             {
                 foreach (var kbaIssue in kbaIssues)
                 {
@@ -208,7 +209,7 @@ namespace Manlaan.Mounts.Views
             }
         }
 
-        private void BuildGeneralSettingsPanel(Panel defaultMountPanel, int labelWidth2, int mountsAndRadialInputWidth)
+        private void BuildGeneralSettingsPanel(Panel defaultMountPanel, int labelWidth2, int optionWidth)
         {
             Label settingDefaultMountKeybind_Label = new Label()
             {
@@ -217,12 +218,13 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                Text = "Key binding: ",
+                Text = "Module keybind: ",
             };
             settingDefaultMount_Keybind = new KeybindingAssigner(Module._settingDefaultMountBinding.Value)
             {
                 NameWidth = 0,
-                Size = new Point(mountsAndRadialInputWidth, 20),
+                Width = optionWidth,
+                Size = new Point(optionWidth, 20),
                 Parent = defaultMountPanel,
                 Location = new Point(settingDefaultMountKeybind_Label.Right + 4, settingDefaultMountKeybind_Label.Top - 1),
             };
@@ -236,12 +238,12 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                Text = "Keybind behaviour: ",
+                Text = "Module keybind behaviour: ",
             };
             Dropdown settingKeybindBehaviour_Select = new Dropdown()
             {
                 Location = new Point(settingKeybindBehaviour_Label.Right + 5, settingKeybindBehaviour_Label.Top - 4),
-                Width = settingDefaultMount_Keybind.Width,
+                Width = optionWidth,
                 Parent = defaultMountPanel,
             };
             settingKeybindBehaviour_Select.Items.Add("Disabled");
@@ -255,9 +257,34 @@ namespace Manlaan.Mounts.Views
                 Module._settingKeybindBehaviour.Value = settingKeybindBehaviour_Select.SelectedItem;
             };
 
-            Label settingJumpbinding_Label = new Label()
+            Label settingTapThresholdInMilliseconds_Label = new Label()
             {
                 Location = new Point(0, settingKeybindBehaviour_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Module Keybind Tap Threshold:",
+                BasicTooltipText = "The threshold to determine whether a module keybind press is a \"tap\" (in milliseconds). Default: 500ms (0.5s)."
+            };
+            TrackBar settingTapThresholdInMilliseconds_Slider = new TrackBar()
+            {
+                Location = new Point(settingTapThresholdInMilliseconds_Label.Right + 5, settingTapThresholdInMilliseconds_Label.Top),
+                Width = optionWidth,
+                MaxValue = 5000,
+                MinValue = 0,
+                Value = Module._settingTapThresholdInMilliseconds.Value,
+                Parent = defaultMountPanel,
+                BasicTooltipText = $"{Module._settingTapThresholdInMilliseconds.Value}"
+            };
+            settingTapThresholdInMilliseconds_Slider.ValueChanged += delegate {
+                Module._settingTapThresholdInMilliseconds.Value = (int)settingTapThresholdInMilliseconds_Slider.Value;
+                settingTapThresholdInMilliseconds_Slider.BasicTooltipText = $"{Module._settingTapThresholdInMilliseconds.Value}";
+            };
+
+            Label settingJumpbinding_Label = new Label()
+            {
+                Location = new Point(0, settingTapThresholdInMilliseconds_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -275,7 +302,7 @@ namespace Manlaan.Mounts.Views
             var settingJump_Keybind = new KeybindingAssigner(Module._settingJumpBinding.Value)
             {
                 NameWidth = 0,
-                Size = new Point(mountsAndRadialInputWidth, 20),
+                Size = new Point(optionWidth, 20),
                 Parent = defaultMountPanel,
                 Location = new Point(settingJumpbinding_Label.Right + 4, settingJumpbinding_Label.Top - 1),
             };
@@ -288,12 +315,12 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = defaultMountPanel,
                 Text = "Falling or gliding update frequency:",
-                BasicTooltipText = "Lower: faster reaction (might cause flickering). Higher: vice versa. Default 0.1."
+                BasicTooltipText = "Lower: faster reaction (might cause flickering). Higher: vice versa. Default: 0.1."
             };
             TrackBar settingFallingOrGlidingUpdateFrequency_Slider = new TrackBar()
             {
                 Location = new Point(settingFallingOrGlidingUpdateFrequency_Label.Right + 5, settingFallingOrGlidingUpdateFrequency_Label.Top),
-                Width = mountsAndRadialInputWidth,
+                Width = optionWidth,
                 MaxValue = 1.0f,
                 SmallStep = true,
                 MinValue = 0.0f,
@@ -306,31 +333,9 @@ namespace Manlaan.Mounts.Views
                 settingFallingOrGlidingUpdateFrequency_Slider.BasicTooltipText = $"{Module._settingFallingOrGlidingUpdateFrequency.Value}";
             };
 
-
-            Label settingDisplayModuleOnLoadingScreen_Label = new Label()
-            {
-                Location = new Point(0, settingFallingOrGlidingUpdateFrequency_Label.Bottom + 6),
-                Width = labelWidth2,
-                AutoSizeHeight = false,
-                WrapText = false,
-                Parent = defaultMountPanel,
-                Text = "Display module on loading screen:"
-            };
-            Checkbox settingDisplayModuleOnLoadingScreen_Checkbox = new Checkbox()
-            {
-                Size = new Point(labelWidth2, 20),
-                Parent = defaultMountPanel,
-                Checked = Module._settingDisplayModuleOnLoadingScreen.Value,
-                Location = new Point(settingDisplayModuleOnLoadingScreen_Label.Right + 5, settingDisplayModuleOnLoadingScreen_Label.Top - 1),
-            };
-            settingDisplayModuleOnLoadingScreen_Checkbox.CheckedChanged += delegate {
-                Module._settingDisplayModuleOnLoadingScreen.Value = settingDisplayModuleOnLoadingScreen_Checkbox.Checked;
-            };
-
-
             Label settingBlockSequenceFromGw2_Label = new Label()
             {
-                Location = new Point(0, settingDisplayModuleOnLoadingScreen_Label.Bottom + 6),
+                Location = new Point(0, settingFallingOrGlidingUpdateFrequency_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -350,14 +355,37 @@ namespace Manlaan.Mounts.Views
                 Module._settingDefaultMountBinding.Value.BlockSequenceFromGw2 = settingBlockSequenceFromGw2_Checkbox.Checked;
             };
 
-            Label settingMountAutomaticallyAfterLoadingScreen_Label = new Label()
+
+            Label settingDisplayModuleOnLoadingScreen_Label = new Label()
             {
                 Location = new Point(0, settingBlockSequenceFromGw2_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                Text = "Mount automatically after loading screen:"
+                Text = "Display module on loading screen:"
+            };
+            Checkbox settingDisplayModuleOnLoadingScreen_Checkbox = new Checkbox()
+            {
+                Size = new Point(labelWidth2, 20),
+                Parent = defaultMountPanel,
+                Checked = Module._settingDisplayModuleOnLoadingScreen.Value,
+                Location = new Point(settingDisplayModuleOnLoadingScreen_Label.Right + 5, settingDisplayModuleOnLoadingScreen_Label.Top - 1),
+            };
+            settingDisplayModuleOnLoadingScreen_Checkbox.CheckedChanged += delegate {
+                Module._settingDisplayModuleOnLoadingScreen.Value = settingDisplayModuleOnLoadingScreen_Checkbox.Checked;
+            };
+
+
+            Label settingMountAutomaticallyAfterLoadingScreen_Label = new Label()
+            {
+                Location = new Point(0, settingDisplayModuleOnLoadingScreen_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Mount automatically later:",
+                BasicTooltipText = "Later activation, e.g.: after loading screen"
             };
             Checkbox settingMountAutomaticallyAfterLoadingScreen_Checkbox = new Checkbox()
             {
@@ -370,10 +398,31 @@ namespace Manlaan.Mounts.Views
                 Module._settingMountAutomaticallyAfterLoadingScreen.Value = settingMountAutomaticallyAfterLoadingScreen_Checkbox.Checked;
             };
 
+            Label combatLaunchMasteryUnlocked_Label = new Label()
+            {
+                Location = new Point(0, settingMountAutomaticallyAfterLoadingScreen_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Combat Launch mastery unlocked: ",
+                BasicTooltipText = "This is detected via the API, but if you don't want to use Combat Mastery you can disable this option and queuing will still happen."
+            };
+            Checkbox combatLaunchMasteryUnlocked_Checkbox = new Checkbox()
+            {
+                Size = new Point(20, 20),
+                Parent = defaultMountPanel,
+                Checked = Module._settingCombatLaunchMasteryUnlocked.Value,
+                Location = new Point(combatLaunchMasteryUnlocked_Label.Right + 5, combatLaunchMasteryUnlocked_Label.Top - 1),
+            };
+            combatLaunchMasteryUnlocked_Checkbox.CheckedChanged += delegate {
+                Module._settingCombatLaunchMasteryUnlocked.Value = combatLaunchMasteryUnlocked_Checkbox.Checked;
+            };
+
 
             Label settingEnableMountQueueing_Label = new Label()
             {
-                Location = new Point(0, settingMountAutomaticallyAfterLoadingScreen_Label.Bottom + 6),
+                Location = new Point(0, combatLaunchMasteryUnlocked_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -391,10 +440,31 @@ namespace Manlaan.Mounts.Views
                 Module._settingEnableMountQueueing.Value = settingEnableMountQueueing_Checkbox.Checked;
             };
 
+            Label dragInfoPanel_Label = new Label()
+            {
+                Location = new Point(0, settingEnableMountQueueing_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                BasicTooltipText = "The info panel displays out of combat queueing, later activation, ground target action and tap action.\nSee settings and documentation for more info.",
+                Text = "Drag info panel: "
+            };
+            Checkbox dragInfoPanel_Checkbox = new Checkbox()
+            {
+                Size = new Point(20, 20),
+                Parent = defaultMountPanel,
+                Checked = Module._settingDragInfoPanel.Value,
+                Location = new Point(dragInfoPanel_Label.Right + 5, dragInfoPanel_Label.Top - 1),
+            };
+            dragInfoPanel_Checkbox.CheckedChanged += delegate {
+                Module._settingDragInfoPanel.Value = dragInfoPanel_Checkbox.Checked;
+            };
+
 
             Label settingDisplayMountQueueing_Label = new Label()
             {
-                Location = new Point(0, settingEnableMountQueueing_Label.Bottom + 6),
+                Location = new Point(0, dragInfoPanel_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
@@ -412,48 +482,86 @@ namespace Manlaan.Mounts.Views
                 Module._settingDisplayMountQueueing.Value = settingDisplayMountQueueing_Checkbox.Checked;
             };
 
-            Label dragMountQueueing_Label = new Label()
+
+            Label settingDisplayLaterActivation_Label = new Label()
             {
                 Location = new Point(0, settingDisplayMountQueueing_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                Text = "Drag out of combat queueing: "
+                Text = "Display later activation:",
+                BasicTooltipText = "Displays \"mount automatically after loading screen\""
             };
-            Checkbox dragMountQueueing_Checkbox = new Checkbox()
+            Checkbox settingDisplayLaterActivation_Checkbox = new Checkbox()
             {
-                Size = new Point(20, 20),
+                Size = new Point(labelWidth2, 20),
                 Parent = defaultMountPanel,
-                Checked = Module._settingDragMountQueueing.Value,
-                Location = new Point(dragMountQueueing_Label.Right + 5, dragMountQueueing_Label.Top - 1),
+                Checked = Module._settingDisplayLaterActivation.Value,
+                Location = new Point(settingDisplayLaterActivation_Label.Right + 5, settingDisplayLaterActivation_Label.Top - 1),
             };
-            dragMountQueueing_Checkbox.CheckedChanged += delegate {
-                Module._settingDragMountQueueing.Value = dragMountQueueing_Checkbox.Checked;
+            settingDisplayLaterActivation_Checkbox.CheckedChanged += delegate {
+                Module._settingDisplayLaterActivation.Value = settingDisplayLaterActivation_Checkbox.Checked;
             };
 
 
-
-            Label combatLaunchMasteryUnlocked_Label = new Label()
+            Label settingDisplayGroundTargetAction_Label = new Label()
             {
-                Location = new Point(0, dragMountQueueing_Label.Bottom + 6),
+                Location = new Point(0, settingDisplayLaterActivation_Label.Bottom + 6),
                 Width = labelWidth2,
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                Text = "Combat Launch mastery unlocked: ",
-                BasicTooltipText = "EoD and SotO masteries are not detectable in the API yet, see documentation for more info."
+                Text = "Display ground target action:"
             };
-            Checkbox combatLaunchMasteryUnlocked_Checkbox = new Checkbox()
+            Checkbox settingDisplayGroundTargetAction_Checkbox = new Checkbox()
             {
-                Size = new Point(20, 20),
+                Size = new Point(labelWidth2, 20),
                 Parent = defaultMountPanel,
-                Checked = Module._settingCombatLaunchMasteryUnlocked.Value,
-                Location = new Point(combatLaunchMasteryUnlocked_Label.Right + 5, combatLaunchMasteryUnlocked_Label.Top - 1),
+                Checked = Module._settingDisplayGroundTargetingAction.Value,
+                Location = new Point(settingDisplayGroundTargetAction_Label.Right + 5, settingDisplayGroundTargetAction_Label.Top - 1),
             };
-            combatLaunchMasteryUnlocked_Checkbox.CheckedChanged += delegate {
-                Module._settingCombatLaunchMasteryUnlocked.Value = combatLaunchMasteryUnlocked_Checkbox.Checked;
+            settingDisplayGroundTargetAction_Checkbox.CheckedChanged += delegate {
+                Module._settingDisplayGroundTargetingAction.Value = settingDisplayGroundTargetAction_Checkbox.Checked;
             };
+
+            Label settingGroundTargetting_Label = new Label()
+            {
+                Location = new Point(0, settingDisplayGroundTargetAction_Label.Bottom + 6),
+                Width = labelWidth2,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = defaultMountPanel,
+                Text = "Ground targeting: ",
+                BasicTooltipText = "Normal - Show range indicator on first press, cast on second.\nFast with range indicator - Show range indicator on keypress, cast on release.\nInstant - Instantly cast at your mouse cursor's location."
+            };
+            new Image
+            {
+                Parent = defaultMountPanel,
+                Size = new Point(16, 16),
+                Location = new Point(settingGroundTargetting_Label.Right - 140, settingGroundTargetting_Label.Bottom - 16),
+                Texture = anetTexture,
+            };
+            Dropdown settingGroundTargetting_Select = new Dropdown()
+            {
+                Location = new Point(settingGroundTargetting_Label.Right + 5, settingGroundTargetting_Label.Top - 4),
+                Width = optionWidth,
+                Parent = defaultMountPanel,
+            };
+            foreach (var i in Enum.GetValues(typeof(GroundTargeting)))
+            {
+                settingGroundTargetting_Select.Items.Add(i.ToString());
+            }
+            settingGroundTargetting_Select.SelectedItem = Module._settingGroundTargeting.Value.ToString();
+            settingGroundTargetting_Select.ValueChanged += delegate {
+                Module._settingGroundTargeting.Value = (GroundTargeting)Enum.Parse(typeof(GroundTargeting), settingGroundTargetting_Select.SelectedItem);
+            };
+
+
+
+
+
+
         }
 
         private void BuildRadialSettingsPanel(Container radialPanel, int labelWidth, int mountsAndRadialInputWidth)
@@ -586,6 +694,18 @@ namespace Manlaan.Mounts.Views
                 Parent = radialPanel,
                 Location = new Point(settingMountRadialToggleActionCameraKeyBinding_Label.Right + 4, settingMountRadialToggleActionCameraKeyBinding_Label.Top - 1),
             };
+        }
+    }
+
+    public static class KeyBindingExtensions
+    {
+        public static bool EqualsKeyBinding(this KeyBinding firstKeyBinding, KeyBinding secondKeyBinding)
+        {
+            if (firstKeyBinding == null || secondKeyBinding == null)
+                return false;
+
+            return firstKeyBinding.PrimaryKey == secondKeyBinding.PrimaryKey &&
+                   firstKeyBinding.ModifierKeys == secondKeyBinding.ModifierKeys;
         }
     }
 }

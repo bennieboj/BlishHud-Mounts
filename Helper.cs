@@ -1,5 +1,6 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls.Extern;
+using Blish_HUD.Gw2Mumble;
 using Blish_HUD.Input;
 using Blish_HUD.Modules.Managers;
 using Blish_HUD.Settings;
@@ -14,14 +15,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Taimi.UndaDaSea_BlishHUD;
 
 namespace Manlaan.Mounts
 {
+    public class RangedThingUpdatedEvent : EventArgs
+    {
+        public Thing NewThing { get; set; }
+        public RangedThingUpdatedEvent(Thing newThing)
+        {
+            NewThing = newThing;
+        }
+    }
+
     public class Helper
     {
         private static readonly Logger Logger = Logger.GetLogger<Helper>();
 
         private Dictionary<string, Thing> StoredThingForLater = new Dictionary<string, Thing>();
+
+        private Thing _storedRangedThing;
+        public Thing StoredRangedThing {
+            get { return _storedRangedThing; }
+            set{
+                if (RangedThingUpdated != null)
+                {
+                    RangedThingUpdated(this, new ValueChangedEventArgs<Thing>(_storedRangedThing, value));
+                }
+                Logger.Debug($"Setting {nameof(StoredRangedThing)} to: {value?.Name}");
+                _storedRangedThing = value;
+            }
+        }
+        public event EventHandler<ValueChangedEventArgs<Thing>> RangedThingUpdated;
+        public event EventHandler<ValueChangedEventArgs<Dictionary<string, Thing>>> StoredThingForLaterUpdated;
 
         private readonly Dictionary<(Keys, ModifierKeys), SemaphoreSlim> _semaphores;
 
@@ -30,7 +56,9 @@ namespace Manlaan.Mounts
         private bool _isPlayerGlidingOrFalling = false;
         private Gw2ApiManager Gw2ApiManager;
         private bool _isCombatLaunchUnlocked;
-        private DateTime lastTimeJumped = DateTime.MinValue;        
+        private DateTime lastTimeJumped = DateTime.MinValue;
+        public SkyLake _lake = null;
+
 
         public Helper(Gw2ApiManager gw2ApiManager)
         {
@@ -38,11 +66,12 @@ namespace Manlaan.Mounts
             Gw2ApiManager = gw2ApiManager;
 
             Module._debug.Add("StoreThingForLaterActivation", () => $"{string.Join(", ", StoredThingForLater.Select(x => x.Key + "=" + x.Value.Name).ToArray())}");
+            Module._debug.Add("Lake", () => $"name: {_lake?.Name} surface {_lake?.WaterSurface} Z {GameService.Gw2Mumble.PlayerCharacter.Position.Z} distance {_lake?.Distance}");
         }
 
         public bool IsCombatLaunchUnlocked()
         {
-            return _isCombatLaunchUnlocked || Module._settingCombatLaunchMasteryUnlocked.Value;
+            return _isCombatLaunchUnlocked && Module._settingCombatLaunchMasteryUnlocked.Value;
         }
 
         public async Task IsCombatLaunchUnlockedAsync()
@@ -53,7 +82,7 @@ namespace Manlaan.Mounts
             }
 
             var masteries = await Gw2ApiManager.Gw2ApiClient.V2.Masteries.AllAsync();
-            _isCombatLaunchUnlocked = masteries.Any(m => m.Name == "Combat Launch");
+            _isCombatLaunchUnlocked = masteries.Any(m => m.Levels.Any(ml => ml.Name == "Combat Launch"));
         }
 
         public bool IsPlayerInWvwMap()
@@ -71,13 +100,35 @@ namespace Manlaan.Mounts
 
         public bool IsPlayerUnderWater()
         {
-            return GameService.Gw2Mumble.PlayerCharacter.Position.Z <= -1.2;
+            var playerPosition = GameService.Gw2Mumble.PlayerCharacter.Position;
+            var waterSurface = GetRelevantWaterSurface(playerPosition);
+            return playerPosition.Z <= waterSurface-1.2;
+        }
+
+        private float GetRelevantWaterSurface(Vector3 playerPosition)
+        {
+            var currentMap = GameService.Gw2Mumble.CurrentMap.Id;
+            var lake = Module._skyLakes.Where(lake => lake.Map == currentMap).Where(lake => lake.IsNearby(playerPosition)).OrderBy(lake => lake.Distance).FirstOrDefault();
+
+            _lake = lake;
+
+            var waterSurface = 0f;
+            if (lake != null)
+            {
+                if (lake.IsInWater(playerPosition))
+                {
+                    waterSurface = lake.WaterSurface;
+                }
+            }
+            return waterSurface;
         }
 
         public bool IsPlayerOnWaterSurface()
         {
-            var zpos = GameService.Gw2Mumble.PlayerCharacter.Position.Z;
-            return zpos > -1.2 && zpos < 0;
+            var playerPosition = GameService.Gw2Mumble.PlayerCharacter.Position;
+            var zpos = playerPosition.Z;
+            var waterSurface = GetRelevantWaterSurface(playerPosition);
+            return zpos > waterSurface - 1.2 && zpos < waterSurface;
         }
 
         public bool IsPlayerInCombat()
@@ -157,7 +208,7 @@ namespace Manlaan.Mounts
             }
         }
 
-        public async Task TriggerKeybind(SettingEntry<KeyBinding> keybindingSetting)
+        public async Task TriggerKeybind(SettingEntry<KeyBinding> keybindingSetting, WhichKeybindToRun whichKeyBindToRun)
         {
             var semaphore = GetOrCreateSemaphore(keybindingSetting.Value);
 
@@ -166,30 +217,38 @@ namespace Manlaan.Mounts
             try
             {
                 Logger.Debug("TriggerKeybind entered");
-                if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
+                if (whichKeyBindToRun == WhichKeybindToRun.Both || whichKeyBindToRun == WhichKeybindToRun.Press)
                 {
-                    Logger.Debug($"TriggerKeybind press modifiers {keybindingSetting.Value.ModifierKeys}");
-                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
-                        Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.MENU, false);
-                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
-                        Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.CONTROL, false);
-                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
-                        Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.SHIFT, false);
+                    if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
+                    {
+                        Logger.Debug($"TriggerKeybind press modifiers {keybindingSetting.Value.ModifierKeys}");
+                        if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
+                            Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.MENU, false);
+                        if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
+                            Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.CONTROL, false);
+                        if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
+                            Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.SHIFT, false);
+                    }
+                    Logger.Debug($"TriggerKeybind press PrimaryKey {keybindingSetting.Value.PrimaryKey}");
+                    Blish_HUD.Controls.Intern.Keyboard.Press(ToVirtualKey(keybindingSetting.Value.PrimaryKey), false);
+                    await Task.Delay(50);
                 }
-                Logger.Debug($"TriggerKeybind press PrimaryKey {keybindingSetting.Value.PrimaryKey}");
-                Blish_HUD.Controls.Intern.Keyboard.Press(ToVirtualKey(keybindingSetting.Value.PrimaryKey), false);
-                await Task.Delay(50);
-                Logger.Debug($"TriggerKeybind release PrimaryKey {keybindingSetting.Value.PrimaryKey}");
-                Blish_HUD.Controls.Intern.Keyboard.Release(ToVirtualKey(keybindingSetting.Value.PrimaryKey), false);
-                if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
+
+
+                if (whichKeyBindToRun == WhichKeybindToRun.Both || whichKeyBindToRun == WhichKeybindToRun.Release)
                 {
-                    Logger.Debug($"TriggerKeybind release modifiers {keybindingSetting.Value.ModifierKeys}");
-                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
-                        Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.SHIFT, false);
-                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
-                        Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.CONTROL, false);
-                    if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
-                        Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.MENU, false);
+                    Logger.Debug($"TriggerKeybind release PrimaryKey {keybindingSetting.Value.PrimaryKey}");
+                    Blish_HUD.Controls.Intern.Keyboard.Release(ToVirtualKey(keybindingSetting.Value.PrimaryKey), false);
+                    if (keybindingSetting.Value.ModifierKeys != ModifierKeys.None)
+                    {
+                        Logger.Debug($"TriggerKeybind release modifiers {keybindingSetting.Value.ModifierKeys}");
+                        if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Shift))
+                            Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.SHIFT, false);
+                        if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Ctrl))
+                            Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.CONTROL, false);
+                        if (keybindingSetting.Value.ModifierKeys.HasFlag(ModifierKeys.Alt))
+                            Blish_HUD.Controls.Intern.Keyboard.Release(VirtualKeyShort.MENU, false);
+                    }
                 }
             }
             finally
@@ -216,44 +275,77 @@ namespace Manlaan.Mounts
             return Module._things.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault();
         }
 
-        internal void StoreThingForLaterActivation(Thing thing, string characterName, string reason)
+        internal async Task DoRangedThing()
         {
-            Logger.Debug($"{nameof(StoreThingForLaterActivation)}: {thing.Name} for character: {characterName} with reason: {reason}");
-            StoredThingForLater[characterName] = thing;
+            if(StoredRangedThing != null)
+            {
+                var thing = StoredRangedThing;
+                Logger.Debug($"{nameof(DoRangedThing)} {thing?.Name}");
+                await thing?.DoAction(false, false);
+                StoredRangedThing = null;
+            }
         }
 
-        internal bool IsSomethingStoredForLaterActivation(string characterName)
+        internal void StoreThingForLaterActivation(Thing thing, string reason)
         {
-            var result = StoredThingForLater.ContainsKey(characterName);
-            Logger.Debug($"{nameof(IsSomethingStoredForLaterActivation)} for character {characterName} : {result}");
+            var characterName = GameService.Gw2Mumble.PlayerCharacter.Name;
+            Logger.Debug($"{nameof(StoreThingForLaterActivation)}: {thing.Name} for character: {characterName} with reason: {reason}");
+            StoredThingForLater[characterName] = thing;
+            if (StoredThingForLaterUpdated != null)
+            {
+                StoredThingForLaterUpdated(this, new ValueChangedEventArgs<Dictionary<string, Thing>>(null, StoredThingForLater));
+            }
+        }
+
+        internal Thing IsSomethingStoredForLaterActivation()
+        {
+            var characterName = GameService.Gw2Mumble.PlayerCharacter.Name;
+            StoredThingForLater.TryGetValue(characterName, out Thing result);
+            Logger.Debug($"{nameof(IsSomethingStoredForLaterActivation)} for character {characterName} : {result?.Name}");
             return result;
         }
 
-        internal void ClearSomethingStoredForLaterActivation(string characterName)
+        internal void ClearSomethingStoredForLaterActivation()
         {
+            var characterName = GameService.Gw2Mumble.PlayerCharacter.Name;
             Logger.Debug($"{nameof(ClearSomethingStoredForLaterActivation)} for character: {characterName}");
             StoredThingForLater.Remove(characterName);
+            if (StoredThingForLaterUpdated != null)
+            {
+                StoredThingForLaterUpdated(this, new ValueChangedEventArgs<Dictionary<string, Thing>>(null, StoredThingForLater));
+            }
         }
 
-        internal async Task DoThingActionForLaterActivation(string characterName)
+        internal async Task DoThingActionForLaterActivation()
         {
+            var characterName = GameService.Gw2Mumble.PlayerCharacter.Name;
             var thing = StoredThingForLater[characterName];
-            Logger.Debug($"{nameof(ClearSomethingStoredForLaterActivation)} {thing?.Name} for character: {characterName}");
-            await thing?.DoAction(false);
-            ClearSomethingStoredForLaterActivation(characterName);
+            Logger.Debug($"{nameof(DoThingActionForLaterActivation)} {thing?.Name} for character: {characterName}");
+            await thing?.DoAction(false, false);
+            ClearSomethingStoredForLaterActivation();
         }
 
         internal ContextualRadialThingSettings GetApplicableContextualRadialThingSettings() => Module.ContextualRadialSettings.OrderBy(c => c.Order).FirstOrDefault(c => c.IsEnabled.Value && c.IsApplicable());
+        internal ContextualRadialThingSettings GetApplicableTriggeringContextualRadialThingSettings() => Module.ContextualRadialSettings.OrderBy(c => c.Order).FirstOrDefault(c => c.IsEnabled.Value && c.IsApplicable() && c.GetKeybind().Value.IsTriggering);
+
+        internal IEnumerable<RadialThingSettings> GetAllGenericRadialThingSettings()
+        {
+            var contextualRadialSettingsCasted = Module.ContextualRadialSettings.ConvertAll(x => (RadialThingSettings)x);
+            var userDefinedRadialSettingsCasted = Module.UserDefinedRadialSettings.ConvertAll(x => (RadialThingSettings)x);
+            return contextualRadialSettingsCasted.Concat(userDefinedRadialSettingsCasted);
+        }
 
         internal RadialThingSettings GetTriggeredRadialSettings()
         {
-            if (!Module._settingDefaultMountBinding.IsNull && Module._settingDefaultMountBinding.Value.IsTriggering)
+            var contextual = GetApplicableTriggeringContextualRadialThingSettings();
+            if(contextual != null)
             {
-                return GetApplicableContextualRadialThingSettings();
+                return contextual;
             }
 
-            var userdefinedList = Module.UserDefinedRadialSettings.Where(s => !s.Keybind.IsNull && s.Keybind.Value.IsTriggering);
-            if (userdefinedList.Count() == 1) {
+            var userdefinedList = Module.UserDefinedRadialSettings.Where(s => s.GetKeybind().Value.IsTriggering);
+            if (userdefinedList.Count() == 1)
+            {
                 return userdefinedList.Single();
             }
 

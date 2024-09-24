@@ -90,19 +90,21 @@ namespace Manlaan.Mounts.Controls
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
             RadialThings.Clear();
 
-            var applicableRadialSettings = _helper.GetTriggeredRadialSettings();
+            var triggeredRadialSettings = _helper.GetTriggeredRadialSettings();
             
-            if(applicableRadialSettings  == null)
+            if(triggeredRadialSettings  == null)
             {
+                _errorLabel.Text = $"No triggered radial settings found!!!";
+                _errorLabel.Show();
                 return;
             }
 
-            SelectedSettings = applicableRadialSettings;
+            SelectedSettings = triggeredRadialSettings;
 
-            var things = applicableRadialSettings.AvailableThings.ToList();
+            var things = triggeredRadialSettings.AvailableThings.ToList();
             if (!things.Any())
             {
-                _errorLabel.Text = $"No actions configured in the {applicableRadialSettings.Name} context \n(or no keybinds specified for these actions)\nClick button to go to the relevant settings: ";
+                _errorLabel.Text = $"No actions configured in the {triggeredRadialSettings.Name} context \n(or no keybinds specified for these actions)\nClick button to go to the relevant settings: ";
                 _errorLabel.Show();
                 _settingsButton.Show();
                 return;
@@ -113,10 +115,20 @@ namespace Manlaan.Mounts.Controls
                 _settingsButton.Hide();
             }
 
-            var thingToPutInCenter = applicableRadialSettings.GetCenterThing();
+            if(triggeredRadialSettings is ContextualRadialThingSettings)
+            {
+                var triggeredContextual = (ContextualRadialThingSettings)triggeredRadialSettings;
+                var tapThing = triggeredContextual.GetApplyInstantlyOnTapThing();
+                if (tapThing != null && triggeredContextual.IsTapApplicable())
+                {
+                    things.Remove(tapThing);
+                }
+            }
+
+            var thingToPutInCenter = triggeredRadialSettings.GetCenterThing();
             if (thingToPutInCenter != null && thingToPutInCenter.IsAvailable)
             {
-                if (applicableRadialSettings.RemoveCenterThing.Value)
+                if (triggeredRadialSettings.RemoveCenterThing.Value)
                 {
                     things.Remove(thingToPutInCenter);
                 }
@@ -244,7 +256,7 @@ namespace Manlaan.Mounts.Controls
                 unconditionallyDoAction = ((ContextualRadialThingSettings)SelectedSettings).UnconditionallyDoAction.Value;
             }
 
-            await (SelectedMount?.Thing.DoAction(unconditionallyDoAction) ?? Task.CompletedTask);
+            await (SelectedMount?.Thing.DoAction(unconditionallyDoAction, true) ?? Task.CompletedTask);
             SelectedSettings = null;
         }
 
@@ -258,7 +270,7 @@ namespace Manlaan.Mounts.Controls
                 if (!GameService.Input.Mouse.CursorIsVisible && !Module._settingMountRadialToggleActionCameraKeyBinding.IsNull)
                 {
                     IsActionCamToggledOnMount = true;
-                    await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding);
+                    await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding, WhichKeybindToRun.Both);
                     Logger.Debug("HandleShown turned off action cam");
                 }
 
@@ -293,7 +305,7 @@ namespace Manlaan.Mounts.Controls
                 Logger.Debug("HandleHidden entered");
                 if (IsActionCamToggledOnMount)
                 {
-                    await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding);
+                    await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding, WhichKeybindToRun.Both);
                     IsActionCamToggledOnMount = false;
                     Logger.Debug("HandleHidden turned back on action cam");
                 }

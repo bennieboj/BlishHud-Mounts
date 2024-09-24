@@ -1,13 +1,13 @@
 {
   "name": "Mounts & More",
-  "version": "1.4.13",
+  "version": "1.5.0-beta8",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
 
   "description": "Mounts, mastery skills and novelty icons in radial, icon rows and corner icons. Settings need to be configured before using the module!",
   "dependencies": {
-    "bh.blishhud": ">=1.0.0"
+    "bh.blishhud": ">=1.2.0"
   },
   "url": "https://github.com/bennieboj/BlishHud-Mounts",
   "contributors": [  
@@ -20,27 +20,31 @@
       "username": "manlaan.8921"
     }
   ],
-  "directories": [ "mounts" ]
-}
-
-/*
-,
+  "directories": [ "mounts" ],
   "api_permissions": {
     "progression": {
       "optional": true,
       "details": "Combat Launch mastery tracking"
     }
   }
-*/
+}
 
 
 /*
     "changelog": {
+        "1.5.0-beta8": "2024-09-24: Added SotO sky lakes, thanks to TinyTaimi from the UndaDaSea module and Teh from the BlishHUD discord + changed keybinds validation",
+        "1.5.0-beta7": "2024-09-16: Fix ooc infopanel display + disable radial setting tap in UI when threshold is 0.",
+        "1.5.0-beta6": "2024-09-16: Add infopanel + add ground targeting options.",
+        "1.5.0-beta5": "2024-09-13: Add api_permissions to manifest + prevent 'Apply instantly if single' to toggle on count of actions + indicate permissions.",
+        "1.5.0-beta4": "2024-09-12: Fix GetTriggeredRadialSettings for UserDefinedRadialSettings being swapped if there are more than 1.",
+        "1.5.0-beta3": "2024-09-12: Remove tapped action to allow 'Apply instantly on tap' to work together with 'Apply instantly if single' + add support for ground targeting + implemented Skyscale's Combat Launch mastery via API.",
         "1.4.13": "2024-08-28: Allow warclaw to be usable in combat and add summon conjured doorway mastery.",
         "1.4.12": "2024-08-08: Allow block module keybind and user defined keybinds from going to GW2 to be configurable.",
         "1.4.11": "2024-08-01: Public release 1.4.11",
+        "1.5.0-beta2": "2024-05-09: Added ApplyInstantlyOnTap.",
         "1.4.11-beta2": "2024-05-08: Allow FallingOrGlidingUpdateFrequency to be defined + block module keybind and user defined keybinds from going to GW2.",
         "1.4.11-beta1": "2024-05-07: Fix handle shown and handle hidden being called in parallel, causing action cam to be out of sync.",
+        "1.5.0-beta1": "2024-03-20: Added natural mounts by maanlichtje. Replace ApplyInstantlyWhenSingle option with ApplyInstantlyOnTap and ApplyInstantlyOnHold.",
         "1.4.10": "2024-02-15: prevent mount movement ability via jump key to trigger gliding detection for 5 seconds.",
         "1.4.9": "2024-02-13: public release 1.4.9",
         "1.4.9-beta1": "2024-02-01: Adapt flying parameters.",

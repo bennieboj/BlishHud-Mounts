@@ -33,7 +33,24 @@ namespace Manlaan.Mounts.Things
         public SettingEntry<KeyBinding> KeybindingSetting { get; private set; }
         public SettingEntry<string> ImageFileNameSetting { get; private set; }
         public CornerIcon CornerIcon { get; private set; }
-        public DateTime? QueuedTimestamp { get; internal set; }
+
+        private DateTime? _queuedTimestamp;
+        public DateTime? QueuedTimestamp {
+            get { return _queuedTimestamp;  }
+            internal set
+            {
+                var oldvalue = _queuedTimestamp;
+                Logger.Debug($"Setting {nameof(QueuedTimestamp)} on {Name} to: {value}");
+                _queuedTimestamp = value;
+                if (QueuedTimestampUpdated != null && oldvalue != value)
+                {
+                    QueuedTimestampUpdated(this, new ValueChangedEventArgs("", ""));
+                }
+
+            }
+        }
+        public event EventHandler<ValueChangedEventArgs> QueuedTimestampUpdated;
+
         public DateTime? LastUsedTimestamp { get; internal set; }
         public bool IsKeybindSet => KeybindingSetting.Value.ModifierKeys != ModifierKeys.None || KeybindingSetting.Value.PrimaryKey != Keys.None;
         public bool IsAvailable => IsKeybindSet;
@@ -48,7 +65,7 @@ namespace Manlaan.Mounts.Things
                 HoverIcon = img,
                 Priority = 10
             };
-            CornerIcon.Click += async delegate { await DoAction(false); };
+            CornerIcon.Click += async delegate { await DoAction(false, true); };
         }
 
         public void DisposeCornerIcon()
@@ -56,11 +73,11 @@ namespace Manlaan.Mounts.Things
             CornerIcon?.Dispose();
         }
 
-        public async Task DoAction(bool unconditionallyDoAction)
+        public async Task DoAction(bool unconditionallyDoAction, bool isActionComingFromMouseActionOnModuleUI)
         {
             if (unconditionallyDoAction)
             {
-                await _helper.TriggerKeybind(KeybindingSetting);
+                await _helper.TriggerKeybind(KeybindingSetting, WhichKeybindToRun.Both);
                 return;
             }
 
@@ -73,12 +90,50 @@ namespace Manlaan.Mounts.Things
 
             if (!Module.CanThingBeActivated())
             {
-                _helper.StoreThingForLaterActivation(this, GameService.Gw2Mumble.PlayerCharacter.Name, "NotAbleToActivate");
+                _helper.StoreThingForLaterActivation(this, "NotAbleToActivate");
                 return;
             }
 
+            if (isActionComingFromMouseActionOnModuleUI && IsGroundTargeted())
+            {
+                switch (Module._settingGroundTargeting.Value)
+                {
+                    case GroundTargeting.Instant:
+                        if (ShouldGroundTargetingBeDelayed())
+                        {
+                            _helper.StoredRangedThing = this;
+                            return;
+                        }
+                        break;
+                    case GroundTargeting.Normal:
+                        break;
+                    case GroundTargeting.FastWithRangeIndicator:
+                        _helper.StoredRangedThing = this;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            var whichKeybindToRun = WhichKeybindToRun.Both;
             LastUsedTimestamp = DateTime.UtcNow;
-            await _helper.TriggerKeybind(KeybindingSetting);
+            switch (Module._settingGroundTargeting.Value)
+            {
+                case GroundTargeting.Instant:
+                    _helper.StoredRangedThing = null; //reset
+                    break;
+                case GroundTargeting.Normal:
+                    break;
+                case GroundTargeting.FastWithRangeIndicator:
+                    if (IsGroundTargeted())
+                    {
+                        whichKeybindToRun = isActionComingFromMouseActionOnModuleUI ? WhichKeybindToRun.Press : WhichKeybindToRun.Release;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            await _helper.TriggerKeybind(KeybindingSetting, whichKeybindToRun);
         }
 
         public virtual bool IsInUse()
@@ -87,6 +142,16 @@ namespace Manlaan.Mounts.Things
         }
 
         public virtual bool IsUsableInCombat()
+        {
+            return false;
+        }
+
+        public virtual bool IsGroundTargeted()
+        {
+            return false;
+        }
+
+        public virtual bool ShouldGroundTargetingBeDelayed()
         {
             return false;
         }
@@ -103,5 +168,12 @@ namespace Manlaan.Mounts.Things
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
             return hashCode;
         }
+    }
+
+    public enum WhichKeybindToRun
+    {
+        Both = 0,
+        Press = 1,
+        Release = 2,
     }
 }
