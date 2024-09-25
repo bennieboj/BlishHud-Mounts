@@ -8,6 +8,7 @@ using Mounts;
 using System;
 using Mounts.Settings;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Manlaan.Mounts.Views
 {
@@ -51,7 +52,7 @@ namespace Manlaan.Mounts.Views
                 Parent = buildPanel,
                 TextColor = Color.Red,
                 Font = GameService.Content.DefaultFont18,
-                Text = "When enabled, these radial settings dictate which actions are being displayed.\nFor more info, see the documentation.".Replace(" ", "  "),
+                Text = "These radial settings dictate which actions are being displayed in contextual and user-defined radials.\nFor more info, see the documentation.".Replace(" ", "  "),
                 HorizontalAlignment = HorizontalAlignment.Left
             };
 
@@ -105,6 +106,7 @@ namespace Manlaan.Mounts.Views
                 Parent = RadialSettingsListPanel,
                 Text = "Evaluation Order",
                 HorizontalAlignment = HorizontalAlignment.Center,
+                BasicTooltipText = "Determines the order of evaluation of the contextual radials, 0 is checked first, then 1, etc.\nWhen an active contextual radial is found the evaluation stops."
             };
             Label enabledHeader_label = new Label()
             {
@@ -114,6 +116,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = RadialSettingsListPanel,
                 Text = "Enabled",
+                BasicTooltipText = "Disabled radials are not taken into account for the evaluation and are thus not displayed.",
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
 
@@ -267,6 +270,7 @@ namespace Manlaan.Mounts.Views
                     WrapText = false,
                     Parent = RadialSettingsDetailPanel,
                     Text = "Key binding: ",
+                    BasicTooltipText = "The keybind to display this user-defined radial."
                 };
                 KeybindingAssigner settingDefaultMount_Keybind = new KeybindingAssigner(userDefinedRadialSettingsName.Keybind.Value)
                 {
@@ -286,6 +290,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = RadialSettingsDetailPanel,
                 Text = "Default: ",
+                BasicTooltipText = "The default action using in this radial, see documentation (\"Default action\") for more info."
             };
             Dropdown settingDefaultThing_Select = new Dropdown()
             {
@@ -357,7 +362,8 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = RadialSettingsDetailPanel,
-                Text = "Enabled"
+                Text = "Enabled",
+                BasicTooltipText = "Disabled radials are not taken into account for the evaluation and are thus not displayed."
             };
 
             var IsDefault = false;

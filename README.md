@@ -27,11 +27,14 @@ The keybinds in the module need to match the ones in you in-game settings:
   ![](./readme/initial_setup_result.png)
 
 ##### Custom icons
-To use custom icons:
-- Open the designated folder:
+To use your own custom icons, follow these steps:
+1. Open the designated folder:
   ![](./readme/custom_icons.png)
-- Add your new icons, name them like the existing icons `raptor-something-new.png`. Do not replace files! Use new filenames, otherwise your icons will be replaced.
-- Restart the module by disabling and enabling it (see screenshot step 1)
+1. Add your new icons, name them like the existing icons `raptor-something-new.png`.
+   - Do not replace files! Use new filenames, otherwise your icons will be replaced.
+1. Restart the module by disabling and enabling it (see screenshot step 1)
+
+Only files with the extension "png" are supported.
 
 
 On the right you'll see a list of settings:
@@ -279,13 +282,16 @@ Not rendered otherwise.
 Use these actions also for corner icons, only available on the default icon settings.
 
 #### Orientation
-Display the row horizontally or vertically.
+The orientation of the icon row, either horizontal or vertical.
+
+#### Icon Size
+The icon size of actions in the row.
 
 #### Opacity
-The opacity of the displayed icons.
+The opacity of actions in the row.
 
 #### Drag
-Option to reposition the icons.
+Option to enable repositioning the icon row using the white icon at the beginning of the row.
 
 #### List of actions
 The list of actions that are used in this icon settings.

@@ -46,7 +46,7 @@ namespace Manlaan.Mounts.Views
                 Parent = buildPanel,
                 TextColor = Color.Red,
                 Font = GameService.Content.DefaultFont18,
-                Text = "When enabled, these icon settings dictate which actions are being displayed.\nFor more info, see the documentation.".Replace(" ", "  "),
+                Text = "These icon settings configure which actions are being displayed in the icon rows and corner icons.\nFor more info, see the documentation.".Replace(" ", "  "),
                 HorizontalAlignment = HorizontalAlignment.Left
             };
 
@@ -102,6 +102,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = IconSettingsListPanel,
                 Text = "Enabled",
+                BasicTooltipText = "Disabled icon rows are not displayed.",
                 HorizontalAlignment = HorizontalAlignment.Left,
             };
 
@@ -238,7 +239,8 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = IconSettingsDetailPanel,
-                Text = "Enabled"
+                Text = "Enabled",
+                BasicTooltipText = "Disabled icon rows are not displayed.",
             };
             Checkbox radialSettingsIsEnabled_Checkbox = new Checkbox()
             {
@@ -262,7 +264,8 @@ namespace Manlaan.Mounts.Views
                     AutoSizeHeight = false,
                     WrapText = false,
                     Parent = IconSettingsDetailPanel,
-                    Text = "Enable corner icons: "
+                    Text = "Enable corner icons: ",
+                    BasicTooltipText = "Use these actions also for corner icons, only available on the default icon settings."
                 };
                 Checkbox radialSettingsDisplayCornerIcons_Checkbox = new Checkbox()
                 {
@@ -286,6 +289,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = IconSettingsDetailPanel,
                 Text = "Orientation: ",
+                BasicTooltipText = "The orientation of the icon row, either horizontal or vertical."
             };
             Dropdown settingManualOrientation_Select = new Dropdown()
             {
@@ -309,7 +313,8 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = IconSettingsDetailPanel,
-                Text = "Icon Width: ",
+                Text = "Icon Size: ",
+                BasicTooltipText = "The icon size of actions in the row."
             };
             TrackBar settingImgWidth_Slider = new TrackBar()
             {
@@ -320,7 +325,10 @@ namespace Manlaan.Mounts.Views
                 Value = currentIconSettings.Size.Value,
                 Parent = IconSettingsDetailPanel,
             };
-            settingImgWidth_Slider.ValueChanged += delegate { currentIconSettings.Size.Value = (int)settingImgWidth_Slider.Value; };
+            settingImgWidth_Slider.ValueChanged += delegate { 
+                currentIconSettings.Size.Value = (int)settingImgWidth_Slider.Value;
+                settingImgWidth_Slider.BasicTooltipText = $"{currentIconSettings.Size.Value}";
+            };
 
             Label settingManualOpacity_Label = new Label()
             {
@@ -330,6 +338,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = IconSettingsDetailPanel,
                 Text = "Opacity: ",
+                BasicTooltipText = "The opacity of actions in the row."
             };
             TrackBar settingOpacity_Slider = new TrackBar()
             {
@@ -340,7 +349,10 @@ namespace Manlaan.Mounts.Views
                 Value = currentIconSettings.Opacity.Value * 100,
                 Parent = IconSettingsDetailPanel,
             };
-            settingOpacity_Slider.ValueChanged += delegate { currentIconSettings.Opacity.Value = settingOpacity_Slider.Value / 100; };
+            settingOpacity_Slider.ValueChanged += delegate {
+                currentIconSettings.Opacity.Value = settingOpacity_Slider.Value / 100;
+                settingImgWidth_Slider.BasicTooltipText = $"{currentIconSettings.Opacity.Value}";
+            };
 
             Label radialSettingsIsDraggingEnabled_Label = new Label()
             {
@@ -349,7 +361,8 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = IconSettingsDetailPanel,
-                Text = "Drag: "
+                Text = "Drag: ",
+                BasicTooltipText = "Option to enable repositioning the icon row using the white icon at the beginning of the row."
             };
             Checkbox radialSettingsIsDraggingEnabled_Checkbox = new Checkbox()
             {

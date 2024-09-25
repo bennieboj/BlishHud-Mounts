@@ -219,6 +219,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = defaultMountPanel,
                 Text = "Module keybind: ",
+                BasicTooltipText = "The module keybind is used to trigger the behaviour in the next setting."
             };
             settingDefaultMount_Keybind = new KeybindingAssigner(Module._settingDefaultMountBinding.Value)
             {
@@ -226,7 +227,7 @@ namespace Manlaan.Mounts.Views
                 Width = optionWidth,
                 Size = new Point(optionWidth, 20),
                 Parent = defaultMountPanel,
-                Location = new Point(settingDefaultMountKeybind_Label.Right + 4, settingDefaultMountKeybind_Label.Top - 1),
+                Location = new Point(settingDefaultMountKeybind_Label.Right + 4, settingDefaultMountKeybind_Label.Top - 1)
             };
             settingDefaultMount_Keybind.BindingChanged += delegate {
                 ValidateKeybindOverlaps();
@@ -239,6 +240,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = defaultMountPanel,
                 Text = "Module keybind behaviour: ",
+                BasicTooltipText = "Either display the radial or use the default action when the module keybind is held down.\nBoth are dependent on the context the player is in.\nDefault: Radial"
             };
             Dropdown settingKeybindBehaviour_Select = new Dropdown()
             {
@@ -265,7 +267,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = defaultMountPanel,
                 Text = "Module Keybind Tap Threshold:",
-                BasicTooltipText = "The threshold to determine whether a module keybind press is a \"tap\" (in milliseconds). Default: 500ms (0.5s)."
+                BasicTooltipText = "The threshold to determine whether a module keybind press is a \"tap\" (in milliseconds).\nOnly applicable for contextual radial settings.\nDefault: 500ms (0.5s)."
             };
             TrackBar settingTapThresholdInMilliseconds_Slider = new TrackBar()
             {
@@ -290,7 +292,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = defaultMountPanel,
                 Text = "In-game Jump key binding: ",
-                BasicTooltipText = "Used to detect gliding better for the IsPlayerGlidingOrFalling radial context."
+                BasicTooltipText = "Used to detect gliding better for the IsPlayerGlidingOrFalling contextual radial settings."
             };
             new Image
             {
@@ -315,7 +317,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = defaultMountPanel,
                 Text = "Falling or gliding update frequency:",
-                BasicTooltipText = "Lower: faster reaction (might cause flickering). Higher: vice versa. Default: 0.1."
+                BasicTooltipText = "Used to detect gliding and falling better for the IsPlayerGlidingOrFalling contextual radial settings.\nLower: faster reaction (might cause flickering when holding the module keybind).\nHigher: slightly slower reaction time, but more stable detection.\nDefault: 0.1."
             };
             TrackBar settingFallingOrGlidingUpdateFrequency_Slider = new TrackBar()
             {
@@ -340,7 +342,8 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                Text = "Block sequence from GW2:"
+                Text = "Block sequence from GW2:",
+                BasicTooltipText = "When checked, the sequence is not sent to GW2 otherwise it is sent to GW2.\nDefault: enabled."
             };
             Checkbox settingBlockSequenceFromGw2_Checkbox = new Checkbox()
             {
@@ -363,7 +366,8 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                Text = "Display module on loading screen:"
+                Text = "Display module on loading screen:",
+                BasicTooltipText = "Allow the module to be displayed on the loading screen."
             };
             Checkbox settingDisplayModuleOnLoadingScreen_Checkbox = new Checkbox()
             {
@@ -384,8 +388,8 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                Text = "Mount automatically later:",
-                BasicTooltipText = "Later activation, e.g.: after loading screen"
+                Text = "Mount automatically after loading screen:",
+                BasicTooltipText = "This option allows the an action to be activated after loading screen. Only applicable for mounts.\nDefault: disabled."
             };
             Checkbox settingMountAutomaticallyAfterLoadingScreen_Checkbox = new Checkbox()
             {
@@ -406,7 +410,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = defaultMountPanel,
                 Text = "Combat Launch mastery unlocked: ",
-                BasicTooltipText = "This is detected via the API, but if you don't want to use Combat Mastery you can disable this option and queuing will still happen."
+                BasicTooltipText = "Combat Launch mastery allows the user to mount on the Skyscale mount when in combat.\nThis is detected via the API.\nIf you don't want to use Combat Mastery you can disable this option and out of combat queuing will still happen.\nDefault: disabled."
             };
             Checkbox combatLaunchMasteryUnlocked_Checkbox = new Checkbox()
             {
@@ -427,7 +431,8 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                Text = "Enable out of combat queueing:"
+                Text = "Enable out of combat queueing:",
+                BasicTooltipText = "When using an action that cannot be done in combat we queue this action and perform in when the player is out of combat.\nOnly the last action in combat will be performed.\nDefault: disabled"
             };
             Checkbox settingEnableMountQueueing_Checkbox = new Checkbox()
             {
@@ -447,7 +452,7 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                BasicTooltipText = "The info panel displays out of combat queueing, later activation, ground target action and tap action.\nSee settings and documentation for more info.",
+                BasicTooltipText = "The info panel displays out of combat queueing, \"mount automatically after loading screen\" and ground target action.\nSee settings and documentation for more info.",
                 Text = "Drag info panel: "
             };
             Checkbox dragInfoPanel_Checkbox = new Checkbox()
@@ -469,7 +474,8 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                Text = "Display out of combat queueing:"
+                Text = "Display out of combat queueing:",
+                BasicTooltipText = "Displays \"out of combat queueing\" in the info panel."
             };
             Checkbox settingDisplayMountQueueing_Checkbox = new Checkbox()
             {
@@ -490,8 +496,8 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                Text = "Display later activation:",
-                BasicTooltipText = "Displays \"mount automatically after loading screen\""
+                Text = "Display \"mount automatically after loading screen\":",
+                BasicTooltipText = "Displays \"mount automatically after loading screen\" in the info panel."
             };
             Checkbox settingDisplayLaterActivation_Checkbox = new Checkbox()
             {
@@ -512,7 +518,8 @@ namespace Manlaan.Mounts.Views
                 AutoSizeHeight = false,
                 WrapText = false,
                 Parent = defaultMountPanel,
-                Text = "Display ground target action:"
+                Text = "Display ground target action:",
+                BasicTooltipText = "Displays the \"ground target action\" in the info panel."
             };
             Checkbox settingDisplayGroundTargetAction_Checkbox = new Checkbox()
             {
@@ -574,6 +581,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = radialPanel,
                 Text = "Radial settings: ",
+                BasicTooltipText = "Settings applied to all radials, both contextual and user-defined."
             };
             Label settingMountRadialSpawnAtMouse_Label = new Label()
             {
@@ -583,6 +591,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = radialPanel,
                 Text = "Spawn at mouse: ",
+                BasicTooltipText = "When enabled the radials will spawn at your current mouse position, otherwise they spawn at the middle of your screen and your mouse cursor will be moved towards that by the module.\nDefault: disabled."
             };
             Checkbox settingMountRadialSpawnAtMouse_Checkbox = new Checkbox()
             {
@@ -602,6 +611,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = radialPanel,
                 Text = "Radius: ",
+                BasicTooltipText = "Configures the size of the radials."
             };
             TrackBar settingMountRadialRadiusModifier_Slider = new TrackBar()
             {
@@ -612,7 +622,10 @@ namespace Manlaan.Mounts.Views
                 Value = Module._settingMountRadialRadiusModifier.Value * 100,
                 Parent = radialPanel,
             };
-            settingMountRadialRadiusModifier_Slider.ValueChanged += delegate { Module._settingMountRadialRadiusModifier.Value = settingMountRadialRadiusModifier_Slider.Value / 100; };
+            settingMountRadialRadiusModifier_Slider.ValueChanged += delegate {
+                Module._settingMountRadialRadiusModifier.Value = settingMountRadialRadiusModifier_Slider.Value / 100;
+                settingMountRadialRadiusModifier_Slider.BasicTooltipText = $"{Module._settingMountRadialRadiusModifier.Value}";
+            };
             Label settingMountRadialStartAngle_Label = new Label()
             {
                 Location = new Point(0, settingMountRadialRadiusModifier_Label.Bottom + 6),
@@ -621,6 +634,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = radialPanel,
                 Text = "Start angle: ",
+                BasicTooltipText = "Configures the start point of the first action in the radials when displaying."
             };
             TrackBar settingMountRadialStartAngle_Slider = new TrackBar()
             {
@@ -631,7 +645,10 @@ namespace Manlaan.Mounts.Views
                 Value = Module._settingMountRadialStartAngle.Value * 360,
                 Parent = radialPanel,
             };
-            settingMountRadialStartAngle_Slider.ValueChanged += delegate { Module._settingMountRadialStartAngle.Value = settingMountRadialStartAngle_Slider.Value / 360; };
+            settingMountRadialStartAngle_Slider.ValueChanged += delegate {
+                Module._settingMountRadialStartAngle.Value = settingMountRadialStartAngle_Slider.Value / 360;
+                settingMountRadialStartAngle_Slider.BasicTooltipText = $"{Module._settingMountRadialStartAngle.Value}";
+            };
             Label settingMountRadialIconSizeModifier_Label = new Label()
             {
                 Location = new Point(0, settingMountRadialStartAngle_Label.Bottom + 6),
@@ -640,6 +657,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = radialPanel,
                 Text = "Icon size: ",
+                BasicTooltipText = "Configures the icon size when displaying icons in the radials."
             };
             TrackBar settingMountRadialIconSizeModifier_Slider = new TrackBar()
             {
@@ -650,7 +668,10 @@ namespace Manlaan.Mounts.Views
                 Value = Module._settingMountRadialIconSizeModifier.Value * 100,
                 Parent = radialPanel,
             };
-            settingMountRadialIconSizeModifier_Slider.ValueChanged += delegate { Module._settingMountRadialIconSizeModifier.Value = settingMountRadialIconSizeModifier_Slider.Value / 100; };
+            settingMountRadialIconSizeModifier_Slider.ValueChanged += delegate {
+                Module._settingMountRadialIconSizeModifier.Value = settingMountRadialIconSizeModifier_Slider.Value / 100;
+                settingMountRadialIconSizeModifier_Slider.BasicTooltipText = $"{Module._settingMountRadialIconSizeModifier.Value}";
+            };
             Label settingMountRadialIconOpacity_Label = new Label()
             {
                 Location = new Point(0, settingMountRadialIconSizeModifier_Label.Bottom + 6),
@@ -659,6 +680,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = radialPanel,
                 Text = "Icon opacity: ",
+                BasicTooltipText = "Configures the icon opacity when displaying icons in the radials."
             };
             TrackBar settingMountRadialIconOpacity_Slider = new TrackBar()
             {
@@ -669,7 +691,10 @@ namespace Manlaan.Mounts.Views
                 Value = Module._settingMountRadialIconOpacity.Value * 100,
                 Parent = radialPanel,
             };
-            settingMountRadialIconOpacity_Slider.ValueChanged += delegate { Module._settingMountRadialIconOpacity.Value = settingMountRadialIconOpacity_Slider.Value / 100; };
+            settingMountRadialIconOpacity_Slider.ValueChanged += delegate {
+                Module._settingMountRadialIconOpacity.Value = settingMountRadialIconOpacity_Slider.Value / 100;
+                settingMountRadialIconOpacity_Slider.BasicTooltipText = $"{Module._settingMountRadialIconOpacity.Value}";
+            };
 
             Label settingMountRadialToggleActionCameraKeyBinding_Label = new Label()
             {
@@ -679,6 +704,7 @@ namespace Manlaan.Mounts.Views
                 WrapText = false,
                 Parent = radialPanel,
                 Text = "In-game action camera key binding: ",
+                BasicTooltipText = "Used to toggle the action camera in-game when displaying a radial to help with selecting an action."
             };
             new Image
             {

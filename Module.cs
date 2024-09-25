@@ -426,7 +426,7 @@ namespace Manlaan.Mounts
             var thingsForMigration = orderedThings.ToList();
 
             _settingsLastRunMigrationVersion = settings.DefineSetting("LastRunMigrationVersion", 0);
-            _settingBlockSequenceFromGw2 = settings.DefineSetting("BlockSequenceFromGw2", false);
+            _settingBlockSequenceFromGw2 = settings.DefineSetting("BlockSequenceFromGw2", true);
             _settingDefaultMountBinding = settings.DefineSetting("DefaultMountBinding", new KeyBinding(Keys.None), () => Strings.Setting_DefaultMountBinding, () => "");
             _settingDefaultMountBinding.Value.Enabled = true;
             _settingDefaultMountBinding.Value.BlockSequenceFromGw2 = _settingBlockSequenceFromGw2.Value;

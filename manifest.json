@@ -1,6 +1,6 @@
 {
   "name": "Mounts & More",
-  "version": "1.5.0-beta8",
+  "version": "1.5.0-beta9",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -32,6 +32,7 @@
 
 /*
     "changelog": {
+        "1.5.0-beta9": "2024-09-25: Disable ooc queuing in wvw + update tooltips in settings.",
         "1.5.0-beta8": "2024-09-24: Added SotO sky lakes, thanks to TinyTaimi from the UndaDaSea module and Teh from the BlishHUD discord + changed keybinds validation",
         "1.5.0-beta7": "2024-09-16: Fix ooc infopanel display + disable radial setting tap in UI when threshold is 0.",
         "1.5.0-beta6": "2024-09-16: Add infopanel + add ground targeting options.",
