@@ -73,6 +73,7 @@ When active it's displayed in the [Info panel](#info-panel).
 
 #### Out of Combat queuing
 When using an mount that cannot be used in combat we automatically queuing this action when out of combat.
+This feature is disabled in competitive game modes.
 
 Settings related to out of combat queueing:
   - Combat Launch mastery unlocked

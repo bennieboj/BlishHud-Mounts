@@ -81,7 +81,7 @@ namespace Manlaan.Mounts.Things
                 return;
             }
 
-            if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat && Module._settingEnableMountQueueing.Value && !IsUsableInCombat())
+            if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat && Module._settingEnableMountQueueing.Value && !IsUsableInCombat() && !_helper.IsPlayerInWvwMap())
             {
                 Logger.Debug($"{nameof(DoAction)} Set queued for out of combat: {Name}");
                 QueuedTimestamp = DateTime.UtcNow;

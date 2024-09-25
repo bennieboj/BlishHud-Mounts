@@ -648,7 +648,7 @@ namespace Manlaan.Mounts
 
         public static bool CanThingBeActivated()
         {
-            return GameService.GameIntegration.Gw2Instance.IsInGame;// && !GameService.Gw2Mumble.UI.IsMapOpen;
+            return GameService.GameIntegration.Gw2Instance.IsInGame;
         }
 
         /// <inheritdoc />
