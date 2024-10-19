@@ -13,5 +13,10 @@ namespace Manlaan.Mounts.Things.Mounts
         {
             return true;
         }
+
+        public override bool ShouldGroundTargetingBeDelayed()
+        {
+            return true;
+        }
     }
 }
