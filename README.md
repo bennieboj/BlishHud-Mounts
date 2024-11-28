@@ -14,7 +14,7 @@ Custom icons, out of combat queueing, ground target actions and automatically lo
   ![](./readme/go_to_settings.png)
 
 ### General Settings (1st tab)
-On the left you'll see a list of actions with their keybinds and icons.
+On the left you'll see a list of actions with their keybinds and icons. 
 
 #### Keybinds
 
