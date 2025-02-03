@@ -86,9 +86,10 @@ Settings related to out of combat queueing:
 
 The following actions are usable in-game when in combat:
 - For both [Skyscale](https://wiki.guildwars2.com/wiki/Skyscale_(skill)) and [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill))
-  - Requirements:
-    - [Combat Launch Mastery](https://wiki.guildwars2.com/wiki/Combat_Launch) unlocked
+  - Either one of these two need to be set:
+    - [Combat Launch Mastery](https://wiki.guildwars2.com/wiki/Combat_Launch) unlocked, this requires an API key and the "progression" permission enabled.
     - "Combat Launch mastery unlocked" option in the module enabled
+  - When the API call fails, the "Combat Launch mastery unlocked" option takes over.
   - It is not possible to read in-game cooldowns via mumble, so the module does not know when the [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)) skill is off cooldown.
   - The game launches you in the air for both these skills when you're in combat, see "Mechanics": [Skyscale mastery](https://wiki.guildwars2.com/wiki/Skyscale_(mastery_skill)).
   - If you don't want to use this combat launch mastery for skyscale you can disable the "Combat Launch mastery unlocked" option. 
@@ -280,6 +281,9 @@ Not rendered otherwise.
 
 #### Enable corner icons
 Use these actions also for corner icons, only available on the default icon settings.
+
+#### Enabled in competitive maps
+Enable/disabled in WvW.
 
 #### Orientation
 The orientation of the icon row, either horizontal or vertical.

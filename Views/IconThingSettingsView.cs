@@ -13,7 +13,7 @@ namespace Manlaan.Mounts.Views
     class IconThingSettingsView : View
     {
         private int totalWidth = 2500;
-        private int labelWidth = 170;
+        private int labelWidth = 180;
 
         private Panel IconSettingsListPanel;
         private Panel IconSettingsDetailPanel;
@@ -280,10 +280,31 @@ namespace Manlaan.Mounts.Views
                 nextY = radialSettingsDisplayCornerIcons_Label.Bottom;
             }
 
+            Label radialSettingsIsEnabledInCompetitiveMaps_Label = new Label()
+            {
+                Location = new Point(0, nextY + 6),
+                Width = labelWidth,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = IconSettingsDetailPanel,
+                Text = "Enabled in competitive maps",
+                BasicTooltipText = "Disabled icon rows are not displayed.",
+            };
+            Checkbox radialSettingsIsEnabledInCompetitiveMaps_Checkbox = new Checkbox()
+            {
+                Size = new Point(20, 20),
+                Parent = IconSettingsDetailPanel,
+                Checked = currentIconSettings.IsEnabledInCompetitiveMaps.Value,
+                Location = new Point(radialSettingsIsEnabledInCompetitiveMaps_Label.Right + 5, radialSettingsIsEnabledInCompetitiveMaps_Label.Top - 1),
+            };
+            radialSettingsIsEnabledInCompetitiveMaps_Checkbox.CheckedChanged += delegate {
+                currentIconSettings.IsEnabledInCompetitiveMaps.Value = radialSettingsIsEnabledInCompetitiveMaps_Checkbox.Checked;
+            };
+
 
             Label settingManualOrientation_Label = new Label()
             {
-                Location = new Point(0, nextY + 6),
+                Location = new Point(0, radialSettingsIsEnabledInCompetitiveMaps_Label.Bottom + 6),
                 Width = 75,
                 AutoSizeHeight = false,
                 WrapText = false,

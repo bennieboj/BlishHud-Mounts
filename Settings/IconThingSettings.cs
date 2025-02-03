@@ -15,6 +15,7 @@ namespace Manlaan.Mounts
         public SettingEntry<string> Name;
         public SettingEntry<bool> IsEnabled;
         public SettingEntry<bool> DisplayCornerIcons;
+        public SettingEntry<bool> IsEnabledInCompetitiveMaps;
 
         public SettingEntry<IconOrientation> Orientation;
         public SettingEntry<Point> Location;
@@ -35,6 +36,7 @@ namespace Manlaan.Mounts
             Name = settingCollection.DefineSetting($"IconThingSettings{Id}name", defaultName);
             IsEnabled = settingCollection.DefineSetting($"IconThingSettings{Id}IsEnabled", true);
             DisplayCornerIcons = settingCollection.DefineSetting($"IconThingSettings{Id}DisplayCornerIcons", true);
+            IsEnabledInCompetitiveMaps = settingCollection.DefineSetting($"IconThingSettings{Id}IsEnabledInCompetitiveMaps", true);
             Orientation = settingCollection.DefineSetting($"IconThingSettings{Id}Orientation", IconOrientation.Horizontal);
             Location = settingCollection.DefineSetting($"IconThingSettings{Id}Location", new Point(100,100));
             IsDraggingEnabled = settingCollection.DefineSetting($"IconThingSettings{Id}IsDragging", false);
@@ -46,6 +48,7 @@ namespace Manlaan.Mounts
 
             IsEnabled.SettingChanged += SettingChanged;
             DisplayCornerIcons.SettingChanged += SettingChanged;
+            IsEnabledInCompetitiveMaps.SettingChanged += SettingChanged;
             Orientation.SettingChanged += SettingChanged;
             Location.SettingChanged += SettingChanged;
             IsDraggingEnabled.SettingChanged += SettingChanged;
@@ -59,6 +62,7 @@ namespace Manlaan.Mounts
             settingCollection.UndefineSetting($"IconThingSettings{Id}name");
             settingCollection.UndefineSetting($"IconThingSettings{Id}IsEnabled");
             settingCollection.UndefineSetting($"IconThingSettings{Id}DisplayCornerIcons");
+            settingCollection.UndefineSetting($"IconThingSettings{Id}IsEnabledInCompetitiveMaps");
             settingCollection.UndefineSetting($"IconThingSettings{Id}Orientation");
             settingCollection.UndefineSetting($"IconThingSettings{Id}Location");
             settingCollection.UndefineSetting($"IconThingSettings{Id}IsDragging");

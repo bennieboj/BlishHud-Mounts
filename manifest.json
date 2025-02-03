@@ -1,6 +1,6 @@
 {
   "name": "Mounts & More",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "namespace": "Manlaan.Mounts",
   "package": "Mounts.dll",
   "manifest_version": 1,
@@ -22,7 +22,7 @@
   ],
   "directories": [ "mounts" ],
   "api_permissions": {
-    "progression": {
+    "account": {
       "optional": true,
       "details": "Combat Launch mastery tracking"
     }
@@ -32,6 +32,7 @@
 
 /*
     "changelog": {
+        "1.5.2": "2025-02-02: Is Combat Launch Unlocked: Fix API call (requires 'progression' API permission) + ignore value when the call fails. Added 'Enabled in competitive maps' to icon settings.",
         "1.5.1": "2024-10-19: 1.5.1 fix Summon Conjured Doorway instant targeting.",
         "1.5.0": "2024-09-27: 1.5.0 public release",
         "1.5.0-beta9": "2024-09-25: Disable ooc queuing in wvw + update tooltips in settings.",

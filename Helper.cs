@@ -1,6 +1,5 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls.Extern;
-using Blish_HUD.Gw2Mumble;
 using Blish_HUD.Input;
 using Blish_HUD.Modules.Managers;
 using Blish_HUD.Settings;
@@ -55,7 +54,8 @@ namespace Manlaan.Mounts
         private double _lastUpdateSeconds = 0.0f;
         private bool _isPlayerGlidingOrFalling = false;
         private Gw2ApiManager Gw2ApiManager;
-        private bool _isCombatLaunchUnlocked;
+        private bool? _isCombatLaunchUnlocked;
+        private string _isCombatLaunchUnlockedReason;
         private DateTime lastTimeJumped = DateTime.MinValue;
         public SkyLake _lake = null;
 
@@ -67,22 +67,35 @@ namespace Manlaan.Mounts
 
             Module._debug.Add("StoreThingForLaterActivation", () => $"{string.Join(", ", StoredThingForLater.Select(x => x.Key + "=" + x.Value.Name).ToArray())}");
             Module._debug.Add("Lake", () => $"name: {_lake?.Name} surface {_lake?.WaterSurface} Z {GameService.Gw2Mumble.PlayerCharacter.Position.Z} distance {_lake?.Distance}");
+            Module._debug.Add("IsCombatLaunchUnlocked", () => $"{_isCombatLaunchUnlockedReason}");
         }
 
         public bool IsCombatLaunchUnlocked()
         {
-            return _isCombatLaunchUnlocked && Module._settingCombatLaunchMasteryUnlocked.Value;
+            return (!_isCombatLaunchUnlocked.HasValue || _isCombatLaunchUnlocked.Value) && Module._settingCombatLaunchMasteryUnlocked.Value;
         }
 
         public async Task IsCombatLaunchUnlockedAsync()
         {
-            if (!Gw2ApiManager.HasPermissions(new List<TokenPermission> { TokenPermission.Progression }))
+            if (!Gw2ApiManager.HasPermissions(new List<TokenPermission> { TokenPermission.Account }))
             {
-                _isCombatLaunchUnlocked = false;
+                _isCombatLaunchUnlockedReason = "API permissions \"account\" is not enabled.";
+                Logger.Error($"{nameof(IsCombatLaunchUnlockedAsync)} {_isCombatLaunchUnlockedReason}");
+                return;
             }
 
-            var masteries = await Gw2ApiManager.Gw2ApiClient.V2.Masteries.AllAsync();
-            _isCombatLaunchUnlocked = masteries.Any(m => m.Levels.Any(ml => ml.Name == "Combat Launch"));
+            try
+            {
+                var masteries = await Gw2ApiManager.Gw2ApiClient.V2.Account.Masteries.GetAsync();
+                _isCombatLaunchUnlocked = masteries.Any(m => m.Id == 36 && m.Level >= 4);
+                _isCombatLaunchUnlockedReason = $"API call succeeded at {DateTime.Now.ToString("HH:mm:ss")}, CombatLaunch is {(_isCombatLaunchUnlocked.Value ? "unlocked" : "not unlocked")}";
+                Logger.Info($"{nameof(IsCombatLaunchUnlockedAsync)} {_isCombatLaunchUnlockedReason}");
+            }
+            catch (Exception ex)
+            {
+                _isCombatLaunchUnlockedReason = "something went wrong, see log for error";
+                Logger.Error(ex, $"{nameof(IsCombatLaunchUnlockedAsync)} {_isCombatLaunchUnlockedReason}");
+            }
         }
 
         public bool IsPlayerInWvwMap()

@@ -67,7 +67,7 @@ namespace Manlaan.Mounts.Controls
 
         private void DrawManualIcons()
         {
-            if (!_iconThingSettings.IsEnabled.Value)
+            if (!_iconThingSettings.IsEnabled.Value || (!_iconThingSettings.IsEnabledInCompetitiveMaps.Value && _helper.IsPlayerInWvwMap()))
             {
                 return;
             }
