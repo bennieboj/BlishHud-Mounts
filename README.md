@@ -328,7 +328,7 @@ A: I don't expect anything in return, but if you want you can:
 ### Q: Can I configure mouse buttons for keybinds?
 A: Not directly, but read on:
 - This is a limitation of BlishHUD atm, see [this issue](https://github.com/blish-hud/Blish-HUD/issues/611) for more information.
-- The best way of using mouse buttons is to map the mouse buttons to keyboard keys (e.g.: PageDown) and then use these keyboard keys in-game. The mapping most likely needs to be done in the software of your mouse. This has the added advantage that it works for all use cases since not all mouse buttons are even detected by your OS/GW2 by default (typically mouse 6 and up are not detected).
+- The best way of using mouse buttons is to map the mouse buttons to keyboard keys (e.g.: PageDown) and then use these keyboard keys in-game. The mapping most likely needs to be done in the software of your mouse os using AHK. This has the added advantage that it works for all use cases since not all mouse buttons are even detected by your OS/GW2 by default (typically mouse 6 and up are not detected).
 
 
 ## Releases
