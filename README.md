@@ -4,7 +4,7 @@ Custom icons, out of combat queueing, ground target actions and automatically lo
 
 [Settings](#settings) need to be configured before using the module!
 
-![](./readme/initial_setup_result.png)
+![](./readme/initial_setup_result.png) 
 
 ## Settings
 
