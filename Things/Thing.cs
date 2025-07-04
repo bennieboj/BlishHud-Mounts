@@ -2,6 +2,7 @@
 using Blish_HUD.Controls;
 using Blish_HUD.Input;
 using Blish_HUD.Settings;
+using Manlaan.Mounts.Things.Mounts;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Mounts;
@@ -75,7 +76,7 @@ namespace Manlaan.Mounts.Things
                 HoverIcon = img,
                 Priority = 10
             };
-            CornerIcon.Click += async delegate { await DoAction(false, true); };
+            CornerIcon.Click += async delegate { await DoAction(false, false, true); };
         }
 
         public void DisposeCornerIcon()
@@ -83,12 +84,26 @@ namespace Manlaan.Mounts.Things
             CornerIcon?.Dispose();
         }
 
-        public async Task DoAction(bool unconditionallyDoAction, bool isActionComingFromMouseActionOnModuleUI)
+        public async Task DoAction(bool unconditionallyDoAction, bool attemptSwapMountsIfMounted, bool isActionComingFromMouseActionOnModuleUI)
         {
             if (unconditionallyDoAction)
             {
                 await _helper.TriggerKeybind(KeybindingSetting, WhichKeybindToRun.Both);
                 return;
+            }
+
+            if (attemptSwapMountsIfMounted && _helper.IsPlayerMounted() && this is Mount && !IsInUse())
+            {
+                if (IsUsableInAir())
+                {
+                    await _helper.TriggerKeybind(KeybindingSetting, WhichKeybindToRun.Both);
+                    await Task.Delay(350);
+                }
+                else
+                {
+                    QueueAfterFalling();
+                    return;
+                }
             }
 
             if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat && Module._settingEnableMountQueueing.Value && !IsUsableInCombat() && !_helper.IsPlayerInWvwMap())

@@ -88,7 +88,7 @@ namespace Manlaan.Mounts.Controls
                     Opacity = _iconThingSettings.Opacity.Value,
                     BasicTooltipText = thing.DisplayName
                 };
-                _btnMount.LeftMouseButtonPressed += async delegate { await thing.DoAction(false, true); };
+                _btnMount.LeftMouseButtonPressed += async delegate { await thing.DoAction(false, false, true); };
 
                 if (_iconThingSettings.Orientation.Value == IconOrientation.Horizontal)
                     curX += _iconThingSettings.Size.Value;
