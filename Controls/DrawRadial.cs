@@ -266,7 +266,10 @@ namespace Manlaan.Mounts.Controls
                 attemptSwapMountsIfMounted = ((ContextualRadialThingSettings)SelectedSettings).AttemptSwapMountsIfMounted.Value;
             }
 
-            if (attemptSwapMountsIfMounted && _helper.IsPlayerMounted() && SelectedMount.Thing is Mount)
+            if (attemptSwapMountsIfMounted && 
+                _helper.IsPlayerMounted() && 
+                SelectedMount.Thing is Mount &&
+                !SelectedMount.Thing.IsInUse())
             {
                 await SelectedMount.Thing.DoAction(unconditionallyDoAction, true);
 
