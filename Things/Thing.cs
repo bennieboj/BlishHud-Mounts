@@ -51,6 +51,16 @@ namespace Manlaan.Mounts.Things
         }
         public event EventHandler<ValueChangedEventArgs> QueuedTimestampUpdated;
 
+        private DateTime? _queuedAfterFallingTimestamp;
+        public DateTime? QueuedAfterFallingTimeStamp
+        {
+            get { return _queuedAfterFallingTimestamp; }
+            internal set
+            {
+                _queuedAfterFallingTimestamp = value;
+            }
+        }
+
         public DateTime? LastUsedTimestamp { get; internal set; }
         public bool IsKeybindSet => KeybindingSetting.Value.ModifierKeys != ModifierKeys.None || KeybindingSetting.Value.PrimaryKey != Keys.None;
         public bool IsAvailable => IsKeybindSet;
@@ -146,6 +156,11 @@ namespace Manlaan.Mounts.Things
             return false;
         }
 
+        public virtual bool IsUsableInAir()
+        {
+            return false;
+        }
+
         public virtual bool IsGroundTargeted()
         {
             return false;
@@ -167,6 +182,11 @@ namespace Manlaan.Mounts.Things
             int hashCode = 657878212;
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
             return hashCode;
+        }
+
+        public void QueueAfterFalling()
+        {
+            QueuedAfterFallingTimeStamp = DateTime.UtcNow;
         }
     }
 

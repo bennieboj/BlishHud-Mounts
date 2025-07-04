@@ -474,6 +474,27 @@ namespace Manlaan.Mounts.Views
                 radialSettingsUnconditionallyDoAction_Checkbox.CheckedChanged += delegate {
                     contextualRadialSettingsAtBottom.UnconditionallyDoAction.Value = radialSettingsUnconditionallyDoAction_Checkbox.Checked;
                 };
+
+                Label radialSettingsAttemptSwapMountsIfMounted_Label = new Label()
+                {
+                    Location = new Point(0, radialSettingsUnconditionallyDoAction_Label.Bottom + 6),
+                    Width = labelWidth,
+                    AutoSizeHeight = false,
+                    WrapText = false,
+                    Parent = RadialSettingsDetailPanel,
+                    Text = "Attempt to Swap Mounts If Mounted",
+                    BasicTooltipText = "If selected will run the action twice in case the player is mounted, causing a mount swap"
+                };
+                Checkbox radialSettingsAttemptSwapMountsIfMounted_Checkbox = new Checkbox()
+                {
+                    Size = new Point(20, 20),
+                    Parent = RadialSettingsDetailPanel,
+                    Checked = contextualRadialSettingsAtBottom.AttemptSwapMountsIfMounted.Value,
+                    Location = new Point(radialSettingsAttemptSwapMountsIfMounted_Label.Right + 5, radialSettingsAttemptSwapMountsIfMounted_Label.Top - 1),
+                };
+                radialSettingsAttemptSwapMountsIfMounted_Checkbox.CheckedChanged += delegate {
+                    contextualRadialSettingsAtBottom.AttemptSwapMountsIfMounted.Value = radialSettingsAttemptSwapMountsIfMounted_Checkbox.Checked;
+                };
             }
 
             ThingSettingsView thingSettingsView = new ThingSettingsView(currentRadialSettings)
