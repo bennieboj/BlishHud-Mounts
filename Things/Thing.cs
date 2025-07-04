@@ -102,7 +102,6 @@ namespace Manlaan.Mounts.Things
                 else
                 {
                     QueueAfterFalling();
-                    return;
                 }
             }
 
