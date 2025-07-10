@@ -96,7 +96,6 @@ namespace Manlaan.Mounts
         public static List<SkyLake> _skyLakes = new List<SkyLake>();
         private bool _lastIsThingSwitchable = false;
         private int _lastInUseThingsCount = 0;
-        private DateTime? _landedTimestamp = null;
 
 
         [ImportingConstructor]
@@ -559,29 +558,7 @@ namespace Manlaan.Mounts
 
         protected override void Update(GameTime gameTime)
         {
-            var wasGlidingOrFalling = _helper.IsPlayerGlidingOrFalling();
             _helper.UpdatePlayerGlidingOrFalling(gameTime);
-            var isGlidingOrFalling = _helper.IsPlayerGlidingOrFalling();
-
-            if (!isGlidingOrFalling && wasGlidingOrFalling)
-            {
-                _landedTimestamp = DateTime.UtcNow;
-            }
-            
-            if (isGlidingOrFalling)
-            {
-                _landedTimestamp = null;
-            }
-
-            // The falling indicator is unreliable so we make sure we are actually not falling for a bit
-            if (_landedTimestamp != null && DateTime.UtcNow.Subtract(_landedTimestamp.Value).TotalMilliseconds > 600)
-            {
-                _landedTimestamp = null;
-
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                this.HandleAfterFallingAsync();
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            }
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
@@ -853,18 +830,6 @@ namespace Manlaan.Mounts
                 {
                     thing.QueuedTimestamp = null;
                 }
-            }
-        }
-
-        private async Task HandleAfterFallingAsync()
-        {
-            var thingInAir = _helper.GetQueuedForAfterFallingThing();
-
-            await (thingInAir?.DoAction(false, false, false) ?? Task.CompletedTask);
-
-            foreach (var thing in _things)
-            {
-                thing.QueuedAfterFallingTimeStamp = null;
             }
         }
     }

@@ -288,11 +288,6 @@ namespace Manlaan.Mounts
             return Module._things.Where(m => m.QueuedTimestamp != null).OrderByDescending(m => m.QueuedTimestamp).FirstOrDefault();
         }
 
-        internal Thing GetQueuedForAfterFallingThing()
-        {
-            return Module._things.Where(m => m.QueuedAfterFallingTimeStamp != null).OrderByDescending(m => m.QueuedAfterFallingTimeStamp).FirstOrDefault();
-        }
-
         internal async Task DoRangedThing()
         {
             if(StoredRangedThing != null)

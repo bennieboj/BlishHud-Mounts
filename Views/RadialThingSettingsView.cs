@@ -482,8 +482,8 @@ namespace Manlaan.Mounts.Views
                     AutoSizeHeight = false,
                     WrapText = false,
                     Parent = RadialSettingsDetailPanel,
-                    Text = "Attempt to Swap Mounts If Mounted",
-                    BasicTooltipText = "If selected will run the action twice in case the player is mounted, causing a mount swap"
+                    Text = "Attempt to Swap Mounts If Mounted (Flying only)",
+                    BasicTooltipText = "If selected will run the action twice in case the player is mounted and the target is a flying mount, causing a mount swap"
                 };
                 Checkbox radialSettingsAttemptSwapMountsIfMounted_Checkbox = new Checkbox()
                 {
