@@ -542,9 +542,12 @@ namespace Manlaan.Mounts
             _debug.Add("Queued for out of combat", () => $"{_helper.GetQueuedThing()?.Name}");
             _debug.Add("TappedModuleKeybind", () => $"{DateTime.Now} {tappedModuleKeybind} {lastTriggered} {(lastTriggered != null ? (int)(DateTime.Now-lastTriggered.Value).TotalMilliseconds : "")}");
 
+            if (Gw2ApiManager.HasSubtoken)
+            {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            _helper.IsCombatLaunchUnlockedAsync();
+                _helper.IsCombatLaunchUnlockedAsync();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            }
             Gw2ApiManager.SubtokenUpdated += async delegate
             {
                 await _helper.IsCombatLaunchUnlockedAsync();

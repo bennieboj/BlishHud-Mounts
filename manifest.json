@@ -22,7 +22,7 @@
   ],
   "directories": [ "mounts" ],
   "api_permissions": {
-    "account": {
+    "progression": {
       "optional": true,
       "details": "Combat Launch mastery tracking"
     }
