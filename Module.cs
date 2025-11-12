@@ -550,7 +550,10 @@ namespace Manlaan.Mounts
             }
             Gw2ApiManager.SubtokenUpdated += async delegate
             {
-                await _helper.IsCombatLaunchUnlockedAsync();
+                if (Gw2ApiManager.HasSubtoken)
+                {
+                    await _helper.IsCombatLaunchUnlockedAsync();
+                }
             };
 
             DrawUI();
