@@ -641,7 +641,7 @@ namespace Manlaan.Mounts
             //    _drawMouseCursor.Hide();
             //}
 
-            if (_radial.Visible && !(_settingDefaultMountBinding.Value.IsTriggering || UserDefinedRadialSettings.Any(s => s.Keybind.Value.IsTriggering) ) || !shouldShowModule)
+            if (_radial != null && _radial.Visible && !(_settingDefaultMountBinding.Value.IsTriggering || UserDefinedRadialSettings.Any(s => s.Keybind.Value.IsTriggering) ) || !shouldShowModule)
             {
                 _radial.Hide();
             }
