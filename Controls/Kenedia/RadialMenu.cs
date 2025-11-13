@@ -115,10 +115,20 @@ namespace Kenedia.Modules.Core.Controls
             Radius = (int)(Math.Min(Width, Height) / 2 * DpiScale);
         }
 
+        protected override void OnHidden(EventArgs e)
+        {
+            base.OnHidden(e);
+            RunActionWhenMouseContains(OnSliceOnHoverHidden);
+        }
+
         protected override void OnClick(MouseEventArgs e)
         {
             base.OnClick(e);
+            RunActionWhenMouseContains(OnSliceClick);
+        }
 
+        private void RunActionWhenMouseContains(Action<int> onSliceAction)
+        {
             // Angle per slice
             float angleStep = MathHelper.TwoPi / Slices;
             float startOffset = -MathHelper.PiOver2; // top of circle
@@ -145,9 +155,20 @@ namespace Kenedia.Modules.Core.Controls
 
                 if (contains_mouse)
                 {
-                    OnSliceClick(i);
+                    onSliceAction(i);
                 }
             }
+        }
+
+        /// <summary>
+        /// Handles the event when a slice is hovered over when the radial is hidden.
+        /// </summary>
+        /// <remarks>This method is called to process a slice hover event when the radial is hidden. Derived classes can override
+        /// this method  to provide custom handling for slice hover events when hidden.</remarks>
+        /// <param name="i">The index of the clicked slice. Must be a non-negative integer.</param>
+        protected virtual void OnSliceOnHoverHidden(int i)
+        {
+            Debug.WriteLine($"Hovered on slice {i} when radial was hidden");
         }
 
         /// <summary>
