@@ -4,6 +4,7 @@ using Blish_HUD.Input;
 using Blish_HUD.Modules.Managers;
 using Blish_HUD.Settings;
 using Gw2Sharp.Models;
+using Gw2Sharp.WebApi.Exceptions;
 using Gw2Sharp.WebApi.V2.Models;
 using Manlaan.Mounts.Things;
 using Microsoft.Xna.Framework;
@@ -77,25 +78,57 @@ namespace Manlaan.Mounts
 
         public async Task IsCombatLaunchUnlockedAsync()
         {
-            if (!Gw2ApiManager.HasPermissions(new List<TokenPermission> { TokenPermission.Account }))
+            if (!Gw2ApiManager.HasPermissions(new List<TokenPermission> { TokenPermission.Progression }))
             {
-                _isCombatLaunchUnlockedReason = "API permissions \"account\" is not enabled.";
-                Logger.Error($"{nameof(IsCombatLaunchUnlockedAsync)} {_isCombatLaunchUnlockedReason}");
+                _isCombatLaunchUnlockedReason = "API permissions \"progression\" is not enabled.";
+                Logger.Info($"{nameof(IsCombatLaunchUnlockedAsync)} {_isCombatLaunchUnlockedReason}");
                 return;
             }
 
-            try
+            if (!Gw2ApiManager.HasPermissions(new List<TokenPermission> { TokenPermission.Account }))
             {
-                var masteries = await Gw2ApiManager.Gw2ApiClient.V2.Account.Masteries.GetAsync();
-                _isCombatLaunchUnlocked = masteries.Any(m => m.Id == 36 && m.Level >= 4);
-                _isCombatLaunchUnlockedReason = $"API call succeeded at {DateTime.Now.ToString("HH:mm:ss")}, CombatLaunch is {(_isCombatLaunchUnlocked.Value ? "unlocked" : "not unlocked")}";
+                _isCombatLaunchUnlockedReason = "API permissions \"account\" is not enabled.";
                 Logger.Info($"{nameof(IsCombatLaunchUnlockedAsync)} {_isCombatLaunchUnlockedReason}");
+                return;
             }
-            catch (Exception ex)
+
+            const int maxRetries = 3;
+            int attempt = 0;
+
+            while (true)
             {
-                _isCombatLaunchUnlockedReason = "something went wrong, see log for error";
-                Logger.Error(ex, $"{nameof(IsCombatLaunchUnlockedAsync)} {_isCombatLaunchUnlockedReason}");
+                try
+                {
+                    attempt++;
+                    var masteries = await Gw2ApiManager.Gw2ApiClient.V2.Account.Masteries.GetAsync();
+                    _isCombatLaunchUnlocked = masteries.Any(m => m.Id == 36 && m.Level >= 4);
+                    _isCombatLaunchUnlockedReason = $"API call succeeded at {DateTime.Now:HH:mm:ss}, CombatLaunch is {(_isCombatLaunchUnlocked.Value ? "unlocked" : "not unlocked")}";
+                    Logger.Info($"{nameof(IsCombatLaunchUnlockedAsync)} {_isCombatLaunchUnlockedReason}");
+                    break; // success, exit loop
+                }
+                catch (RequestCanceledException ex)
+                {
+                    _isCombatLaunchUnlockedReason = $"request cancelled (attempt {attempt} of {maxRetries})";
+                    Logger.Info(ex, $"{nameof(IsCombatLaunchUnlockedAsync)} {_isCombatLaunchUnlockedReason}");
+
+                    if (attempt >= maxRetries)
+                    {
+                        _isCombatLaunchUnlockedReason = $"still failed after {maxRetries} attempts due to request cancellations";
+                        Logger.Info($"{nameof(IsCombatLaunchUnlockedAsync)} {_isCombatLaunchUnlockedReason}");
+                        break;
+                    }
+
+                    // add a small delay before retrying
+                    await Task.Delay(TimeSpan.FromSeconds(2));
+                }
+                catch (Exception ex)
+                {
+                    _isCombatLaunchUnlockedReason = "something went wrong, see log for error";
+                    Logger.Error(ex, $"{nameof(IsCombatLaunchUnlockedAsync)} {_isCombatLaunchUnlockedReason}");
+                    break;
+                }
             }
+
         }
 
         public bool IsPlayerInWvwMap()

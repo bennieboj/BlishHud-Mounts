@@ -11,5 +11,10 @@ namespace Manlaan.Mounts.Things.Mounts
         }
 
         protected override MountType MountType => MountType.Skimmer;
+
+        public override bool IsUsableInCombat()
+        {
+            return true;
+        }
     }
 }
