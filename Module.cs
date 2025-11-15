@@ -566,7 +566,7 @@ namespace Manlaan.Mounts
         {
             _helper.UpdatePlayerGlidingOrFalling(gameTime);
 
-            if(Mouse.GetState().LeftButton == ButtonState.Pressed)
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 _helper.DoRangedThing();
@@ -763,7 +763,7 @@ namespace Manlaan.Mounts
             {
                 if (tappedModuleKeybind == TappedModuleKeybindState.Tap)
                 {
-                    await tappedThing?.DoAction(selectedRadialSettings.UnconditionallyDoAction.Value, false);
+                    await tappedThing?.DoAction(selectedRadialSettings.UnconditionallyDoAction.Value, selectedRadialSettings.AttemptSwapMountsIfMounted.Value, false);
                     Logger.Debug($"{nameof(DoKeybindActionAsync)} not showing radial selected thing (tappedModuleKeybind): {tappedThing?.Name}");
                     tappedModuleKeybind = TappedModuleKeybindState.Unknown;
                     return;
@@ -781,7 +781,7 @@ namespace Manlaan.Mounts
 
             if (things.Count() == 1 && selectedRadialSettings.ApplyInstantlyIfSingle.Value)
             {
-                await things.FirstOrDefault()?.DoAction(selectedRadialSettings.UnconditionallyDoAction.Value, false);
+                await things.FirstOrDefault()?.DoAction(selectedRadialSettings.UnconditionallyDoAction.Value, selectedRadialSettings.AttemptSwapMountsIfMounted.Value, false);
                 Logger.Debug($"{nameof(DoKeybindActionAsync)} not showing radial selected thing (ApplyInstantlyIfSingle): {things.First().Name}");
                 return;
             }
@@ -789,7 +789,7 @@ namespace Manlaan.Mounts
             var defaultThing = selectedRadialSettings.GetDefaultThing();
             if (defaultThing != null && GameService.Input.Mouse.CameraDragging)
             {
-                await (defaultThing?.DoAction(false, false) ?? Task.CompletedTask);
+                await (defaultThing?.DoAction(false, false, false) ?? Task.CompletedTask);
                 Logger.Debug($"{nameof(DoKeybindActionAsync)} CameraDragging default");
                 return;
             }
@@ -797,7 +797,7 @@ namespace Manlaan.Mounts
             switch (_settingKeybindBehaviour.Value)
             {
                 case "Default":
-                    await (defaultThing?.DoAction(false, false) ?? Task.CompletedTask);
+                    await (defaultThing?.DoAction(false, false, false) ?? Task.CompletedTask);
                     Logger.Debug($"{nameof(DoKeybindActionAsync)} KeybindBehaviour default");
                     break;
                 case "Radial":
@@ -826,7 +826,7 @@ namespace Manlaan.Mounts
                 {
                     var thingInCombat = _helper.GetQueuedThing();
                     Logger.Debug($"{nameof(HandleCombatChangeAsync)} Applied queued for out of combat: {thingInCombat?.Name}");
-                    await (thingInCombat?.DoAction(false, false) ?? Task.CompletedTask);
+                    await (thingInCombat?.DoAction(false, false, false) ?? Task.CompletedTask);
                 }
                 else
                 {

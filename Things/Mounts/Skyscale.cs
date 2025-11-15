@@ -16,5 +16,10 @@ namespace Manlaan.Mounts.Things.Mounts
         {
             return _helper.IsCombatLaunchUnlocked();
         }
+
+        public override bool IsUsableInAir()
+        {
+            return true;
+        }
     }
 }

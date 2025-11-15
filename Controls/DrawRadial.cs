@@ -1,6 +1,7 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
 using Manlaan.Mounts.Things;
+using Manlaan.Mounts.Things.Mounts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -250,13 +251,22 @@ namespace Manlaan.Mounts.Controls
 
         public async Task TriggerSelectedMountAsync()
         {
-            var unconditionallyDoAction = false;
-            if (SelectedSettings!= null && SelectedSettings is ContextualRadialThingSettings)
+            if (SelectedMount?.Thing == null)
             {
-                unconditionallyDoAction = ((ContextualRadialThingSettings)SelectedSettings).UnconditionallyDoAction.Value;
+                SelectedSettings = null;
+                return;
             }
 
-            await (SelectedMount?.Thing.DoAction(unconditionallyDoAction, true) ?? Task.CompletedTask);
+            var unconditionallyDoAction = false;
+            var attemptSwapMountsIfMounted = false;
+
+            if (SelectedSettings != null && SelectedSettings is ContextualRadialThingSettings)
+            {
+                unconditionallyDoAction = ((ContextualRadialThingSettings)SelectedSettings).UnconditionallyDoAction.Value;
+                attemptSwapMountsIfMounted = ((ContextualRadialThingSettings)SelectedSettings).AttemptSwapMountsIfMounted.Value;
+            }
+
+            await SelectedMount.Thing.DoAction(unconditionallyDoAction, attemptSwapMountsIfMounted, true);            
             SelectedSettings = null;
         }
 

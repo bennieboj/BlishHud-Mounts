@@ -11,5 +11,10 @@ namespace Manlaan.Mounts.Things.Mounts
         }
 
         protected override MountType MountType => MountType.Griffon;
+
+        public override bool IsUsableInAir()
+        {
+            return true;
+        }
     }
 }

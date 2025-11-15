@@ -327,7 +327,7 @@ namespace Manlaan.Mounts
             {
                 var thing = StoredRangedThing;
                 Logger.Debug($"{nameof(DoRangedThing)} {thing?.Name}");
-                await thing?.DoAction(false, false);
+                await thing?.DoAction(false, false, false);
                 StoredRangedThing = null;
             }
         }
@@ -367,7 +367,7 @@ namespace Manlaan.Mounts
             var characterName = GameService.Gw2Mumble.PlayerCharacter.Name;
             var thing = StoredThingForLater[characterName];
             Logger.Debug($"{nameof(DoThingActionForLaterActivation)} {thing?.Name} for character: {characterName}");
-            await thing?.DoAction(false, false);
+            await thing?.DoAction(false, false , false);
             ClearSomethingStoredForLaterActivation();
         }
 

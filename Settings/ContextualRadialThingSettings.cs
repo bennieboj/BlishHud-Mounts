@@ -17,6 +17,7 @@ namespace Mounts.Settings
         public SettingEntry<bool> ApplyInstantlyIfSingle;
         public SettingEntry<string> ApplyInstantlyOnTap;
         public SettingEntry<bool> UnconditionallyDoAction;
+        public SettingEntry<bool> AttemptSwapMountsIfMounted;
 
         public bool IsDefault => Order == 99;
 
@@ -31,6 +32,7 @@ namespace Mounts.Settings
             ApplyInstantlyIfSingle = settingCollection.DefineSetting($"RadialThingSettings{_name}ApplyInstantlyIfSingle", defaultApplyInstantlyIfSingle);
             ApplyInstantlyOnTap = settingCollection.DefineSetting($"RadialThingSettings{_name}ApplyInstantlyOnTap", "Disabled");
             UnconditionallyDoAction = settingCollection.DefineSetting($"RadialThingSettings{_name}UnconditionallyDoAction", defaultUnconditionallyDoAction);
+            AttemptSwapMountsIfMounted = settingCollection.DefineSetting($"RadialThingSettings{_name}AttemptSwapMountsIfMounted", false);
         }
 
         public override SettingEntry<KeyBinding> GetKeybind()
