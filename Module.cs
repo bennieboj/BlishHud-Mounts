@@ -230,6 +230,9 @@ namespace Manlaan.Mounts
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.RadialSettingsTextureName), () => new RadialThingSettingsView(DoKeybindActionAsync, _helper), Strings.Window_RadialSettingsTab));
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.IconSettingsTextureName), () => new IconThingSettingsView(), Strings.Window_IconSettingsTab));
             _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SupportMeTabTextureName), () => new SupportMeView(_textureCache), Strings.Window_SupportMeTab));
+#if DEBUG
+            _settingsWindow.Tabs.Add(new Tab(_textureCache.GetImgFile(TextureCache.SupportMeTabTextureName), () => new TestingView(_textureCache), "Testing"));
+#endif
         }
 
         public List<SkyLake> LoadSkyLakesFromJson()
@@ -541,6 +544,7 @@ namespace Manlaan.Mounts
             _debug.Add("Applicable Contextual RadialSettings", () => $"Name: {_helper.GetApplicableContextualRadialThingSettings()?.Name}, Things count: {_helper.GetApplicableContextualRadialThingSettings()?.AvailableThings.Count}");
             _debug.Add("Queued for out of combat", () => $"{_helper.GetQueuedThing()?.Name}");
             _debug.Add("TappedModuleKeybind", () => $"{DateTime.Now} {tappedModuleKeybind} {lastTriggered} {(lastTriggered != null ? (int)(DateTime.Now-lastTriggered.Value).TotalMilliseconds : "")}");
+            _debug.Add("mouse pos", () => $"{GameService.Input.Mouse.Position.X}, {GameService.Input.Mouse.Position.Y}");
 
             if (Gw2ApiManager.HasSubtoken)
             {
