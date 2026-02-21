@@ -74,7 +74,20 @@ namespace Manlaan.Mounts.Views
         //    };
 
 
-            var mylist = new List<string> { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l" };
+            var mylist = new List<string> {
+                "a",
+                "bb",
+                "ccc",
+                "dddd",
+                "eeeee",
+                "ffffff",
+                "ggggggg",
+                "hhhhhhhh",
+                "iiiiiiiii",
+                "jjjjjjjjjj",
+                "kkkkkkkkkkk",
+                "llllllllllll"
+            };
             var reorderable = new ReorderableList<MyReorderableItem>()
             {
                 Parent = buildPanel,

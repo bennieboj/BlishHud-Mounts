@@ -1,14 +1,12 @@
-﻿using Blish_HUD.Controls;
-
-namespace Mounts.Controls
+﻿namespace Mounts.Controls
 {
     internal class ReorderableListItemWithContent<TContent> : ReorderableListItem
         where TContent : IReorderableListItemContent
     {
         public ReorderableListItemWithContent(TContent content)
+            : base(content) // pass content to base constructor
         {
-            var ctrl = content.CreateContent();
-            ctrl.Parent = ContentPanel;
+            // Nothing else needed here, base already sets up ContentPanel
         }
     }
 }
