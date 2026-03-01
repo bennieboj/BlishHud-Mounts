@@ -1,4 +1,5 @@
-﻿using Blish_HUD;
+﻿using AsyncKeyedLock;
+using Blish_HUD;
 using Blish_HUD.Controls;
 using Manlaan.Mounts.Things;
 using Microsoft.Xna.Framework;
@@ -32,7 +33,7 @@ namespace Manlaan.Mounts.Controls
         private readonly Helper _helper;
         private readonly TextureCache _textureCache;
 
-        private SemaphoreSlim handleShownHiddenSemaphore = new SemaphoreSlim(1, 1);
+        private AsyncNonKeyedLocker handleShownHiddenSemaphore = new();
 
         public EventHandler OnSettingsButtonClicked { get; internal set; }
         private StandardButton _settingsButton;
@@ -62,10 +63,11 @@ namespace Manlaan.Mounts.Controls
             Shown += async (sender, e) => await HandleShown(sender, e);
             Hidden += async (sender, e) => await HandleHidden(sender, e);
 
-            _errorLabel = new Label {
+            _errorLabel = new Label
+            {
                 Parent = this,
                 Location = new Point(0, 0),
-                Size = new Point(800,500),
+                Size = new Point(800, 500),
                 Font = GameService.Content.DefaultFont32,
                 TextColor = Color.Red
             };
@@ -76,7 +78,8 @@ namespace Manlaan.Mounts.Controls
                 Text = Strings.Settings_Button_Label,
                 Visible = false
             };
-            _settingsButton.Click += (args, sender) => {
+            _settingsButton.Click += (args, sender) =>
+            {
                 OnSettingsButtonClicked(args, sender);
             };
         }
@@ -87,12 +90,13 @@ namespace Manlaan.Mounts.Controls
         }
 
 
-        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds) {
+        public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds)
+        {
             RadialThings.Clear();
 
             var triggeredRadialSettings = _helper.GetTriggeredRadialSettings();
-            
-            if(triggeredRadialSettings  == null)
+
+            if (triggeredRadialSettings == null)
             {
                 _errorLabel.Text = $"No triggered radial settings found!!!";
                 _errorLabel.Show();
@@ -115,7 +119,7 @@ namespace Manlaan.Mounts.Controls
                 _settingsButton.Hide();
             }
 
-            if(triggeredRadialSettings is ContextualRadialThingSettings)
+            if (triggeredRadialSettings is ContextualRadialThingSettings)
             {
                 var triggeredContextual = (ContextualRadialThingSettings)triggeredRadialSettings;
                 var tapThing = triggeredContextual.GetApplyInstantlyOnTapThing();
@@ -162,8 +166,8 @@ namespace Manlaan.Mounts.Controls
                     float xDebugInner = (float)Math.Round(GetRadius() * Math.Cos(currentAngle)) + SpawnPoint.X;
                     float yDebugInner = (float)Math.Round(GetRadius() * Math.Sin(currentAngle)) + SpawnPoint.Y;
                     var debugRadiusOuter = 250;
-                    float xDebugOuter = (float)Math.Round(2*debugRadiusOuter * Math.Cos(currentAngle)) + SpawnPoint.X;
-                    float yDebugOuter = (float)Math.Round(2*debugRadiusOuter * Math.Sin(currentAngle)) + SpawnPoint.Y;
+                    float xDebugOuter = (float)Math.Round(2 * debugRadiusOuter * Math.Cos(currentAngle)) + SpawnPoint.X;
+                    float yDebugOuter = (float)Math.Round(2 * debugRadiusOuter * Math.Sin(currentAngle)) + SpawnPoint.Y;
                     spriteBatch.DrawLine(new Vector2(xDebugInner, yDebugInner), new Vector2(xDebugOuter, yDebugOuter), Color.Red, debugLineThickness);
                 }
 
@@ -215,19 +219,19 @@ namespace Manlaan.Mounts.Controls
             var angle = Math.Atan2(diff.Y, diff.X);
             while (angle < startAngle)
             {
-                angle += Math.PI * 2; 
+                angle += Math.PI * 2;
             }
 
 
             var length = new Vector2(diff.Y, diff.X).Length();
-            
+
             foreach (var radialMount in RadialThings)
             {
                 if (length < GetRadius())
                 {
                     radialMount.Selected = radialMount.Default;
-                } 
-                else 
+                }
+                else
                 {
                     radialMount.Selected = radialMount.AngleBegin <= angle && radialMount.AngleEnd > angle;
                 }
@@ -251,7 +255,7 @@ namespace Manlaan.Mounts.Controls
         public async Task TriggerSelectedMountAsync()
         {
             var unconditionallyDoAction = false;
-            if (SelectedSettings!= null && SelectedSettings is ContextualRadialThingSettings)
+            if (SelectedSettings != null && SelectedSettings is ContextualRadialThingSettings)
             {
                 unconditionallyDoAction = ((ContextualRadialThingSettings)SelectedSettings).UnconditionallyDoAction.Value;
             }
@@ -263,58 +267,44 @@ namespace Manlaan.Mounts.Controls
 
         private async Task HandleShown(object sender, EventArgs e)
         {
-            await handleShownHiddenSemaphore.WaitAsync();
-            try
+            using var _ = await handleShownHiddenSemaphore.LockAsync();
+            Logger.Debug("HandleShown entered");
+            if (!GameService.Input.Mouse.CursorIsVisible && !Module._settingMountRadialToggleActionCameraKeyBinding.IsNull)
             {
-                Logger.Debug("HandleShown entered");
-                if (!GameService.Input.Mouse.CursorIsVisible && !Module._settingMountRadialToggleActionCameraKeyBinding.IsNull)
-                {
-                    IsActionCamToggledOnMount = true;
-                    await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding, WhichKeybindToRun.Both);
-                    Logger.Debug("HandleShown turned off action cam");
-                }
-
-                _maxRadialDiameter = Math.Min(GameService.Graphics.SpriteScreen.Width, GameService.Graphics.SpriteScreen.Height);
-                thingIconSize = (int)(_maxRadialDiameter / 4 * Module._settingMountRadialIconSizeModifier.Value);
-                radius = (int)((_maxRadialDiameter / 2 - thingIconSize / 2) * Module._settingMountRadialRadiusModifier.Value);
-                Size = new Point(_maxRadialDiameter, _maxRadialDiameter);
-
-                if (Module._settingMountRadialSpawnAtMouse.Value)
-                {
-                    SpawnPoint = Input.Mouse.Position;
-                }
-                else
-                {
-                    Microsoft.Xna.Framework.Input.Mouse.SetPosition(GameService.Graphics.WindowWidth / 2, GameService.Graphics.WindowHeight / 2);
-                    SpawnPoint = new Point(GameService.Graphics.SpriteScreen.Width / 2, GameService.Graphics.SpriteScreen.Height / 2);
-                }
-
-                Location = new Point(SpawnPoint.X - radius - thingIconSize / 2, SpawnPoint.Y - radius - thingIconSize / 2);
+                IsActionCamToggledOnMount = true;
+                await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding, WhichKeybindToRun.Both);
+                Logger.Debug("HandleShown turned off action cam");
             }
-            finally
+
+            _maxRadialDiameter = Math.Min(GameService.Graphics.SpriteScreen.Width, GameService.Graphics.SpriteScreen.Height);
+            thingIconSize = (int)(_maxRadialDiameter / 4 * Module._settingMountRadialIconSizeModifier.Value);
+            radius = (int)((_maxRadialDiameter / 2 - thingIconSize / 2) * Module._settingMountRadialRadiusModifier.Value);
+            Size = new Point(_maxRadialDiameter, _maxRadialDiameter);
+
+            if (Module._settingMountRadialSpawnAtMouse.Value)
             {
-                handleShownHiddenSemaphore.Release();
+                SpawnPoint = Input.Mouse.Position;
             }
+            else
+            {
+                Microsoft.Xna.Framework.Input.Mouse.SetPosition(GameService.Graphics.WindowWidth / 2, GameService.Graphics.WindowHeight / 2);
+                SpawnPoint = new Point(GameService.Graphics.SpriteScreen.Width / 2, GameService.Graphics.SpriteScreen.Height / 2);
+            }
+
+            Location = new Point(SpawnPoint.X - radius - thingIconSize / 2, SpawnPoint.Y - radius - thingIconSize / 2);
         }
 
         private async Task HandleHidden(object sender, EventArgs e)
         {
-            await handleShownHiddenSemaphore.WaitAsync();
-            try
+            using var _ = await handleShownHiddenSemaphore.LockAsync();
+            Logger.Debug("HandleHidden entered");
+            if (IsActionCamToggledOnMount)
             {
-                Logger.Debug("HandleHidden entered");
-                if (IsActionCamToggledOnMount)
-                {
-                    await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding, WhichKeybindToRun.Both);
-                    IsActionCamToggledOnMount = false;
-                    Logger.Debug("HandleHidden turned back on action cam");
-                }
-                await TriggerSelectedMountAsync();
+                await _helper.TriggerKeybind(Module._settingMountRadialToggleActionCameraKeyBinding, WhichKeybindToRun.Both);
+                IsActionCamToggledOnMount = false;
+                Logger.Debug("HandleHidden turned back on action cam");
             }
-            finally
-            {
-                handleShownHiddenSemaphore.Release();
-            }
+            await TriggerSelectedMountAsync();
         }
     }
 }
