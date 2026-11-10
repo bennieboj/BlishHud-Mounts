@@ -1,5 +1,6 @@
 ﻿using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
+using Microsoft.Xna.Framework;
 using Mounts.Controls;
 using System.Collections.Generic;
 
@@ -19,20 +20,25 @@ namespace Manlaan.Mounts.Views
 
             Control IReorderableListItemContent.CreateContent()
             {
-                _label = new Label()
+                var panel = new Panel
                 {
-                    Text = "TEXT " + _text // replaced below
+                    Width = 380,
+                    Height = 36,
+                    BackgroundColor = Color.CornflowerBlue 
                 };
 
-                // configure label after construction
-                _label.Text = "TEXT " + _text;
-                _label.AutoSizeHeight = true;
-                _label.Width = 300;
-                _label.Left = 8;
-                _label.Top = 8;
+                var label = new Label
+                {
+                    Parent = panel,
+                    Text = _text,
+                    Left = 8,
+                    Top = 8,
+                    Width = 360,
+                    Height = 20,
+                    AutoSizeHeight = true
+                };
 
-                // return the control; the base will set Parent = ContentPanel
-                return _label;
+                return panel;
             }
         }
 

@@ -1,12 +1,14 @@
 ﻿namespace Mounts.Controls
 {
-    internal class ReorderableListItemWithContent<TContent> : ReorderableListItem
+    public class ReorderableListItemWithContent<TContent> : ReorderableListItem
         where TContent : IReorderableListItemContent
     {
+        public TContent Content { get; }
+
         public ReorderableListItemWithContent(TContent content)
-            : base(content) // pass content to base constructor
+            : base(content)
         {
-            // Nothing else needed here, base already sets up ContentPanel
+            Content = content;
         }
     }
 }
